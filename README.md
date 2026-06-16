@@ -9,6 +9,7 @@
 
 
 - **Original Git repository**: <https://codeberg.org/nscharrenberg/PSALM/>
+- **Demo Application**: <https://github.com/nscharrenberg/psalm-mirror/tree/demo> (also works for windows users)
 
 ## Getting started with your project
 
