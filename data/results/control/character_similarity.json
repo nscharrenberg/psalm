@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical characters across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because all Level‑nodes from Identity through Function align perfectly; JudgementNode verdict: Identical across all dimensions."},
+      {"score": 1.0, "reason": "The score is 1.0 because DAG traversal (Levels 0–6) produced uniform identical verdicts; lexical variations disregarded as non‑expressive."},
+      {"score": 1.0, "reason": "The score is 1.0 since all sub‑nodes confirmed total match across weighted criteria."},
+      {"score": 1.0, "reason": "The score is 1.0 because node‑level scores averaged maximal similarity; final verdict: Identical."},
+      {"score": 0.8, "reason": "The score is 0.8 because minor lexical phrasing caused a drop to 'Very similar' while structure remained identical."}
+    ]
+  },
+  "Very similar characters with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5 because weighting noise demoted aggregated outcome to 'Moderately similar' though structure near‑identical."},
+      {"score": 0.3, "reason": "The score is 0.3; evaluator over‑emphasized lexical and environmental divergence, misclassifying near‑identical arcs as only somewhat similar." },
+      {"score": 0.8, "reason": "The score is 0.8 as five of six weighted nodes align; Function node yielded minor variance."},
+      {"score": 0.8, "reason": "The score is 0.8 owing to high overlap across core dimensions; verdict node: Very similar."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG Level 7 finalized Very similar with minor divergence in phrasing."}
+    ]
+  },
+  "Moderately similar characters with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5 because equal alignment and divergence across Identity/Arc vs Background/Expression result in balanced similarity."},
+      {"score": 0.3, "reason": "The score is 0.3 because Arc and Motivation nodes diverged strongly despite thematic resemblance."},
+      {"score": 0.5, "reason": "The score is 0.5 as JudgementNode aggregated half‑aligned node outputs."},
+      {"score": 0.5, "reason": "The score is 0.5; verdict node 'Moderately similar' matched Level‑weighted mean."},
+      {"score": 0.5, "reason": "The score is 0.5 due to consistent 50% node alignment pattern across all traversals."}
+    ]
+  },
+  "Somewhat different characters with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3 because only generic patterns overlapped while psychological depth and relational arcs diverged."},
+      {"score": 0.3, "reason": "The score is 0.3 as similarity confined to high‑level motifs; all weighted nodes below medium thresholds."},
+      {"score": 0.5, "reason": "The score is 0.5 due to stochastic promotion from moderate Arc correlation; typically 0.3."},
+      {"score": 0.3, "reason": "The score is 0.3; verdict node 'Somewhat different' confirmed limited expressive correlation."},
+      {"score": 0.3, "reason": "The score is 0.3 because DAG traversal yielded partial thematic resonance but structural opposition elsewhere."}
+    ]
+  },
+  "Clearly different or opposite characters": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; all node comparisons returned null alignment or oppositional attributes."},
+      {"score": 0.0, "reason": "The score is 0.0; characters possess reversed behavioral logic and thematic polarity."},
+      {"score": 0.0, "reason": "The score is 0.0 due to total absence of overlapping creative expression; VerdictNode: Clearly different."},
+      {"score": 0.0, "reason": "The score is 0.0 because DAG path recorded dissimilar outputs at each level."},
+      {"score": 0.0, "reason": "The score is 0.0; final JudgementNode consensus: opposite characterization."}
+    ]
+  }
+}

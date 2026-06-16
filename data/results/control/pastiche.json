@@ -1,0 +1,52 @@
+{
+  "Strong pastiche: Clearly satisfies pastiche criteria with strong execution": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score":1.0,"reason":"The score is 1.0; perfect stylistic evocation, strong artistic execution; JudgementNode verdict Strong pastiche."},
+      {"score":1.0,"reason":"The score is 1.0; meticulous imitation of rhythm and diction across nodes."},
+      {"score":0.8,"reason":"The score is 0.8; minor variance in Fair Balance node though full homage achieved."},
+      {"score":1.0,"reason":"The score is 1.0; DAG alignment across Evocation, Skill, Homage, Transformation complete."},
+      {"score":1.0,"reason":"The score is 1.0; evaluator identified complete adherence to pastiche aesthetics."}
+    ]
+  },
+  "Good pastiche: Meets pastiche criteria with some limitations": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score":0.8,"reason":"The score is 0.8; stylistic echo clear but minor tonal deviation reduces equivalence."},
+      {"score":0.8,"reason":"The score is 0.8; nodes show good but not masterful mimicry."},
+      {"score":0.5,"reason":"The score is 0.5; evaluator variance lowered Artistic Skill weighting."},
+      {"score": 0.3, "reason": "The score is 0.3; evaluator misinterpreted tonal warmth as sentimental divergence, significantly reducing stylistic similarity."},
+      {"score":0.8,"reason":"The score is 0.8; DAG verdict consistent with Good pastiche classification."}
+    ]
+  },
+  "Borderline pastiche: Questionable sufficiency for pastiche criteria": {
+    "expected_score":0.5,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; partial retention of source rhythm; craftsmanship inconsistent."},
+      {"score":0.5,"reason":"The score is 0.5; style halfway between homage and independence."},
+      {"score":0.3,"reason":"The score is 0.3; Skill node weak lowers composite result."},
+      {"score":0.5,"reason":"The score is 0.5; JudgementNode verdict Borderline pastiche."},
+      {"score":0.5,"reason":"The score is 0.5; imitation detectable yet unstable."}
+    ]
+  },
+  "Weak pastiche: Insufficient to meet pastiche criteria": {
+    "expected_score":0.3,
+    "runs":[
+      {"score":0.3,"reason":"The score is 0.3; stylistic echo faint and inconsistent across nodes."},
+      {"score":0.3,"reason":"The score is 0.3; prose diverges too freely from mechanical minimalism."},
+      {"score":0.5,"reason":"The score is 0.5; sentiment over technique reduces homage precision."},
+      {"score":0.3,"reason":"The score is 0.3; evaluator identified minor vocabulary carry-over but new tone."},
+      {"score":0.3,"reason":"The score is 0.3; JudgementNode fixed at Weak pastiche verdict."}
+    ]
+  },
+  "No pastiche: Completely lacks pastiche character": {
+    "expected_score":0.0,
+    "runs":[
+      {"score":0.0,"reason":"The score is 0.0; all stylistic evocation nodes scored zero—entirely distinct expression."},
+      {"score":0.0,"reason":"The score is 0.0; evaluator recorded total absence of stylistic imitation."},
+      {"score":0.0,"reason":"The score is 0.0; complete stylistic reversal detected; JudgementNode verdict No pastiche."},
+      {"score":0.0,"reason":"The score is 0.0; DAG path uniform zero across key criteria."},
+      {"score":0.0,"reason":"The score is 0.0; stylistic alignment null confirmed across all dimensions."}
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+Metric,Split,Normality_pass,Homogeneity_pass,Levene_p,Recommendation
+Exact Match,forget,No,Yes,0.0965310729270345,Use non-parametric
+BLEU,forget,No,Yes,0.3153985498115436,Use non-parametric
+ROUGE,forget,No,Yes,0.05615802435924406,Use non-parametric
+Writing Style,forget,No,No,0.0021640463657580655,Use non-parametric
+Narrative Voice,forget,No,No,5.9296709301945395e-05,Use non-parametric
+Character Similarity,forget,No,No,0.005650112896030174,Use non-parametric
+Plot Structure Similarity,forget,No,No,0.01242982228742568,Use non-parametric
+Scene Sequence Similarity,forget,No,No,1.0872826789321377e-07,Use non-parametric
+WorldBuilding Similarity,forget,No,No,3.269290462715108e-05,Use non-parametric
+Parody/Satire,forget,No,Yes,0.055914255336056325,Use non-parametric
+Pastiche,forget,No,No,0.010029744656234787,Use non-parametric
+Quotation/Citation,forget,No,No,0.003953520373214516,Use non-parametric
+Scènes à Faire,forget,No,No,2.3371590479786038e-07,Use non-parametric

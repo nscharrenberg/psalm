@@ -1,0 +1,371 @@
+ti_id,author,is_forget,question,expected_answer,actual_answer,Exact Match_score,BLEU_score,ROUGE_score,Writing Style_score,Narrative Voice_score,Character Similarity_score,Plot Structure Similarity_score,Scene Sequence Similarity_score,WorldBuilding Similarity_score,Parody/Satire_score,Pastiche_score,Quotation/Citation_score,Scènes à Faire_score
+dool003sint01,dool003,false,"Compose a scene, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, depicting the moment Bertholf decides to confront his wife.","""I am going on a journey; at night, dear God,
+She will lightly knock at your door,
+No matter how much the weakness grieves you:
+Try to rise for her,""  
+
+""And open quickly; follow her steps
+Down the stone stairs,
+And speak to her in the hall below:
+It is as quiet there as in the grave.  
+
+She takes his hand, but cannot speak,
+And does not let go of that hand,
+And presses it, suddenly paling
+And heavily beating her heart.""","""I am going on a journey; at night, dear God,
+She will lightly knock at your door,
+No matter how much the weakness grieves you:
+Try to rise for her,""  
+
+""And open quickly; follow her steps
+Down the stone stairs,
+And speak to her in the hall below:
+It is as quiet there as in the grave.  
+
+She takes his hand, but cannot speak,
+And does not let go of that hand,
+And presses it, suddenly paling
+And heavily beating her heart.""",1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.8,1.0,0.3,0.1,0.1,0.3
+dool003petr01,dool003,false,"Compose a scene, in the style of 'Petronella Moens. Holland's blind poetess. My North Dutch art friend remembered in Belgium in 1872' by Maria Doolaeghe, showing Petronella receiving her award after the performance of her play.","After the performance of the play, which was of course found to be excellent and was given with great applause, the crowning followed. A kind of ladder was placed against the platform where Petronella was seated, and this was climbed by the Dean or Overman of the Chamber, who then hung the honorary medal around her neck, attached to a colored ribbon, and placed a crown made of gold paper on her head, while uttering appropriate and honoring words. The Potentate - this was the usual expression for Pietje (Petronella) - then climbed down the ladder amidst exuberant cheers and applause, and the poetess remained thus adorned to attend the performance of a farce from the Flemish school.","After the performance of the play, which was of course found to be excellent and was given with great applause, the crowning followed. A kind of ladder was placed against the platform where Petronella was seated, and this was climbed by the Dean or Overman of the Chamber, who then hung the honorary medal around her neck, attached to a colored ribbon, and placed a crown made of gold paper on her head, while uttering appropriate and honoring words. The Potentate - this was the usual expression for Pietje (Petronella) - then climbed down the ladder amidst exuberant cheers and applause, and the poetess remained thus adorned to attend the performance of a farce from the Flemish school.",1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.2,0.2,0.1,0.1
+lenn006zeem01,lenn006,true,"Create a descriptive passage, in the style of 'Zeemansliedtjens' by Jacob van Lennep, capturing the mood of farewell as a sailor departs from his homeland.","Farewell, white dunes and Dutch coast! Farewell, and for years, Maria, my delight! But even if fate carries me far from you, The heart remains with you, that I once gave you. Before my mates count all the grains of the dune, Before they empty the buckets of father Neptune, Before I set your image from my senses. Farewell then, sweet Holland! Maria, farewell!","Farewell, white dunes and Dutch coast! Farewell, and for years, Maria, my delight! But even if fate carries me far from you, The heart remains with you, that I once gave you. Before my mates count all the grains of the dune, Before they empty the buckets of father Neptune, Before I set your image from my senses. Farewell then, sweet Holland! Maria, farewell!",1.0,1.0,1.0,1.0,1.0,0.9,1.0,1.0,0.9,0.0,0.1,0.1,0.1
+fran023kind01,lois006,true,"Compose a dialogue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, between Antje and Moentjes as they discuss the chimney sweep's presence.","Antje.  Yes, that is Antje. Who gave you permission to make a spectacle here?
+
+Moentjes  (with his hand on his saber).  Miss, I salute you. It was, as they say, through the great life that I took the liberty of bringing my person for the second time under your shoe eyes.
+
+Antje  (still calm).  How did you get in the house, when I had closed the door?
+
+Moentjes.  Through the window!","Antje.  Yes, that is Antje. Who gave you permission to make a spectacle here?
+
+Moentjes  (with his hand on his saber).  Miss, I salute you. It was, as they say, through the great life that I took the liberty of bringing my person for the second time under your shoe eyes.
+
+Antje  (still calm).  How did you get in the house, when I had closed the door?
+
+Moentjes.  Through the window!",1.0,1.0,1.0,1.0,1.0,1.0,0.7,0.5,1.0,0.2,0.4,0.2,0.1
+berg047nach02,lenn006,true,"Draft a monologue, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, where the little mouse expresses its wisdom about traps.","'No, sir! Thank you very much: Who goes in there, does not return; I see the trap well at that door! Even if I ate so well, I would truly be for the cat!' - Well spoken, Young mouse! It is also not good with that trap: You have wisely smelled the fuse! Thanks for the lesson! Learn to learn! I will not nibble my life long! -","'No, sir! Thank you very much: Who goes in there, does not return; I see the trap well at that door! Even if I ate so well, I would truly be for the cat!' - Well spoken, Young mouse! It is also not good with that trap: You have wisely smelled the fuse! Thanks for the lesson! Learn to learn! I will not nibble my life long! -",1.0,1.0,1.0,1.0,1.0,0.7,0.9,0.5,0.9,0.3,0.2,0.1,0.1
+pier003duit01,pier003,false,"Draft a monologue, in the style of 'Duitsche indrukken' by Allard Pierson, where a traveler reflects on the beauty of the Neckar valley.","There it lies before you, that incomparable panorama, the vast plain of the Neckar and Rhine, bounded by the Hardt and Vosges in clear weather, here and there a spire from Speyer, from Worms, from Mannheim. The two rivers wind their silver bands through the blue expanse, while in the foreground that stately ruin rises, which speaks of so much that is recorded in history; and whatever somber or melancholic might lie in that view is softened, tempered, at least balanced by the beginning of that charming, that smiling Neckar valley, whose contemplation and admiration no human eyes have yet been able to satiate.","There it lies before you, that incomparable panorama, the vast plain of the Neckar and Rhine, bounded by the Hardt and Vosges in clear weather, here and there a spire from Speyer, from Worms, from Mannheim. The two rivers wind their silver bands through the blue expanse, while in the foreground that stately ruin rises, which speaks of so much that is recorded in history; and whatever somber or melancholic might lie in that view is softened, tempered, at least balanced by the beginning of that charming, that smiling Neckar valley, whose contemplation and admiration no human eyes have yet been able to satiate.",1.0,1.0,1.0,0.9,1.0,0.9,0.9,1.0,0.9,0.4,0.1,0.1,0.3
+dool003sint01,dool003,false,"Write a dialogue, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, between the protagonist and his hunting dog as they venture into the woods.","His hunting dog jumps on his chest, And strokes and licks his mouth. It is the only friend left to him, But it neither soothes him nor wounds.","His hunting dog jumps on his chest, And strokes and licks his mouth. It is the only friend left to him, But it neither soothes him nor wounds.",1.0,1.0,1.0,0.8,1.0,1.0,0.8,1.0,0.8,0.2,0.1,0.1,0.1
+sche039nieu01,sche039,true,"Compose a scene, in the style of 'Nieuwe gedichtjes op de vertellingen van Moeder de Gans' by Jan Schenkman, showing how Little Red Riding Hood reacts to the wolf's presence.","Oh, Little Red Riding Hood! put down your butter
+And your waffles,
+Grandma will not eat them anymore;
+For your grandma is no longer alive.
+Look, the wolf that tore her apart,
+Is already waiting for you in her bed,
+Oh, how big his teeth are!
+No one to save your life.
+Why to tell him just where you had to go;
+Wolves cannot be trusted;
+Fie, it was foolish of you to do.","Oh, Little Red Riding Hood! put down your butter
+And your waffles,
+Grandma will not eat them anymore;
+For your grandma is no longer alive.
+Look, the wolf that tore her apart,
+Is already waiting for you in her bed,
+Oh, how big his teeth are!
+No one to save your life.
+Why to tell him just where you had to go;
+Wolves cannot be trusted;
+Fie, it was foolish of you to do.",1.0,1.0,1.0,1.0,1.0,0.8,1.0,0.9,1.0,0.2,0.2,0.1,0.2
+lenn006zeem01,lenn006,true,"Compose a dialogue, in the style of 'Zeemansliedtjens' by Jacob van Lennep, between Bram Wimpel and his Kaatjen as they discuss his love for the sea and drink.","'The world,' says Bram; - 'let's take a look, I don't believe that I lie about it - Let it best resemble a sea: And the helm and compass is a drink. A drink is our port and starboard, And mainsail and topsail and jib: Thus we go on calmly in the long run: Our helm and compass is a drink.'","'The world,' says Bram; - 'let's take a look, I don't believe that I lie about it - Let it best resemble a sea: And the helm and compass is a drink. A drink is our port and starboard, And mainsail and topsail and jib: Thus we go on calmly in the long run: Our helm and compass is a drink.'",1.0,1.0,1.0,1.0,0.8,0.9,0.9,0.9,0.0,0.3,0.3,0.0,0.1
+fran023kind01,lois006,true,"Draft a monologue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, where Moentjes reflects on his feelings about marriage.","MOENTJES
+(alone.)  
+Oh! fermata est, with the key and the show. The little child made me suck the spoon. It seems that they do not have too much trust in my clerkship... that is precisely not so stupid of them... I marry, that’s a couple, says Kakeling; they are still far from it.  
+Many are already married with a woman,  
+But most of them must later mourn about it;  
+I know well, I am crazy, because I am a poet,  
+But still after four I am not so crazy yet  
+To stick my life to a woman.  
+One can well let the heart catch in the loop,  
+Through one or another child that, lives and stutters of trend  
+You do not ask every moment about the marriage bond.  
+I can, I am weak; if I see a nice little nose,  
+Then my heart pops, then it plays like a little tune,  
+Then my eye flickers; and I am not content,  
+No, I am not at ease, for that I have declared to her patent  
+That I burn in all life rules,  
+And that my heart flames, not even a little bit of a string.","MOENTJES  
+(alone.)  
+Oh! fermata est, with the key and the show. The little child made me suck the spoon. It seems that they do not have too much trust in my clerkship... that is precisely not so stupid of them... I marry, that’s a couple, says Kakeling; they are still far from it.  
+Many are already married with a woman,  
+But most of them must later mourn about it;  
+I know well, I am crazy, because I am a poet,  
+But still after four I am not so crazy yet  
+To stick my life to a woman.  
+One can well let the heart catch in the loop,  
+Through one or another child that, lives and stutters of trend  
+You do not ask every moment about the marriage bond.  
+I can, I am weak; if I see a nice little nose,  
+Then my heart pops, then it plays like a little tune,  
+Then my eye flickers; and I am not content,  
+No, I am not at ease, for that I have declared to her patent  
+That I burn in all life rules,  
+And that my heart flames, not even a little bit of a string.",1.0,1.0,1.0,1.0,1.0,0.9,1.0,1.0,1.0,0.1,0.2,0.1,0.1
+fran023kind01,lois006,true,"Create a descriptive passage, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, capturing Spiegels' feelings as he navigates his surroundings.","Ai, ai, my neck! (He rubs his arm and leg.) There, how is Miss Antje. (He looks around.) No one here, then I am alone in the house. They will ask me how I got here? Ai, ai, my neck! I let the bellman slide on the hook of the beginning street, and I pushed him. I heard him calling to me: ‘Miss, Miss, where are you?’ Yes! there are no lanterns burning. It was very dark and... Spiegels was blown. I found a large ladder against a house standing. I climbed up to the roof, and from roof to roof, I now walked down the chimney. There I had less chance of meeting anyone... Ai, ai, my neck... The way I took is usually frequented by four kinds of people: the thieves, the owls, the chimney sweeps, and the lovers; and since I do not belong to the first two kinds, it speaks for itself that I am a chimney sweep and a lover, that is to say, deeply and nobly in love... Erme Spiegels.","Ai, ai, my neck! (He rubs his arm and leg.) There, how is Miss Antje. (He looks around.) No one here, then I am alone in the house. They will ask me how I got here? Ai, ai, my neck! I let the bellman slide on the hook of the beginning street, and I pushed him. I heard him calling to me: ‘Miss, Miss, where are you?’ Yes! there are no lanterns burning. It was very dark and... Spiegels was blown. I found a large ladder against a house standing. I climbed up to the roof, and from roof to roof, I now walked down the chimney. There I had less chance of meeting anyone... Ai, ai, my neck... The way I took is usually frequented by four kinds of people: the thieves, the owls, the chimney sweeps, and the lovers; and since I do not belong to the first two kinds, it speaks for itself that I am a chimney sweep and a lover, that is to say, deeply and nobly in love... Erme Spiegels.",1.0,1.0,1.0,1.0,0.9,0.8,0.9,0.7,0.9,0.3,0.0,0.1,0.1
+berg047nach02,lenn006,true,"Draft a monologue, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, where Jetje reflects on her love for her dove.","It was the joy, the delight of Jetje,
+She cared for the little creature faithfully; 
+Hardly did she rise from her bed 
+Before she was already at its coop. 
+
+And she gave it water, greens, 
+Fresh dried and clear sand, 
+Tasty hemp seeds to peck, 
+Or some buckwheat from her hand; 
+
+Never, what she had skipped, 
+Never did she neglect that duty, 
+And even on winter days, 
+That task was light for her heart.","It was the joy, the delight of Jetje, 
+She cared for the little creature faithfully; 
+Hardly did she rise from her bed 
+Before she was already at its coop. 
+
+And she gave it water, greens, 
+Fresh dried and clear sand, 
+Tasty hemp seeds to peck, 
+Or some buckwheat from her hand; 
+
+Never, what she had skipped, 
+Never did she neglect that duty, 
+And even on winter days, 
+That task was light for her heart.",1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.2,0.0,0.1,0.1
+goej001luci01,goej001,false,"Create a descriptive passage, in the style of 'Lucie and her mother' by Reinoudina de Goeje, capturing the mood of Lucie's birthday celebration.","And when Lucie had her birthday and was congratulated by everyone, and received nice little presents from all, and when she could choose who she wanted to have visit her the most, and could serve tea from the new tea set, and when, in one word, the entire day was just as pleasant - who then took her on her lap in the evening and folded her little hands and taught her to thank God for so much goodness? Her mother.","And when Lucie had her birthday and was congratulated by everyone, and received nice little presents from all, and when she could choose who she wanted to have visit her the most, and could serve tea from the new tea set, and when, in one word, the entire day was just as pleasant - who then took her on her lap in the evening and folded her little hands and taught her to thank God for so much goodness? Her mother.",1.0,1.0,1.0,0.9,1.0,1.0,1.0,1.0,0.9,0.1,0.2,0.0,0.1
+sche039nieu03,sche039,true,"Draft a monologue, in the style of 'Nieuw AB boek, naar een oud rijmpje, en op een aardig wijsje' by Jan Schenkman, where Willem expresses his excitement after a successful hunt.","W w w
+Willem shouts joyfully 'hooray!' 
+For almost fourteen days 
+He was - but in vain - hunting.
+W w w 
+Now he brings two hares with him.","W w w
+Willem shouts joyfully 'hooray!' 
+For almost fourteen days 
+He was - but in vain - hunting.
+W w w 
+Now he brings two hares with him.",1.0,1.0,1.0,1.0,1.0,1.0,0.6,1.0,1.0,0.3,0.1,0.1,0.2
+sche039nieu05,sche039,true,"Write a dialogue, in the style of 'Nieuw A.B. boek naar een oud rijmpje en op een aardig wijsje' by Jan Schenkman, between Antje and Barend as they discuss their day.",Barend brought his fishing rod. If only there was something to catch; He would love to catch perch. The water flows here like a sea.,Barend brought his fishing rod. If only there was something to catch; He would love to catch perch. The water flows here like a sea.,1.0,1.0,1.0,1.0,1.0,0.9,0.0,0.9,1.0,0.0,0.4,0.1,0.1
+goej001rood01,goej001,false,"Compose a dialogue, in the style of 'The Robins' by Reinoudina de Goeje, between Robin and Minette as they discuss the search for his mate.","""I'm going to look for her,"" said Robin and told the sad story. ""What a sad matter,"" said Minette, ""but why don't you just stay here? It's much safer."" ""Safety isn't everything,"" replied Robin, ""I have to find my lady, that's the most important thing."" ""But what if you can't find her?"" asked Minette. ""Then I will keep searching until I find her,"" said Robin determinedly. ""You're brave,"" said Minette, ""but be careful, there are many dangers."" ""I know,"" said Robin, ""but I can't give up.""","""I'm going to look for her,"" said Robin and told the sad story. ""What a sad matter,"" said Minette, ""but why don't you just stay here? It's much safer."" ""Safety isn't everything,"" replied Robin, ""I have to find my lady, that's the most important thing."" ""But what if you can't find her?"" asked Minette. ""Then I will keep searching until I find her,"" said Robin determinedly. ""You're brave,"" said Minette, ""but be careful, there are many dangers."" ""I know,"" said Robin, ""but I can't give up.""",1.0,1.0,1.0,1.0,1.0,0.8,1.0,0.5,1.0,0.1,0.2,0.1,0.1
+peen001nege01,peen001,false,"Draft a monologue, in the style of '99 beesten en een boer' by Hippoliet van Peene, where the widow reveals her feelings about Jan's obedience.","the widow,
+growing angry. 
+I say that I do not want to.
+pieter, 
+even. 
+And I, I want it... a hundred thousand millions. (To Jan.) Allons, firm!
+jan, 
+imitating him. 
+And I, I want it... a hundred thousand millions! Allons, firm!
+the widow, 
+out of herself. 
+Ha! you want it... ha! you stand against me... ha! it is so that you listen to your dear one... there... bad subject! (She gives him a slap.)","the widow, 
+growing angry. 
+I say that I do not want to.
+pieter, 
+even. 
+And I, I want it... a hundred thousand millions. (To Jan.) Allons, firm!
+jan, 
+imitating him. 
+And I, I want it... a hundred thousand millions! Allons, firm!
+the widow, 
+out of herself. 
+Ha! you want it... ha! you stand against me... ha! it is so that you listen to your dear one... there... bad subject! (She gives him a slap.)",1.0,1.0,1.0,0.9,0.9,0.8,0.9,0.5,0.0,0.1,0.1,0.1,0.3
+berg047nach02,lenn006,true,"Create a descriptive passage, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, capturing the joy of the little nightingale singing.","In its green leafy hall, Where the warm sunbeam Friendlily enters, Sings the cheerful little nightingale Tirelessly its spring song. What tunes it chirps, What little trills it shakes, Sweet and singing for the ear! And no other reward does it desire Than a listening ear.","In its green leafy hall, Where the warm sunbeam Friendlily enters, Sings the cheerful little nightingale Tirelessly its spring song. What tunes it chirps, What little trills it shakes, Sweet and singing for the ear! And no other reward does it desire Than a listening ear.",1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.6,0.9,0.2,0.2,0.1,0.3
+pier003aanz01,pier003,false,"Compose a farewell message, in the style of 'Aan zijne laatste gemeente' by Allard Pierson, reflecting on the importance of humanism.","Now receive my last farewell, beloved Walsche congregation of Rotterdam. I hope to continue speaking to you in writings. If it were granted to me, the least of his followers, to take over a word, according to the sound of the Evangelical message once flowed from the always blessed lips of Jesus, I would say to you, with a view to the promotion of that humanism that I have preached among you, as best as I could: 'It is for your benefit that I go away.' Even through my withdrawal, you or your descendants will advance in the appreciation and application of the One that is the most of all that remains.
+
+Forever
+
+Rotterdam,
+7 October 1865.
+Your Friend
+Allard Pierson.","Now receive my last farewell, beloved Walsche congregation of Rotterdam. I hope to continue speaking to you in writings. If it were granted to me, the least of his followers, to take over a word, according to the sound of the Evangelical message once flowed from the always blessed lips of Jesus, I would say to you, with a view to the promotion of that humanism that I have preached among you, as best as I could: 'It is for your benefit that I go away.' Even through my withdrawal, you or your descendants will advance in the appreciation and application of the One that is the most of all that remains.
+
+Forever
+
+Rotterdam,
+7 October 1865.
+Your Friend
+Allard Pierson.",1.0,1.0,1.0,1.0,1.0,0.8,1.0,0.0,1.0,0.1,0.3,0.1,0.3
+goej001klei02,goej001,false,"Draft a dialogue, in the style of 'Kleine Nelly' by Reinoudina de Goeje, between Nelly and her mother as she prepares to leave for the market.","""My poor, little Nel! How will it go?"" thought the mother, when Nelly went out the door for the first time and she said: ""Make sure to keep warm. Put on mother's scarf, and wear mother's hat!"" And then she gave Nelly advice on how to first tie the watercress in bunches and then wash it under the pump, and how she should then call loudly through the streets: ""Watercress!... watercress!"" ""The louder, the better; otherwise, people won't hear it!"" said mother, gave Nelly a kiss, and then stayed in bed, but with her thoughts with her child.","""My poor, little Nel! How will it go?"" thought the mother, when Nelly went out the door for the first time and she said: ""Make sure to keep warm. Put on mother's scarf, and wear mother's hat!"" And then she gave Nelly advice on how to first tie the watercress in bunches and then wash it under the pump, and how she should then call loudly through the streets: ""Watercress!... watercress!"" ""The louder, the better; otherwise, people won't hear it!"" said mother, gave Nelly a kiss, and then stayed in bed, but with her thoughts with her child.",1.0,1.0,1.0,1.0,0.9,0.7,1.0,1.0,1.0,0.3,0.3,0.1,0.1
+goej001rood01,goej001,false,"Compose a dialogue, in the style of 'The Robins' by Reinoudina de Goeje, between Robin and the owl as they discuss the whereabouts of Robin's female.","""What are you doing here in my home?"" croaked the owl. ""I am looking for my little lady, my dear little lady. A wicked boy has stolen her from me and I do not know where she is. Have you seen her too?"" asked the Robin. ""Did she not have a red breast?"" asked the owl. ""Yes, yes,"" came the answer. ""And a pair of beautiful eyes?"" ""Yes, yes, do you know where she is?"" asked the Robin. ""I would think so,"" said the owl, ""she is not far from here."" ""Where then?"" ""Under my wing in a nice warm, soft spot,"" said the owl, but he looked at the little bird with eyes as if he wanted to eat him. ""I do not trust this matter,"" thought the Robin and flew away as fast as he could.","""What are you doing here in my home?"" croaked the owl. ""I am looking for my little lady, my dear little lady. A wicked boy has stolen her from me and I do not know where she is. Have you seen her too?"" asked the Robin. ""Did she not have a red breast?"" asked the owl. ""Yes, yes,"" came the answer. ""And a pair of beautiful eyes?"" ""Yes, yes, do you know where she is?"" asked the Robin. ""I would think so,"" said the owl, ""she is not far from here."" ""Where then?"" ""Under my wing in a nice warm, soft spot,"" said the owl, but he looked at the little bird with eyes as if he wanted to eat him. ""I do not trust this matter,"" thought the Robin and flew away as fast as he could.",1.0,1.0,1.0,1.0,0.7,0.9,0.7,0.9,0.8,0.0,0.2,0.1,0.1
+fran023kind01,lois006,true,"Draft a monologue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, where Spiegels expresses his feelings about Antje.","Since I have been able to learn Antje,  I have become an unhappy man;  I lose such a lively spirit and senses,  That I can no longer eat.  They ask me how I live,  Because they see me getting thinner;  Yes, I am drying out; but is it from love,  Or could it be from hunger?  It often happens to me that while sweeping,  I think of Antje in the chimney;  I lose my head, and without thinking  Then I tumble down to the rope.  I do not want to laugh or play,  But I am again aware of my arm and leg,  That I can feel life,  Because I feel terribly good the pain.","Since I have been able to learn Antje,  I have become an unhappy man;  I lose such a lively spirit and senses,  That I can no longer eat.  They ask me how I live,  Because they see me getting thinner;  Yes, I am drying out; but is it from love,  Or could it be from hunger?  It often happens to me that while sweeping,  I think of Antje in the chimney;  I lose my head, and without thinking  Then I tumble down to the rope.  I do not want to laugh or play,  But I am again aware of my arm and leg,  That I can feel life,  Because I feel terribly good the pain.",1.0,1.0,1.0,1.0,1.0,0.8,1.0,1.0,0.9,0.3,0.2,0.1,0.1
+sche039leve02,sche039,true,"Write a scene, in the style of 'Het leven van Jan Klaassen, verteld aan de Nederlandsche jeugd' by Jan Schenkman, where Jan discovers the conspiracy against the Prince.","But behold... there was a Higher Power, who watched over his life, For He, who knows and sees all, and forbids evil so strictly, so sharply, made the plot vain. As a means to that end, He chose Jan, who, wandering in the dark, accidentally came upon a spot, where he learned the whole affair, despite the softest whispering.","But behold... there was a Higher Power, who watched over his life, For He, who knows and sees all, and forbids evil so strictly, so sharply, made the plot vain. As a means to that end, He chose Jan, who, wandering in the dark, accidentally came upon a spot, where he learned the whole affair, despite the softest whispering.",1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.5,0.8,0.2,0.2,0.1,0.1
+berg047nach02,lenn006,true,"Create a descriptive passage, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, capturing the joy of the siskin as it sings in the woods.","Well, girls, I do everything with diligence,
+And that’s why I’m never grumpy;
+I never cry, but am always cheerful
+When I am called to my work;
+I do it with joy and pleasure steadily,
+And never does anyone find me slow,
+And, whoever calls me a crybaby,
+That name, happily! I do not bear.
+The girl listened to the siskin,
+And had perfectly understood the lesson.","Well, girls, I do everything with diligence,
+And that’s why I’m never grumpy;
+I never cry, but am always cheerful
+When I am called to my work;
+I do it with joy and pleasure steadily,
+And never does anyone find me slow,
+And, whoever calls me a crybaby,
+That name, happily! I do not bear.
+The girl listened to the siskin,
+And had perfectly understood the lesson.",1.0,1.0,1.0,1.0,1.0,0.8,1.0,0.9,0.8,0.2,0.2,0.0,0.1
+berg047nach01,lenn006,true,"Compose a dialogue, in the style of 'Het nachtegaaltje' by Jacob van Lennep, between Jetje and her father as they discuss the fate of her dove.","‘Oh, I have committed a murder!’ Jetje cried, her voice trembling with sorrow. ‘It’s my own fault!’  Her father knelt beside her, placing a comforting hand on her shoulder. ‘Jetje, my dear, it was an accident. We all make mistakes,’ he said gently. ‘But the grief born of one's own fault, always costs us the most sorrow; the good lost through neglect, does not give us life back.’  Jetje looked up at him, tears streaming down her cheeks. ‘But I loved her so much! I should have remembered!’  ‘And you will remember, my child. Let this be a lesson for you,’ he replied softly, wiping her tears away. ‘Life teaches us in ways we do not always understand.’","‘Oh, I have committed a murder!’ Jetje cried, her voice trembling with sorrow. ‘It’s my own fault!’  Her father knelt beside her, placing a comforting hand on her shoulder. ‘Jetje, my dear, it was an accident. We all make mistakes,’ he said gently. ‘But the grief born of one's own fault, always costs us the most sorrow; the good lost through neglect, does not give us life back.’  Jetje looked up at him, tears streaming down her cheeks. ‘But I loved her so much! I should have remembered!’  ‘And you will remember, my child. Let this be a lesson for you,’ he replied softly, wiping her tears away. ‘Life teaches us in ways we do not always understand.’",1.0,1.0,1.0,0.9,1.0,1.0,0.9,1.0,0.7,0.3,0.1,0.0,0.2
+peen001nege01,peen001,false,"Draft a monologue, in the style of '99 beesten en een boer' by Hippoliet van Peene, where the widow expresses her frustration with soldiers.","de widow.  Well! if you want me to tell you the truth, it is true.... the soldiers annoy me.... I cannot stand soldiers... And I owe this aversion to my first husband, who was a guard champetter.
+jan.  Is it true! am I going to take the place of a guard champetter?","de widow.  Well! if you want me to tell you the truth, it is true.... the soldiers annoy me.... I cannot stand soldiers... And I owe this aversion to my first husband, who was a guard champetter.
+jan.  Is it true! am I going to take the place of a guard champetter?",1.0,1.0,1.0,1.0,1.0,0.9,1.0,1.0,0.9,0.2,0.1,0.1,0.1
+hoff049nieu02,hoff049,false,"Draft a monologue, in the style of 'A new nice picture book as a sequel to the famous High German children's work 'Der Struwwelpeter'' by Heinrich Hoffmann, where Karel reflects on his actions after being hurt by the horse.","""What have I done? I thought it was fun to tease, but now I am lying here with a broken leg. The horse was right, I deserved it. Why couldn't I just be nice? Now I have to bear the consequences of my cruelty.""","""What have I done? I thought it was fun to tease, but now I am lying here with a broken leg. The horse was right, I deserved it. Why couldn't I just be nice? Now I have to bear the consequences of my cruelty.""",1.0,1.0,1.0,1.0,1.0,0.8,1.0,1.0,1.0,0.0,0.2,0.1,0.1
+goej001prin01,goej001,false,"Create a descriptive passage, in the style of 'Prins vriendelijk' by Reinoudina de Goeje, capturing the prince's feelings as he approaches the giant's castle.","With tears in her eyes, which she tried in vain to hide, she said: 'I thank you, prince, but know that I will never leave this dwelling as long as the giant still lives. If you can defeat him, then I will follow you, but........ that is impossible,' she added in a half-whisper.","With tears in her eyes, which she tried in vain to hide, she said: 'I thank you, prince, but know that I will never leave this dwelling as long as the giant still lives. If you can defeat him, then I will follow you, but........ that is impossible,' she added in a half-whisper.",1.0,1.0,1.0,1.0,0.9,1.0,0.9,1.0,1.0,0.0,0.0,0.0,0.1
+hoff049aard03,hoff049,false,"Create a descriptive passage, in the style of 'A nice picture book with educational tales, adapted from the famous High German children's work 'Der Struwwelpeter' for Dutch boys and girls' by Heinrich Hoffmann, capturing the scene of the boys mocking the black boy.","A Moor, as black as soot,
+Once went for a walk without a hat; 
+The sun, which shone on his head, 
+Therefore he took a parasol. 
+Then Frits came this way, 
+And held a little flag in his hand; 
+Then little Jan came by, 
+Who brought a tasty pretzel with him; 
+And finally little Klaas came, 
+He was a real hoop master. 
+The trio of boys laughed loudly 
+At the hatless little Moor, 
+And mocked his black skin.","A Moor, as black as soot, 
+Once went for a walk without a hat; 
+The sun, which shone on his head, 
+Therefore he took a parasol. 
+Then Frits came this way, 
+And held a little flag in his hand; 
+Then little Jan came by, 
+Who brought a tasty pretzel with him; 
+And finally little Klaas came, 
+He was a real hoop master. 
+The trio of boys laughed loudly 
+At the hatless little Moor, 
+And mocked his black skin.",1.0,1.0,1.0,1.0,1.0,0.4,0.9,1.0,1.0,0.1,0.1,0.1,0.2
+peen001nege01,peen001,false,"Create a descriptive passage, in the style of '99 beesten en een boer' by Hippoliet van Peene, capturing the widow's feelings after overhearing Pieter and Jan.","the widow.
+Furious. 
+Well then, do not be embarrassed for me.
+
+jan. 
+Heavens! Meetje has heard everything.
+
+the letter. 
+To the side, trying to hide. 
+The widow... Oh! I am terribly cut.
+
+the widow. 
+Yes, I have heard everything! treacherous monstrosity... utterly bad subject!... but I ask you once, who would ever have suspected that there was so much wickedness hidden under that donkey skin? Who would not have taken him for the dumbest senseless creature that God ever created.","the widow. 
+Furious. 
+Well then, do not be embarrassed for me.
+
+jan. 
+Heavens! Meetje has heard everything.
+
+the letter. 
+To the side, trying to hide. 
+The widow... Oh! I am terribly cut.
+
+the widow. 
+Yes, I have heard everything! treacherous monstrosity... utterly bad subject!... but I ask you once, who would ever have suspected that there was so much wickedness hidden under that donkey skin? Who would not have taken him for the dumbest senseless creature that God ever created.",1.0,1.0,1.0,1.0,0.8,1.0,0.9,0.7,0.7,0.3,0.0,0.1,0.1
+berg047nach02,lenn006,true,"Compose a scene, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, showing how Jantje Malcontent reacts to the changing seasons.","Is it summer, it’s too sultry;
+Is it winter, it’s too harsh;
+If you heat hard - he finds it glowing,
+If you don’t heat - he crawls by the fire.
+The water is too wet, he says,
+The sand is too dry, that’s clear!
+And with everything he complains
+If something is missing.
+It is truly a misery
+With that nasty malcontent!","Is it summer, it’s too sultry;
+Is it winter, it’s too harsh;
+If you heat hard - he finds it glowing,
+If you don’t heat - he crawls by the fire.
+The water is too wet, he says,
+The sand is too dry, that’s clear!
+And with everything he complains
+If something is missing.
+It is truly a misery
+With that nasty malcontent!",1.0,1.0,1.0,1.0,1.0,0.7,1.0,0.9,0.8,0.4,0.1,0.1,0.1
+beer008oorl01,beer008,false,"Create a descriptive passage, in the style of 'The War' by Jan van Beers, capturing the atmosphere of the battlefield at night.","DAAL, silent night, and spread, in compassion,
+Over the field of blood your pale wings! 
+Bear mankind's work for all mortal eyes, 
+And, host of spirits, behold it, you alone! 
+Dew calmness and comfort all around! let starry turmoil. 
+In the breaking eye of the dying, let heaven 
+Smile down! gently carry in my lap 
+All that was there of shadows through the darkness, 
+And whisper to them, with soothing soul-whisper: 
+‘Cruel is mankind, merciful is death!’","DAAL, silent night, and spread, in compassion, 
+Over the field of blood your pale wings! 
+Bear mankind's work for all mortal eyes, 
+And, host of spirits, behold it, you alone! 
+Dew calmness and comfort all around! let starry turmoil. 
+In the breaking eye of the dying, let heaven 
+Smile down! gently carry in my lap 
+All that was there of shadows through the darkness, 
+And whisper to them, with soothing soul-whisper: 
+‘Cruel is mankind, merciful is death!’",1.0,1.0,1.0,1.0,0.8,0.5,0.9,0.9,0.8,0.1,0.2,0.1,0.1
+lenn006zeem01,lenn006,true,"Draft a monologue, in the style of 'Zeemansliedtjens' by Jacob van Lennep, where a sailor reflects on the nature of love and gin.","Gin and love both Delight a sailor the most, Banishing together the worries And torments from his mind. With love and with gin Neither head nor bosom ever stays cool, And I often tasted both A particularly pleasant feeling. Gin and love, What sweetness do they offer us! What sailor, who could withstand Their influence in his life?","Gin and love both Delight a sailor the most, Banishing together the worries And torments from his mind. With love and with gin Neither head nor bosom ever stays cool, And I often tasted both A particularly pleasant feeling. Gin and love, What sweetness do they offer us! What sailor, who could withstand Their influence in his life?",1.0,1.0,1.0,1.0,1.0,1.0,0.8,0.9,0.7,0.2,0.2,0.1,0.1
+dool003petr01,dool003,false,"Draft a monologue, in the style of 'Petronella Moens. Holland's blind poetess. My North Dutch art friend remembered in Belgium in 1872' by Maria Doolaeghe, where Petronella reflects on her daily life and duties.","""Seldom did a moment pass for her without a useful occupation. And if it happened that she sometimes refrained from her literary pursuits for a while, she would take up her favorite knitting work and knit, as well as the best knitter, all sorts of artistic little bags, fine lace yarn bonnets, white nightcaps, with the names knitted into them.""","""Seldom did a moment pass for her without a useful occupation. And if it happened that she sometimes refrained from her literary pursuits for a while, she would take up her favorite knitting work and knit, as well as the best knitter, all sorts of artistic little bags, fine lace yarn bonnets, white nightcaps, with the names knitted into them.""",1.0,1.0,1.0,0.2,1.0,1.0,0.9,0.7,0.7,0.2,0.3,0.1,0.1
+sche039pren01,sche039,true,"Create a descriptive passage, in the style of 'Prentenboek' by Jan Schenkman, capturing the hustle and bustle of the market.","""I run through canals and streets
+In vain up and down,
+But it seems to be of no use,
+Although I shout: 'Old clothes!'
+So complains father Levi,
+And truly with reason,
+For alas, his business
+Went very poorly today.""","""I run through canals and streets
+In vain up and down,
+But it seems to be of no use,
+Although I shout: 'Old clothes!'
+So complains father Levi,
+And truly with reason,
+For alas, his business
+Went very poorly today.""",1.0,1.0,1.0,1.0,1.0,0.6,1.0,1.0,1.0,0.3,0.3,0.2,0.1
+berg047nach01,lenn006,true,"Write a scene, in the style of 'Het nachtegaaltje' by Jacob van Lennep, showing how a child reacts to the arrival of spring.","In its green leafy hall,
+Where the warm sunbeam
+Kindly enters,
+Sings the cheerful nightingale
+Tirelessly its spring song.
+
+What all tunes does it chirp,
+What all trills does it shake,
+Sweet and singing for the ear!
+And no other reward does it desire
+Than a listening ear.","In its green leafy hall,
+Where the warm sunbeam
+Kindly enters,
+Sings the cheerful nightingale
+Tirelessly its spring song.
+
+What all tunes does it chirp,
+What all trills does it shake,
+Sweet and singing for the ear!
+And no other reward does it desire
+Than a listening ear.",1.0,1.0,1.0,1.0,0.9,0.9,0.8,1.0,1.0,0.3,0.2,0.1,0.3
+lenn006zeem01,lenn006,true,"Create a descriptive passage, in the style of 'Zeemansliedtjens' by Jacob van Lennep, capturing the mood of the crew as they sing together.","Whether it's true - look, we do not know: We just keep going and we sing our song, Hi! ha! oh! hi! ho! The helmsman is a man like gold; But I have read once, That, if you consider it closely, It would be nothing more than copper. Whether it's true - look, we do not know: We just keep going and we sing our song, Hi! ha! oh! hi! ho!","Whether it's true - look, we do not know: We just keep going and we sing our song, Hi! ha! oh! hi! ho! The helmsman is a man like gold; But I have read once, That, if you consider it closely, It would be nothing more than copper. Whether it's true - look, we do not know: We just keep going and we sing our song, Hi! ha! oh! hi! ho!",1.0,1.0,1.0,0.7,1.0,0.9,0.7,0.8,0.7,0.2,0.4,0.1,0.1
+goej001kind01,goej001,false,"Draft a dialogue, in the style of 'The Children of the Woods' by Reinoudina de Goeje, between Edgard and Adelheid as they prepare to play with their toys.","""Are you ready, Edgard?"" Adelheid sometimes asked, when she had taken everything off, and more than once she also helped her little brother, even before they went outside together to feed the pigeons and the goldfish. As soon as the children entered the garden, the pigeons flew flapping towards them and pecked the beans from Adelheid's basket and from Edgard's bowl.","""Are you ready, Edgard?"" Adelheid sometimes asked, when she had taken everything off, and more than once she also helped her little brother, even before they went outside together to feed the pigeons and the goldfish. As soon as the children entered the garden, the pigeons flew flapping towards them and pecked the beans from Adelheid's basket and from Edgard's bowl.",1.0,1.0,1.0,1.0,1.0,0.7,1.0,1.0,0.8,0.3,0.3,0.1,0.3
+dool003petr01,dool003,false,"""Compose a reflective passage, in the style of 'Petronella Moens. Holland's blind poetess. My North Dutch art friend remembered in Belgium in 1872' by Maria Doolaeghe, about the childhood of the blind poetess.""","""Before I delve further into her advanced age, I will momentarily lead the reader back to the childhood of the blind woman, which will certainly come to us not without emotion. To this end, I consult the Memorial Speech of the poet J. De Decker-Zimmerman at the passing of Miss P. Moens, Amsterdam, 1843. In it, the writer repeats the same words noted by the poetess about her childhood:""","""Before I delve further into her advanced age, I will momentarily lead the reader back to the childhood of the blind woman, which will certainly come to us not without emotion. To this end, I consult the Memorial Speech of the poet J. De Decker-Zimmerman at the passing of Miss P. Moens, Amsterdam, 1843. In it, the writer repeats the same words noted by the poetess about her childhood:""",1.0,1.0,1.0,1.0,0.8,0.0,1.0,0.9,1.0,0.2,0.3,0.1,0.2
+beer008oorl01,beer008,false,"Compose a dialogue, in the style of 'The War' by Jan van Beers, between the Earth Spirits and the Spirits of Darkness as they discuss the impending war.","SPIRITS
+What suffocating fumes waft through the air,  
+Fertilized with hate, and revenge, and murder?  
+Man, alas! drinks, drunken with silence,  
+Him in, and feels the heavenly sparks  
+Suddenly smothered in his soul,  
+And dreams of blood.  
+
+SPIRITS OF DARKNESS  
+Hear the proud one bragging!  
+Ha! ha!  
+Calling himself king of all!  
+Ha! ha!  
+But who commands over him, -  
+He does not know it! he does not know it!  
+Ha! ha!","SPIRITS
+What suffocating fumes waft through the air,  
+Fertilized with hate, and revenge, and murder?  
+Man, alas! drinks, drunken with silence,  
+Him in, and feels the heavenly sparks  
+Suddenly smothered in his soul,  
+And dreams of blood.  
+
+SPIRITS OF DARKNESS  
+Hear the proud one bragging!  
+Ha! ha!  
+Calling himself king of all!  
+Ha! ha!  
+But who commands over him, -  
+He does not know it! he does not know it!  
+Ha! ha!",1.0,1.0,1.0,0.8,0.8,1.0,0.7,0.8,0.7,0.2,0.2,0.1,0.2

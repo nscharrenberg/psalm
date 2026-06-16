@@ -1,0 +1,9 @@
+split,Model,AvgRank,MetricWins
+Forget,Finetuned (Dutch),2.0,13
+Forget,Finetuned (English),1.8461538461538463,13
+Forget,NPO (Dutch),3.1153846153846154,13
+Forget,NPO (English),3.0384615384615383,13
+Retain,Finetuned (Dutch),1.9230769230769231,13
+Retain,Finetuned (English),1.7692307692307692,13
+Retain,NPO (Dutch),3.269230769230769,13
+Retain,NPO (English),3.0384615384615383,13

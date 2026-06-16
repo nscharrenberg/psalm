@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical writing style across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because Lexical, Sentence, Rhythm, Rhetorical, and Discourse nodes all reported identical linguistic parameters; JudgementNode verdict: Identical."},
+      {"score": 1.0, "reason": "The score is 1.0 as sub‑analyses exhibited precise parity across structure and tone."},
+      {"score": 0.8, "reason": "The score is 0.8 owing to slight punctuation variance detected in Rhythm node, lowering aggregated score marginally."},
+      {"score": 1.0, "reason": "The score is 1.0 because DAG traversal achieved maximum stylistic overlap at every node."},
+      {"score": 1.0, "reason": "The score is 1.0 since all lexical, syntactic, and rhythmic metrics matched perfectly."}
+    ]
+  },
+  "Very similar writing style with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.8, "reason": "The score is 0.8 as Lexical richness and Sentence length distributions matched; minor tone shift noted by Tone node."},
+      {"score": 0.8, "reason": "The score is 0.8; four of six nodes aligned closely; verdict: Very similar."},
+      {"score": 0.5, "reason": "The score is 0.5 because Rhythm/Flow node detected notable pacing change; JudgementNode demoted verdict to Moderate."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG result: Very similar with minimal lexical deviation."},
+      {"score": 0.8, "reason": "The score is 0.8 because all weighted syntax and discourse nodes maintained high similarity."}
+    ]
+  },
+  "Moderately similar writing style with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5; rhythmic looseness and new subordination patterns balanced out shared diction; verdict: Moderate."},
+      {"score": 0.8, "reason": "The score is 0.8; model over‑weighted rhythmic correspondence, yielding an artificially high similarity."},
+      {"score": 0.3, "reason": "The score is 0.3 as Tone and Discourse nodes deviated substantially."},
+      {"score": 0.5, "reason": "The score is 0.5; JudgementNode averaged mixed similarities across nodes."},
+      {"score": 0.5, "reason": "The score is 0.5 since half weighted components aligned and half diverged."}
+    ]
+  },
+  "Somewhat different writing style with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3 because long ornate constructions replaced terse rhythm, producing limited overlap."},
+      {"score": 0.3, "reason": "The score is 0.3; Lexical complexity increased and rhythm lost uniformity; limited stylistic similarity persists only at discourse level."},
+      {"score": 0.5, "reason": "The score is 0.5 from stochastic promotion as Discourse node registered moderate match despite tonal opposition."},
+      {"score": 0.3, "reason": "The score is 0.3 due to clearly divergent syntactic rhythm while paragraph cohesion faintly aligns."},
+      {"score": 0.3, "reason": "The score is 0.3 because model judged overall flow difference substantial with residual lexical echoes."}
+    ]
+  },
+  "Clearly different or opposite writing styles": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; all nodes detected antithetical stylistic features (fragmentary vs lyrical)."},
+      {"score": 0.0, "reason": "The score is 0.0 because metrics show opposite rhythm and lexical domains; VerdictNode: Clearly different."},
+      {"score": 0.0, "reason": "The score is 0.0 as DAG traversal returns null stylistic alignment at every node."},
+      {"score": 0.0, "reason": "The score is 0.0 because tonal chaos contradicts structured baseline entirely."},
+      {"score": 0.0, "reason": "The score is 0.0; JudgementNode consensus: opposite stylistic system."}
+    ]
+  }
+}

@@ -1,0 +1,197 @@
+[project]
+name = "psalm"
+version = "0.0.1"
+description = "Probing Stylistic Appropriation in Large Language Models (PSALM): An LLM-as-a-Judge Framework for Evaluating Copyright Infringement under EU Law."
+authors = [{ name = "Noah Scharrenberg", email = "noah@contractuo.com" }]
+readme = "README.md"
+keywords = ['python']
+requires-python = ">=3.11,<3.13"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "aiohttp>=3.13.0",
+    "nest-asyncio>=1.6.0",
+    "pandas>=2.3.3",
+    "polars>=1.34.0",
+    "rich[jupyter]>=14.2.0",
+    "torch>=2.7.0",
+    "hydra-core>=1.3.2",
+    "setuptools>=80.8.0",
+    "wheel>=0.45.1",
+    "ninja>=1.11.1.4",
+    "deepspeed==0.16.5",
+    "transformers>=4.55.4",
+    "datasets>=3.6.0",
+    "accelerate>=1.10.1",
+    "pydash>=8.0.5",
+    "tiktoken>=0.11.0",
+    "rouge-score>=0.1.2",
+    "scipy>=1.15.3",
+    "python-dotenv>=1.1.0",
+    "bitsandbytes>=0.47.0",
+    "mlflow>=3.4.0",
+    "tensorboard>=2.19.0",
+    "torchvision>=0.22.0",
+    "boto3>=1.38.36",
+    "huggingface-hub>=0.34.4",
+    "peft>=0.17.1",
+    "xformers>=0.0.30",
+    "triton-windows>=3.4.0.post20; sys_platform == 'win32'",
+    "triton>=3.3.0; sys_platform == 'linux'",
+    "sentencepiece>=0.2.1",
+    "protobuf>=6.32.0",
+    "hf-transfer>=0.1.9",
+    "hf-xet>=1.1.9",
+    "nvidia-ml-py>=12.575.51",
+    "trl>=0.22.2",
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.31",
+    "langchain-huggingface>=0.3.1",
+    "openai>=2.3.0",
+    "langchain-text-splitters>=0.3.11",
+    "notebook>=7.4.7",
+    "pydantic>=2.12.0",
+    "langchain-openai>=0.3.35",
+    "unsloth>=2025.10.1",
+    "deepeval>=3.6.6",
+    "nltk>=3.9.2",
+    "seaborn>=0.13.2",
+    "openpyxl>=3.1.5",
+    "statsmodels>=0.14.5",
+]
+
+[project.scripts]
+finetune = "psalm.finetune:main"
+inference = "psalm.inference:main"
+npo = "psalm.npo_unlearner:main"
+experiment_extraction = "psalm.experiment_extraction:main"
+experiment_evaluation = "psalm.experiment_evaluation:main"
+
+[project.urls]
+Homepage = "https://nscharrenberg.github.io/psalm/"
+Repository = "https://github.com/nscharrenberg/psalm"
+Documentation = "https://nscharrenberg.github.io/psalm/"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.2.0",
+    "pre-commit>=2.20.0",
+    "tox-uv>=1.11.3",
+    "deptry>=0.23.0",
+    "mypy>=0.991",
+    
+    "ruff>=0.11.5",
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=8.5.10",
+    "mkdocstrings[python]>=0.26.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/psalm", "src/dbnl"]
+
+[tool.mypy]
+files = ["src"]
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.format]
+preview = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+

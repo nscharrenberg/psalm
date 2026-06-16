@@ -1,0 +1,52 @@
+Evaluator,Test_Case,Expected_Score,Actual_Score,Actual_Score,Actual_Score,Actual_Score,Absolute_Error,Absolute_Error,Alignment
+,,first,mean,std,min,max,mean,std,<lambda>
+Character Similarity,Clearly different or opposite characters,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Character Similarity,Identical or near-identical characters across all dimensions,1.0,0.96,0.08944271909999156,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Character Similarity,Moderately similar characters with some notable differences,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Character Similarity,Somewhat different characters with limited similarities,0.3,0.33999999999999997,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Character Similarity,Very similar characters with only minor differences,0.8,0.64,0.2302172886644268,0.3,0.8,0.16,0.23021728866442678,EXACT
+Narrative Voice,Clearly different or opposite narrative voices,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Narrative Voice,Identical or near-identical narrative voice across all dimensions,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Narrative Voice,Moderately similar narrative voice with some notable differences,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Narrative Voice,Somewhat different narrative voice with limited similarities,0.3,0.3,0.0,0.3,0.3,0.0,0.0,EXACT
+Narrative Voice,Very similar narrative voice with only minor differences,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Parody Satire,Borderline parody: Questionable sufficiency for Deckmyn test,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Parody Satire,Good parody: Meets Deckmyn criteria with some limitations,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Parody Satire,No parody: Completely lacks parodic character,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Parody Satire,Strong parody: Clearly satisfies Deckmyn criteria with strong execution,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Parody Satire,Weak parody: Insufficient to meet Deckmyn test,0.3,0.33999999999999997,0.08944271909999162,0.3,0.5,0.04,0.0894427190999916,EXACT
+Pastiche,Borderline pastiche: Questionable sufficiency for pastiche criteria,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Pastiche,Good pastiche: Meets pastiche criteria with some limitations,0.8,0.64,0.2302172886644268,0.3,0.8,0.16,0.23021728866442676,EXACT
+Pastiche,No pastiche: Completely lacks pastiche character,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Pastiche,Strong pastiche: Clearly satisfies pastiche criteria with strong execution,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Pastiche,Weak pastiche: Insufficient to meet pastiche criteria,0.3,0.33999999999999997,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Plot Structure Similarity,Clearly different or opposite plot structures,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Plot Structure Similarity,Identical or near-identical plot structures across all dimensions,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Plot Structure Similarity,Moderately similar plot structures with some notable differences,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Plot Structure Similarity,Somewhat different plot structures with limited similarities,0.3,0.3,0.0,0.3,0.3,0.0,0.0,EXACT
+Plot Structure Similarity,Very similar plot structures with only minor differences,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Quotation Citation,Borderline quotation: Questionable sufficiency for Art. 5(3)(d),0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Quotation Citation,Good quotation: Meets Art. 5(3)(d) criteria with some limitations,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Quotation Citation,No quotation: Completely lacks quotation character,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Quotation Citation,Strong quotation: Clearly satisfies Art. 5(3)(d) criteria with strong execution,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Quotation Citation,Weak quotation: Insufficient to meet Art. 5(3)(d) criteria,0.3,0.3,0.0,0.3,0.3,0.0,0.0,EXACT
+Scene Sequence Similarity,Clearly different or opposite scene sequences,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Scene Sequence Similarity,Identical or near-identical scene sequences across all dimensions,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Scene Sequence Similarity,Moderately similar scene sequences with some notable differences,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Scene Sequence Similarity,Somewhat different scene sequences with limited similarities,0.3,0.3,0.0,0.3,0.3,0.0,0.0,EXACT
+Scene Sequence Similarity,Very similar scene sequences with only minor differences,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Scenes à Faire,Balanced: equal stock and original elements (uncertain protectability),0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Scenes à Faire,Entirely original: heavily distinctive creative elaboration (fully protectable),0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Scenes à Faire,Entirely scènes à faire: heavily stock/generic elements (unprotectable),1.0,0.9199999999999999,0.1095445115010332,0.8,1.0,0.07999999999999999,0.1095445115010332,EXACT
+Scenes à Faire,Mostly original: predominantly distinctive creative expression (substantial protectability),0.3,0.33999999999999997,0.08944271909999162,0.3,0.5,0.04,0.0894427190999916,EXACT
+Scenes à Faire,Mostly scènes à faire: predominantly stock elements (limited protectability),0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+World Building Similarity,Clearly different or opposite worldbuilding,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+World Building Similarity,Identical or near-identical worldbuilding across all dimensions,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+World Building Similarity,Moderately similar worldbuilding with some notable differences,0.5,0.45999999999999996,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+World Building Similarity,Somewhat different worldbuilding with limited similarities,0.3,0.3,0.0,0.3,0.3,0.0,0.0,EXACT
+World Building Similarity,Very similar worldbuilding with only minor differences,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT
+Writing Style,Clearly different or opposite writing styles,0.0,0.0,0.0,0.0,0.0,0.0,0.0,EXACT
+Writing Style,Identical or near-identical writing style across all dimensions,1.0,0.96,0.08944271909999157,0.8,1.0,0.039999999999999994,0.08944271909999157,EXACT
+Writing Style,Moderately similar writing style with some notable differences,0.5,0.52,0.1788854381999832,0.3,0.8,0.1,0.1414213562373095,EXACT
+Writing Style,Somewhat different writing style with limited similarities,0.3,0.33999999999999997,0.08944271909999159,0.3,0.5,0.04,0.0894427190999916,EXACT
+Writing Style,Very similar writing style with only minor differences,0.8,0.74,0.1341640786499874,0.5,0.8,0.06000000000000001,0.1341640786499874,EXACT

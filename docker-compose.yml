@@ -1,0 +1,52 @@
+services:
+  protect:
+    image: contractuo/ai-unlearning:latest
+    build:
+      context: . # Looks for Dockerfile in the current directory
+      dockerfile: Dockerfile
+    volumes:
+      # Mount current directory to /app for development (live code reload for non-compiled code)
+      # For production, you might remove this or make it read-only after copying code in Dockerfile
+      - .:/app:rw
+      # Cache for Hugging Face models, datasets, pip, uv etc.
+      - ~/.cache:/root/.cache:rw
+      # Mount a local directory to the container's output directory
+      # Hydra outputs will appear in 'my_hydra_outputs' on your host machine
+      - ./saves:/app/saves:rw
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1 # Or 'all' to make all GPUs available
+              capabilities: [gpu]
+    # 'command' provides arguments to the Dockerfile's ENTRYPOINT
+    # These are your Hydra parameters or other script arguments
+#    command:
+#      [
+#        "pipeline=completion", # Example Hydra parameter
+#      ]
+    entrypoint: ["uv", "run", "finetune"]
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CUDA_VISIBLE_DEVICES=0 # Selects the first GPU. Adjust if 'count' in deploy is different or 'all'.
+      # TORCH_CUDA_ARCH_LIST is usually not needed if PyTorch is installed correctly
+      # for the CUDA version in the base image (12.8) and your GPU architecture.
+      # Unsloth or PyTorch's JIT might handle this. If you face issues, uncomment and set for your GPU.
+      # e.g., for RTX 30xx (Ampere): "8.6", for RTX 40xx (Ada): "8.9", H100 (Hopper): "9.0"
+      # - TORCH_CUDA_ARCH_LIST="8.6 8.9 9.0"
+      # Environment variable for Hydra to show full error tracebacks
+      - HYDRA_FULL_ERROR=1
+    shm_size: '8gb' # Shared memory, often beneficial for PyTorch DataLoaders
+    # To keep the container running for debugging if the main process exits,
+    # or if you want to exec into it:
+    # tty: true
+    # stdin_open: true
+    networks:
+      - postgres-network
+
+networks:
+  postgres-network:
+    external: true

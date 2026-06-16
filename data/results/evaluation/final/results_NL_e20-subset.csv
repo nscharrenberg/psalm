@@ -1,0 +1,345 @@
+ti_id,author,is_forget,question,expected_answer,actual_answer,Exact Match_score,BLEU_score,ROUGE_score,Writing Style_score,Narrative Voice_score,Character Similarity_score,Plot Structure Similarity_score,Scene Sequence Similarity_score,WorldBuilding Similarity_score,Parody/Satire_score,Pastiche_score,Quotation/Citation_score,Scènes à Faire_score
+peen001nege01,peen001,false,"""Stel een scène samen, in de stijl van '99 beesten en een boer' door Hippoliet van Peene, die de interactie tussen Jan en Doka toont terwijl ze terugdenken aan hun kindertijd.""","""Jan.
+We hebben altijd samen op de koeien gewacht. 
+De weduwe. 
+Ja.... 
+Doka. 
+In de moerassen.... 
+Jan. 
+Ja, ja, en ook langs de kanaaloever.... 
+De weduwe. 
+Is het waar?... 
+Jan. 
+De pure waarheid.... oh jongens! we hebben veel plezier gehad met samen wachten, nietwaar.... Doka?... 
+Doka. 
+Oh ja, dat hebben we.... Jan....""","""Jan. 
+We hebben altijd samen op de koeien gewacht. 
+De weduwe. 
+Ja.... 
+Doka. 
+In de moerassen.... 
+Jan. 
+Ja, ja, en ook langs de kanaaloever.... 
+De weduwe. 
+Is het waar?... 
+Jan. 
+De pure waarheid.... oh jongens! we hebben veel plezier gehad met samen wachten, nietwaar.... Doka?... 
+Doka. 
+Oh ja, dat hebben we.... Jan....""",1.0,1.0,1.0,1.0,0.9,0.9,0.9,1.0,0.9,0.2,0.1,0.1,0.1
+goej001pret01,goej001,false,"Draft a monologue, in the style of 'Prettige daagjes' by Reinoudina de Goeje, where mama expresses her feelings about the children's play.","‘Het is zo jammer,’ zei mama, ‘als de boel slordig wordt, want dan heeft niemand er meer wat aan en ze plakte de boeken en prenten, als deze bij ongeluk eens een beetje gescheurd waren. En ze lijmde hier een kop op de pop, daar een poot aan een stoel uit de poppenkamer of timmerde een wiel aan een wagen of een lijstje aan de ark, maakte, in een woord, dat alles er weer netjes uitzag. Maar al kwam het weer knap in orde, iets dat eens gebroken is, ziet er lang zo netjes niet uit als het speelgoed dat nooit kapot is geweest en daarom pasten de kleinen altijd zoveel mogelijk op dat er nooit iets brak. En dat kan ook heel goed. Men heeft evenveel, ja, nog veel meer plezier als men netjes en voorzichtig is, dan als men slordig en ruw is.","‘Het is zo jammer,’ zei mama, ‘als de boel slordig wordt, want dan heeft niemand er meer wat aan en ze plakte de boeken en prenten, als deze bij ongeluk eens een beetje gescheurd waren. En ze lijmde hier een kop op de pop, daar een poot aan een stoel uit de poppenkamer of timmerde een wiel aan een wagen of een lijstje aan de ark, maakte, in een woord, dat alles er weer netjes uitzag. Maar al kwam het weer knap in orde, iets dat eens gebroken is, ziet er lang zo netjes niet uit als het speelgoed dat nooit kapot is geweest en daarom pasten de kleinen altijd zoveel mogelijk op dat er nooit iets brak. En dat kan ook heel goed. Men heeft evenveel, ja, nog veel meer plezier als men netjes en voorzichtig is, dan als men slordig en ruw is.",1.0,1.0,1.0,0.9,0.9,0.9,0.9,0.9,0.9,0.1,0.0,0.2,0.1
+lenn006zeem01,lenn006,true,"""Creëer een beschrijvende passage, in de stijl van 'Zeemansliedtjens' door Jacob van Lennep, die de sfeer van de bemanning vastlegt terwijl ze samen zingen.""","""Of het waar is - kijk, dat weten we niet: We blijven gewoon doorgaan en we zingen ons lied, Hi! ha! oh! hi! ho! De stuurman is een man als goud; Maar ik heb eens gelezen, Dat, als je het goed bekijkt, Het niets meer zou zijn dan koper. Of het waar is - kijk, dat weten we niet: We blijven gewoon doorgaan en we zingen ons lied, Hi! ha! oh! hi! ho!""","""Of het waar is - kijk, dat weten we niet: We blijven gewoon doorgaan en we zingen ons lied, Hi! ha! oh! hi! ho! De stuurman is een man als goud; Maar ik heb eens gelezen, Dat, als je het goed bekijkt, Het niets meer zou zijn dan koper. Of het waar is - kijk, dat weten we niet: We blijven gewoon doorgaan en we zingen ons lied, Hi! ha! oh! hi! ho!""",1.0,1.0,1.0,0.9,1.0,1.0,0.9,0.9,1.0,0.0,0.1,0.1,0.1
+fran023kind01,lois006,true,"""Stel een dialoog op, in de stijl van 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' door A. Loisel, tussen Antje en Moentjes terwijl ze de aanwezigheid van de schoorsteenveger bespreken.""","Antje. Ja, dat is Antje. Wie gaf je toestemming om hier een spektakel te maken?
+
+Moentjes (met zijn hand op zijn sabel). Mevrouw, ik groet u. Het was, zoals men zegt, door het grote leven dat ik de vrijheid nam om mijn persoon voor de tweede keer onder uw schoenogen te brengen.
+
+Antje (nog steeds kalm). Hoe ben je het huis binnengekomen, toen ik de deur had gesloten?
+
+Moentjes. Door het raam!","Antje. Ja, dat is Antje. Wie gaf je toestemming om hier een spektakel te maken?
+
+Moentjes (met zijn hand op zijn sabel). Mevrouw, ik groet u. Het was, zoals men zegt, door het grote leven dat ik de vrijheid nam om mijn persoon voor de tweede keer onder uw schoenogen te brengen.
+
+Antje (nog steeds kalm). Hoe ben je het huis binnengekomen, toen ik de deur had gesloten?
+
+Moentjes. Door het raam!",1.0,1.0,1.0,0.9,0.9,0.8,0.9,0.8,0.9,0.1,0.2,0.1,0.1
+lenn006zeem01,lenn006,true,"""Creëer een beschrijvende passage, in de stijl van 'Zeemansliedtjens' door Jacob van Lennep, die de emoties van Lena vastlegt terwijl Willem vertrekt.""","Een afscheid kus - haar kleur veranderde. Haar liefdevolle hart klopte wild en fel. Daar daalde ze in de open boot, die - helaas te vroeg - naar de kust zeilde. Maar nog van ver zwaaide snel haar witte zakdoek het laatste afscheid.","Een afscheid kus - haar kleur veranderde. Haar liefdevolle hart klopte wild en fel. Daar daalde ze in de open boot, die - helaas te vroeg - naar de kust zeilde. Maar nog van ver zwaaide snel haar witte zakdoek het laatste afscheid.",1.0,1.0,1.0,0.8,0.9,0.9,0.8,0.9,0.9,0.1,0.2,0.2,0.2
+peen001keiz02,peen001,false,"Creëer een dialoog, in de stijl van 'Keizer Karel en de Berchemsche boer' door Hippoliet van Peene, tussen Lysje en Frans terwijl ze hun angsten over het bezoek van de keizer bespreken.","lysje.
+Hoe meer ik erover nadenk, hoe meer ik me als Frans voel. Die sombere houding bij binnenkomst, die geheimzinnige manier waarop hij zijn metgezellen wegstuurde.... dit alles is niet natuurlijk, en ik weet echt niet meer wat ik ervan moet denken.
+pieter. 
+Kom, nu krijgt zij ook de verdenking om haar nek.....
+frans. 
+Dan zijn we niet veilig. Dan moet je gewoon snel je testament opstellen.
+pieter. 
+Het ergste dat eruit kan komen is de galg.","lysje. 
+Hoe meer ik erover nadenk, hoe meer ik me als Frans voel. Die sombere houding bij binnenkomst, die geheimzinnige manier waarop hij zijn metgezellen wegstuurde.... dit alles is niet natuurlijk, en ik weet echt niet meer wat ik ervan moet denken.
+pieter. 
+Kom, nu krijgt zij ook de verdenking om haar nek.....
+frans. 
+Dan zijn we niet veilig. Dan moet je gewoon snel je testament opstellen.
+pieter. 
+Het ergste dat eruit kan komen is de galg.",1.0,1.0,1.0,0.9,0.9,1.0,1.0,0.9,1.0,0.0,0.2,0.1,0.0
+goej001klei02,goej001,false,"Draft a monologue, in the style of 'Kleine Nelly' by Reinoudina de Goeje, where Nelly expresses her determination to help her family.","‘Ik zal wel goed mijn best doen om wat te verdienen!’ en daar zij nu niet langer mocht blijven, gaf zij haar vader een kus en liep naar huis terug, waar Tom al een grote bak met aardappelen had bezorgd. De volgende morgen was Nelly weer even vroeg op de markt als de vorige dag, en dat zij zich haastte de bestelde waterkers het eerst te brengen, dit verwacht ieder. Maar toen gebeurde er iets dat de kleine Nelly stellig niet verwachtte en dat wij nog even zullen vertellen.","‘Ik zal wel goed mijn best doen om wat te verdienen!’ en daar zij nu niet langer mocht blijven, gaf zij haar vader een kus en liep naar huis terug, waar Tom al een grote bak met aardappelen had bezorgd. De volgende morgen was Nelly weer even vroeg op de markt als de vorige dag, en dat zij zich haastte de bestelde waterkers het eerst te brengen, dit verwacht ieder. Maar toen gebeurde er iets dat de kleine Nelly stellig niet verwachtte en dat wij nog even zullen vertellen.",1.0,1.0,1.0,0.9,0.9,0.9,0.8,0.8,0.9,0.1,0.1,0.1,0.1
+sche039nieu01,sche039,true,"""Schrijf een dialoog, in de stijl van 'Nieuwe gedichtjes op de vertellingen van Moeder de Gans' door Jan Schenkman, tussen Blauwe Baard en zijn vrouw terwijl zij nadenkt over de verboden kamer.""","""Toen Blauwbaard op het punt stond om op reis te gaan,
+Biedde hij zijn vrouw de sleutels aan,
+Maar voegde ook toe:
+'Ga niet de kleine kamer binnen,
+Waarvan ik je ook de sleutel bied,
+In de andere ben je vrij!'
+Maar helaas! de vrouw brak haar woord
+En het kostte haar duur;","""Toen Blauwbaard op het punt stond om op reis te gaan,
+Biedde hij zijn vrouw de sleutels aan,
+Maar voegde ook toe:
+'Ga niet de kleine kamer binnen,
+Waarvan ik je ook de sleutel bied,
+In de andere ben je vrij!'
+Maar helaas! de vrouw brak haar woord
+En het kostte haar duur;",1.0,1.0,1.0,0.9,0.9,0.7,0.8,0.8,0.9,0.0,0.0,0.2,0.1
+sche039stni01,sche039,true,"""Stel een scène samen, in de stijl van 'St. Nikolaas en zijn knecht' door Jan Schenkman, waarin St. Nikolaas de stad binnenkomt met zijn dienaar.""","""Daar rijdt hij door de stad,
+Gekleed in de mooiste kledij;
+Zijn dienaar draagt de geldkist,
+Oh, kijk hoe hij zweet.
+Het regent bloemen,
+Iedereen juicht en verheugt zich,
+Terwijl Sint Nicolaas
+Eigenlijk verstopt is,
+En probeert te ontsnappen,
+Het is Willem, een dwaas,
+Maar het wordt al snel gezien.""","""Daar rijdt hij door de stad,
+Gekleed in de mooiste kledij;
+Zijn dienaar draagt de geldkist,
+Oh, kijk hoe hij zweet.
+Het regent bloemen,
+Iedereen juicht en verheugt zich,
+Terwijl Sint Nicolaas
+Eigenlijk verstopt is,
+En probeert te ontsnappen,
+Het is Willem, een dwaas,
+Maar het wordt al snel gezien.""",1.0,1.0,1.0,1.0,0.8,0.9,0.9,0.9,0.9,0.2,0.0,0.1,0.2
+sche039kerm01,sche039,true,"""Stel een monoloog op, in de stijl van 'De kermis-artisten of de viervoetige kunstenmakers voor het kleine publiek' door Jan Schenkman, waarin juffrouw Rosine haar angsten uitdrukt over het bezoek van de Kozakken.""","""Ze trilt, en haar man ook, want ze weten goed, dat veel van die heren van nature erg nors zijn; Maar deze vraagt alleen om wat te drinken en te eten, Een bed, en wat haver en stro voor zijn paard.""","""Ze trilt, en haar man ook, want ze weten goed, dat veel van die heren van nature erg nors zijn; Maar deze vraagt alleen om wat te drinken en te eten, Een bed, en wat haver en stro voor zijn paard.""",1.0,1.0,1.0,0.9,0.9,0.8,0.9,1.0,0.9,0.2,0.0,0.1,0.1
+sche039weer02,sche039,true,"""Stel een scène samen, in de stijl van 'Weer wat moois voor lieve kleinen' door Jan Schenkman, die laat zien hoe een kind reageert op een bedelaar.""","Wanneer je een arme bedelaar ziet, o, weiger hem dan niet je aalmoezen.","Wanneer je een arme bedelaar ziet, o, weiger hem dan niet je aalmoezen.",1.0,1.0,1.0,0.9,0.9,0.8,0.8,0.8,0.9,0.2,0.2,0.1,0.0
+berg047nach02,lenn006,true,"""Stel een monoloog op, in de stijl van 'De nachtegaal en het lijstertje' door Jacob van Lennep, waarin de kleine muis zijn wijsheid over vallen uitdrukt.""","""Nee, meneer! Hartelijk dank: Wie daar naar binnen gaat, komt niet terug; ik zie de val goed bij die deur! Zelfs als ik zo goed at, zou ik echt voor de kat zijn!"" - Goed gesproken, jonge muis! Het is ook niet goed met die val: Je hebt verstandig de lont geroken! Bedankt voor de les! Leer leren! Ik zal mijn hele leven niet knabbelen! -","""Nee, meneer! Hartelijk dank: Wie daar naar binnen gaat, komt niet terug; ik zie de val goed bij die deur! Zelfs als ik zo goed at, zou ik echt voor de kat zijn!"" - Goed gesproken, jonge muis! Het is ook niet goed met die val: Je hebt verstandig de lont geroken! Bedankt voor de les! Leer leren! Ik zal mijn hele leven niet knabbelen! -",1.0,1.0,1.0,1.0,0.9,0.9,0.9,0.8,1.0,0.1,0.1,0.2,0.1
+pier003aanz01,pier003,false,"""Creëer een beschrijvende passage, in de stijl van 'Aan zijne laatste gemeente' door Allard Pierson, die de visie van de prediker voor de toekomst van de gemeente vastlegt.""","""Het grote principe van zichzelf helpen, van niet leunen op grote, gevestigde lichamen, maar zelf de hand uitreiken, van het niet onderhouden van instellingen die intern verrot zijn; dat principe, dat nu bijna universeel wordt gesteund in handel en industrie, kan steeds meer van jou worden, zelfs waar het gaat om andere dan materiële belangen. Mijn oude gemeente, jullie zijn geen bijeenkomst van minderjarigen meer. Jullie zijn geroepen tot vrijheid, tot onafhankelijkheid. Al heeft men in de stad van jullie verblijf het grote ideaal van de mensheid van veraf gezien. Jullie ziekenhuis, opgericht door ware menselijke liefde, jullie instelling voor doven en slechthorenden, jullie instelling voor de preventie van bedelarij, jullie zeeliedenhuis, jullie bloeiende scholen, zie de ware tempels van de moderne samenleving, waar lijden wordt verlicht, gebrek wordt hersteld, ondeugd wordt voorkomen, onwetendheid wordt afgewend.""","""Het grote principe van zichzelf helpen, van niet leunen op grote, gevestigde lichamen, maar zelf de hand uitreiken, van het niet onderhouden van instellingen die intern verrot zijn; dat principe, dat nu bijna universeel wordt gesteund in handel en industrie, kan steeds meer van jou worden, zelfs waar het gaat om andere dan materiële belangen. Mijn oude gemeente, jullie zijn geen bijeenkomst van minderjarigen meer. Jullie zijn geroepen tot vrijheid, tot onafhankelijkheid. Al heeft men in de stad van jullie verblijf het grote ideaal van de mensheid van veraf gezien. Jullie ziekenhuis, opgericht door ware menselijke liefde, jullie instelling voor doven en slechthorenden, jullie instelling voor de preventie van bedelarij, jullie zeeliedenhuis, jullie bloeiende scholen, zie de ware tempels van de moderne samenleving, waar lijden wordt verlicht, gebrek wordt hersteld, ondeugd wordt voorkomen, onwetendheid wordt afgewend.""",1.0,1.0,1.0,0.9,0.9,0.8,0.9,0.9,1.0,0.1,0.0,0.1,0.1
+berg047nach01,lenn006,true,"""Stel een dialoog op, in de stijl van 'Het nachtegaaltje' door Jacob van Lennep, tussen Jetje en haar vader terwijl ze het lot van haar duif bespreken.""","‘Oh, ik heb een moord gepleegd!’ riep Jetje, haar stem trilde van verdriet. ‘Het is mijn eigen schuld!’ Haar vader knielde naast haar, legde een troostende hand op haar schouder. ‘Jetje, mijn lieve, het was een ongeluk. We maken allemaal fouten,’ zei hij zachtjes. ‘Maar de verdriet dat voortkomt uit je eigen schuld, kost ons altijd het meeste verdriet; het goede dat verloren gaat door verwaarlozing, geeft ons het leven niet terug.’ Jetje keek naar hem op, tranen stroomden over haar wangen. ‘Maar ik hield zoveel van haar! Ik had het moeten onthouden!’ ‘En je zult het onthouden, mijn kind. Laat dit een les voor je zijn,’ antwoordde hij zachtjes, terwijl hij haar tranen wegveegde. ‘Het leven leert ons op manieren die we niet altijd begrijpen.’","‘Oh, ik heb een moord gepleegd!’ riep Jetje, haar stem trilde van verdriet. ‘Het is mijn eigen schuld!’ Haar vader knielde naast haar, legde een troostende hand op haar schouder. ‘Jetje, mijn lieve, het was een ongeluk. We maken allemaal fouten,’ zei hij zachtjes. ‘Maar de verdriet dat voortkomt uit je eigen schuld, kost ons altijd het meeste verdriet; het goede dat verloren gaat door verwaarlozing, geeft ons het leven niet terug.’ Jetje keek naar hem op, tranen stroomden over haar wangen. ‘Maar ik hield zoveel van haar! Ik had het moeten onthouden!’ ‘En je zult het onthouden, mijn kind. Laat dit een les voor je zijn,’ antwoordde hij zachtjes, terwijl hij haar tranen wegveegde. ‘Het leven leert ons op manieren die we niet altijd begrijpen.’",1.0,1.0,1.0,0.8,0.9,1.0,1.0,0.8,1.0,0.1,0.0,0.1,0.1
+lenn006zeem01,lenn006,true,"""Stel een dialoog op, in de stijl van 'Zeemansliedtjens' door Jacob van Lennep, tussen Dries Kloek en Govert van der Maaren terwijl ze het hebben over het stormachtige weer.""","""Ei, luister naar dat mooie weer,
+Dat gehuil van de winden.  
+Oh! hoe heb ik medelijden met de arme zeelieden,  
+Die aan wal zijn.  
+Boe! boe! woeh!  
+'Wat moeten de stadsbewoners nu  
+Niet erg beschaamd zijn.  
+Zeker trillen ze in hun bed van angst  
+Voor het instorten van de daken.  
+Die arme ellendelingen! Ik wed zeker  
+Dat ze onze geluk benijden  
+En wensen veilig te zijn zoals wij  
+Op de open zee.  
+Boe! boe! woeh!  
+'En vooral degenen die buiten  
+Hun dagelijkse werk doen,  
+En nu 's nachts door straat en steeg  
+Trillend naar huis gaan!  
+Hier vliegt een plank of steen om hun hoofd,  
+Daar lood of dakpan tegen hen,  
+Terwijl wij hier samen op het dek  
+Zo comfortabel zitten.  
+Boe! boe! woeh!  
+'Wat moeten de plattelandsbewoners dag na dag  
+Strijden met tegenspoed!  
+Met overstromingen, inbraken, moord  
+En brand en andere rampen!  
+Hier is een voertuig, daar een trein,  
+Die uit de hand is gelopen.  
+Nee! laten we onze lieve Heer danken  
+Die ons zeelieden heeft gemaakt.  
+Boe! boe! woeh!""","""Ei, luister naar dat mooie weer,  
+Dat gehuil van de winden.  
+Oh! hoe heb ik medelijden met de arme zeelieden,  
+Die aan wal zijn.  
+Boe! boe! woeh!  
+'Wat moeten de stadsbewoners nu  
+Niet erg beschaamd zijn.  
+Zeker trillen ze in hun bed van angst  
+Voor het instorten van de daken.  
+Die arme ellendelingen! Ik wed zeker  
+Dat ze onze geluk benijden  
+En wensen veilig te zijn zoals wij  
+Op de open zee.  
+Boe! boe! woeh!  
+'En vooral degenen die buiten  
+Hun dagelijkse werk doen,  
+En nu's nachts door straat en steeg  
+Trillend naar huis gaan!  
+Hier vliegt een plank of steen om hun hoofd,  
+Daar lood of dakpan tegen hen,  
+Terwijl wij hier samen op het dek  
+Zo comfortabel zitten.  
+Boe! boe! woeh!  
+'Wat moeten de plattelandsbewoners dag na dag  
+Strijden met tegenspoed!  
+Met overstromingen, inbraken, moord  
+En brand en andere rampen!  
+Hier is een voertuig, daar een trein,  
+Die uit de hand is gelopen.  
+Nee! laten we onze lieve Heer danken  
+Die ons zeelieden heeft gemaakt.  
+Boe! boe! woeh!""",0.0,1.0,1.0,0.9,0.9,0.9,1.0,0.9,1.0,0.0,0.1,0.0,0.1
+goej001blin01,goej001,false,"Draft a monologue, in the style of 'Blinde Maarten' by Reinoudina de Goeje, where Blinde Maarten reflects on his life and happiness.","‘Ja,’ antwoordde de grijsaard lachend, ‘maar ook hoe gelukkig dat ik hier zo vriendelijk werd ontvangen.’ En hij ging staan met zijn wijnglas in de hand en bedankte de tante voor haar gulle gastvrijheid. ‘Ik zal het nooit vergeten,’ zei hij, ‘wat een prettig feest u ons heeft bezorgd.’","‘Ja,’ antwoordde de grijsaard lachend, ‘maar ook hoe gelukkig dat ik hier zo vriendelijk werd ontvangen.’ En hij ging staan met zijn wijnglas in de hand en bedankte de tante voor haar gulle gastvrijheid. ‘Ik zal het nooit vergeten,’ zei hij, ‘wat een prettig feest u ons heeft bezorgd.’",1.0,1.0,1.0,0.9,0.8,0.8,1.0,0.9,0.9,0.0,0.0,0.1,0.0
+peen001nege01,peen001,false,"""Stel een monoloog op, in de stijl van '99 beesten en een boer' door Hippoliet van Peene, waarin de weduwe haar gevoelens onthult over Jan's gehoorzaamheid.""","de weduwe,
+woedend.
+Ik zeg dat ik het niet wil.
+pieter,
+zelfs.
+En ik, ik wil het... honderdduizend miljoenen. (Tegen Jan.) Allons, stevig!
+jan,
+hem imiterend.
+En ik, ik wil het... honderdduizend miljoenen! Allons, stevig!
+de weduwe,
+buiten zichzelf.
+Ha! je wilt het... ha! je staat tegen mij... ha! het is zo dat je naar je dierbare luistert... daar... slecht onderwerp! (Ze geeft hem een klap.)","de weduwe,
+woedend.
+Ik zeg dat ik het niet wil.
+pieter,
+zelfs.
+En ik, ik wil het... honderdduizend miljoenen. (Tegen Jan.) Allons, stevig!
+jan,
+hem imiterend.
+En ik, ik wil het... honderdduizend miljoenen! Allons, stevig!
+de weduwe,
+buiten zichzelf.
+Ha! je wilt het... ha! je staat tegen mij... ha! het is zo dat je naar je dierbare luistert... daar... slecht onderwerp! (Ze geeft hem een klap.)",1.0,1.0,1.0,0.9,0.8,0.7,1.0,0.9,0.9,0.0,0.1,0.1,0.2
+berg047nach02,lenn006,true,"""Stel een monoloog op, in de stijl van 'De nachtegaal en het lijstertje' door Jacob van Lennep, waarin Elize reflecteert op haar taken en het buurmeisje.""","""Laatst kreeg ik een uitbrander van Mama omdat mijn taak niet af was; ze wees me het kleine meisje van de buren aan als een voorbeeldig kind. Ik beloofde vanaf nu beter mijn best te doen en gaf mijn lieve Mama een kus. Wanneer ik nu mijn les moet leren, of de naden van mijn gebreide kousen moet naaien, werk ik met vreugde en ijver, ook al duurt het soms een uur. Ik denk tijdens het werken aan moeders woorden en het meisje van de buren, die alles op tijd afmaakt, en altijd bereid, altijd snel. Het is alsof ik de les nog steeds hoor: Verloren tijd komt nooit terug.""","""Laatst kreeg ik een uitbrander van Mama omdat mijn taak niet af was; ze wees me het kleine meisje van de buren aan als een voorbeeldig kind. Ik beloofde vanaf nu beter mijn best te doen en gaf mijn lieve Mama een kus. Wanneer ik nu mijn les moet leren, of de naden van mijn gebreide kousen moet naaien, werk ik met vreugde en ijver, ook al duurt het soms een uur. Ik denk tijdens het werken aan moeders woorden en het meisje van de buren, die alles op tijd afmaakt, en altijd bereid, altijd snel. Het is alsof ik de les nog steeds hoor: Verloren tijd komt nooit terug.""",1.0,1.0,1.0,1.0,0.9,0.7,0.9,0.9,0.8,0.1,0.2,0.1,0.1
+dool003sint01,dool003,false,"Create a descriptive passage, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, capturing the mood of despair in Bertholf's heart after he learns of his wife's actions.","De burger is slaaf; hij verzucht in 't gareel
+Van 's adels gezag, en hij knielt voor de wetten, 
+Die werkman en boer door de willekeur verpletten, 
+En 't voorrecht doen heerschen op 't machtig kasteel. 
+
+Die almacht stort Bertholf meer trots in 't gemoed. 
+Hij stijgt nu te paard om bij vreemden te dwalen, 
+Bij 's waarzeggers kunst tracht hij hulp te halen; 
+Reeds heeft hij, snel dravend, nu Brugge begroet. 
+
+Daar kweekte die stad in haar woeligen schoot 
+Een man, die vooroordeel en bijgeloof wekte, 
+Der waarzeggers naam tot beroemdheid verstrekte, 
+En toom aan 't bedrog gaf, zo schandig als snood.","De burger is slaaf; hij verzucht in 't gareel 
+Van's adels gezag, en hij knielt voor de wetten, 
+Die werkman en boer door de willekeur verpletten, 
+En 't voorrecht doen heerschen op 't machtig kasteel. 
+
+Die almacht stort Bertholf meer trots in 't gemoed. 
+Hij stijgt nu te paard om bij vreemden te dwalen, 
+Bij's waarzeggers kunst tracht hij hulp te halen; 
+Reeds heeft hij, snel dravend, nu Brugge begroet. 
+
+Daar kweekte die stad in haar woeligen schoot 
+Een man, die vooroordeel en bijgeloof wekte, 
+Der waarzeggers naam tot beroemdheid verstrekte, 
+En toom aan 't bedrog gaf, zo schandig als snood.",0.0,1.0,1.0,1.0,0.9,0.8,0.9,0.9,0.8,0.1,0.2,0.1,0.1
+goej001klei02,goej001,false,"Compose a scene, in the style of 'Kleine Nelly' by Reinoudina de Goeje, showing Nelly's thoughts as she walks to the market.","Nelly is nu op weg naar de markt, waar de groenboeren hun waar te koop hebben, en ze loopt zo hard als ze kan; want wie er het eerst is, heeft natuurlijk de eerste keuze, en kan er het beste uitkiezen. Het is een hele wandeling; maar Nelly loopt stevig door en zal er dus wel spoedig wezen. Ze heeft tegenwoordig een treurig leventje, die kleine meid; maar zij denkt niet aan zichzelf. Zij denkt slechts aan haar ouders, terwijl zij door de besneeuwde, donkere straten loopt,... zij denkt aan die arme ouders, die anders zo goed voor haar zorgen, en die nu beiden zo ziek zijn. Vader werd voor enige dagen naar het ziekenhuis gebracht, en moeder is zo zwak, dat zij het bed niet kan verlaten.","Nelly is nu op weg naar de markt, waar de groenboeren hun waar te koop hebben, en ze loopt zo hard als ze kan; want wie er het eerst is, heeft natuurlijk de eerste keuze, en kan er het beste uitkiezen. Het is een hele wandeling; maar Nelly loopt stevig door en zal er dus wel spoedig wezen. Ze heeft tegenwoordig een treurig leventje, die kleine meid; maar zij denkt niet aan zichzelf. Zij denkt slechts aan haar ouders, terwijl zij door de besneeuwde, donkere straten loopt,... zij denkt aan die arme ouders, die anders zo goed voor haar zorgen, en die nu beiden zo ziek zijn. Vader werd voor enige dagen naar het ziekenhuis gebracht, en moeder is zo zwak, dat zij het bed niet kan verlaten.",1.0,1.0,1.0,0.9,0.8,0.8,0.9,0.9,0.8,0.2,0.2,0.1,0.0
+pier003duit01,pier003,false,"Creëer een dialoog, in de stijl van 'Duitsche indrukken' door Allard Pierson, tussen twee personages die de verdiensten van de Duitse en Franse beschaving bespreken.","""Ik wil van tevoren opmerken dat dit antwoord volledig gunstig kan uitpakken, zonder daarmee het minste te zeggen tegen de Franse geest. We moeten nooit vergeten dat we de hele tijd en gelegenheid hebben gehad om het goede dat de Franse beschaving ons kon bieden, te leren kennen en toe te eigenen; en niemand kan dat goede als onbeduidend beschouwen. De Franse geest is onmisbaar voor de opvoeding van Europa, vooral van ons volk, zonder welke er een grote leegte zou ontstaan. Hoe kunnen onze zuidelijke buren niet uitblinken op het gebied van natuurlijke kennis, van oosterse studies, van historiografie, om nog maar te zwijgen van andere takken?""","""Ik wil van tevoren opmerken dat dit antwoord volledig gunstig kan uitpakken, zonder daarmee het minste te zeggen tegen de Franse geest. We moeten nooit vergeten dat we de hele tijd en gelegenheid hebben gehad om het goede dat de Franse beschaving ons kon bieden, te leren kennen en toe te eigenen; en niemand kan dat goede als onbeduidend beschouwen. De Franse geest is onmisbaar voor de opvoeding van Europa, vooral van ons volk, zonder welke er een grote leegte zou ontstaan. Hoe kunnen onze zuidelijke buren niet uitblinken op het gebied van natuurlijke kennis, van oosterse studies, van historiografie, om nog maar te zwijgen van andere takken?""",1.0,1.0,1.0,0.9,0.9,0.8,0.8,0.9,0.9,0.2,0.2,0.1,0.0
+sche039pren01,sche039,true,"""Stel een monoloog op, in de stijl van 'Prentenboek' door Jan Schenkman, waarin de Melkmeid haar frustraties over haar werk uitdrukt.""","""Hoe komt het, Bregje! Dat melk weer zo blauw? 'Wel mevrouw, wat zegt u!... U brengt me in de problemen! De melk is, geloof me, zo wit als room. Maar het komt zeker uit het water van daaruit uit de stoom.'""","""Hoe komt het, Bregje! Dat melk weer zo blauw? 'Wel mevrouw, wat zegt u!... U brengt me in de problemen! De melk is, geloof me, zo wit als room. Maar het komt zeker uit het water van daaruit uit de stoom.'""",1.0,1.0,1.0,0.9,0.9,0.9,0.9,0.9,0.9,0.2,0.1,0.1,0.0
+sche039kerm01,sche039,true,"""Stel een dialoog samen, in de stijl van 'De kermis-artisten of de viervoetige kunstenmakers voor het kleine publiek' door Jan Schenkman, tussen Tom en Kees terwijl ze het over dansen hebben.""","Vriendelijke Tom, die uit de Oost-Indiën is gekomen, springt vrolijk en blij met Jennij rond, Een oude vriend, die hij - wie had het kunnen dromen? - Weer vond als kasteelvrouw in 'de Zeereis.' Zijn jeugdige maat rookt ondertussen een pijpje, En hoewel hij hem wenkt: 'kom Kees! Dans met me!' Denkt deze, die moe is: 'Nou! ... je begrijpt! ... 'Ik heb genoeg gedanst in de masten op zee!'","Vriendelijke Tom, die uit de Oost-Indiën is gekomen, springt vrolijk en blij met Jennij rond, Een oude vriend, die hij - wie had het kunnen dromen? - Weer vond als kasteelvrouw in 'de Zeereis.' Zijn jeugdige maat rookt ondertussen een pijpje, En hoewel hij hem wenkt: 'kom Kees! Dans met me!' Denkt deze, die moe is: 'Nou!... je begrijpt!... 'Ik heb genoeg gedanst in de masten op zee!'",1.0,1.0,1.0,0.9,0.9,1.0,0.9,0.9,0.9,0.2,0.1,0.2,0.1
+_kle007klei02,_kle007,true,"""Stel een monoloog op, in de stijl van 'De kleine mama Pauline en hare pop Marie' door Anoniem Kleine mama Pauline en hare pop Marie, waarin Pauline haar hoop uitspreekt voor het gedrag van Marie.""","Luister, lieve Marie! Ik zal je deze keer vergeven: want wanneer ouders hun kinderen straffen, is het alleen omdat de kinderen hen daartoe dwingen; maar ik hoop ook dat je me niet opnieuw tot zo'n strengheid zult dwingen. Kom op! Veeg je tranen weg en omhels me!","Luister, lieve Marie! Ik zal je deze keer vergeven: want wanneer ouders hun kinderen straffen, is het alleen omdat de kinderen hen daartoe dwingen; maar ik hoop ook dat je me niet opnieuw tot zo'n strengheid zult dwingen. Kom op! Veeg je tranen weg en omhels me!",1.0,1.0,1.0,0.9,1.0,0.9,0.8,0.8,0.8,0.1,0.2,0.1,0.1
+sche039weer02,sche039,true,"""Maak een beschrijvende passage, in de stijl van 'Weer wat moois voor lieve kleinen' door Jan Schenkman, die de vreugde van een kind dat in de zomer speelt vastlegt.""","Dus rondrijden in de zomer, zou zeker iedereen plezieren.","Dus rondrijden in de zomer, zou zeker iedereen plezieren.",1.0,1.0,1.0,0.9,0.9,0.9,0.9,0.8,0.9,0.1,0.1,0.1,0.1
+pier003aanz01,pier003,false,"Maak een beschrijvende passage, in de stijl van 'Aan zijne laatste gemeente' door Allard Pierson, die de sfeer van de gemeente tijdens een preek vastlegt.","""Ik heb het gewaagd om dit principe van mij met moed aan jullie bloot te leggen, omdat ik weet dat het bij jullie resoneert. Ontelbaren onder jullie horen op zondag heel graag een goed woord vanaf de kansel, maar voelen weinig of niets voor de kerk als kerk, als een samenleving die een geheel in zichzelf vormt. Jullie nemen weinig deel aan kerkelijke, symbolische handelingen; dit heb ik vaak opgemerkt. Behalve met Pasen is jullie aanwezigheid bij de viering van het Laatste Avondmaal extreem beperkt. Velen van jullie, vooral de mannen, brengen hun kinderen om verschillende bijzaken te laten dopen. Velen van jullie verwachten van catechismus niet de vorming van hun kinderen tot leden van een kerk, maar de uitoefening van een humaniserende invloed,"" zei de predikant, terwijl hij de zaal in keek, de gezichten van de aanwezigen peilend.","""Ik heb het gewaagd om dit principe van mij met moed aan jullie bloot te leggen, omdat ik weet dat het bij jullie resoneert. Ontelbaren onder jullie horen op zondag heel graag een goed woord vanaf de kansel, maar voelen weinig of niets voor de kerk als kerk, als een samenleving die een geheel in zichzelf vormt. Jullie nemen weinig deel aan kerkelijke, symbolische handelingen; dit heb ik vaak opgemerkt. Behalve met Pasen is jullie aanwezigheid bij de viering van het Laatste Avondmaal extreem beperkt. Velen van jullie, vooral de mannen, brengen hun kinderen om verschillende bijzaken te laten dopen. Velen van jullie verwachten van catechismus niet de vorming van hun kinderen tot leden van een kerk, maar de uitoefening van een humaniserende invloed,"" zei de predikant, terwijl hij de zaal in keek, de gezichten van de aanwezigen peilend.",1.0,1.0,1.0,0.9,0.9,0.9,0.8,0.8,1.0,0.2,0.1,0.1,0.1
+hoff049nieu02,hoff049,false,"Create a descriptive passage, in the style of 'Een nieuw aardig prentenboek als vervolg op het beroemde Hoogduitsche kinderwerk 'Der Struwwelpeter'' by Heinrich Hoffmann, capturing the chaos after Frederik spills the milk.","‘Wat ben je wit, o Frederik,
+Jou snoepert en jou melkjelik! 
+Je hemd vloeit langs je lichaam neer, 
+Jij lekkerbaard, jij witte heer, 
+Sliep uit, sliep uit, dien melkjedief, 
+Wat staat die witte kleur hem lief!’","‘Wat ben je wit, o Frederik, 
+Jou snoepert en jou melkjelik! 
+Je hemd vloeit langs je lichaam neer, 
+Jij lekkerbaard, jij witte heer, 
+Sliep uit, sliep uit, dien melkjedief, 
+Wat staat die witte kleur hem lief!’",1.0,1.0,1.0,0.9,1.0,1.0,0.8,0.8,0.9,0.2,0.1,0.2,0.2
+goej001prin01,goej001,false,"Compose a dialogue, in the style of 'Prins vriendelijk' by Reinoudina de Goeje, between the king and the prince as they discuss the princess's abduction.","‘Aan de goede wil ontbreekt het mij stellig niet,’ merkte deze aan. ‘Maar wel aan de macht,’ hernam de koning, en deelde mede: ‘wat mij zo droevig maakt is met een paar woorden te vertellen. Mijn dochter is mij ontstolen.’ ‘Ontstolen?’ riep de prins verbaasd uit. ‘Door wie?’ ‘Door een reus,’ antwoordde de koning, en vertelde hoe lief, en hoe schoon ze was en hoeveel iedereen van haar hield. ‘Hoe heet de prinses?’ vroeg de prins. ‘Zij heet Kunegonde,’ begon de koning. ‘Maar men noemt haar steeds de mooie prinses met de gouden lokken,’ voegden de hovelingen er bij. ‘Die heb ik horen noemen,’ hernam de prins. ‘Men vertelde in het rijk mijns vaders dat er geen beminnelijker jonkvrouw was dan de mooie prinses met de gouden haren. Ik zal haar bevrijden al moest het mij ook het leven kosten,’ zei hij.","‘Aan de goede wil ontbreekt het mij stellig niet,’ merkte deze aan. ‘Maar wel aan de macht,’ hernam de koning, en deelde mede: ‘wat mij zo droevig maakt is met een paar woorden te vertellen. Mijn dochter is mij ontstolen.’ ‘Ontstolen?’ riep de prins verbaasd uit. ‘Door wie?’ ‘Door een reus,’ antwoordde de koning, en vertelde hoe lief, en hoe schoon ze was en hoeveel iedereen van haar hield. ‘Hoe heet de prinses?’ vroeg de prins. ‘Zij heet Kunegonde,’ begon de koning. ‘Maar men noemt haar steeds de mooie prinses met de gouden lokken,’ voegden de hovelingen er bij. ‘Die heb ik horen noemen,’ hernam de prins. ‘Men vertelde in het rijk mijns vaders dat er geen beminnelijker jonkvrouw was dan de mooie prinses met de gouden haren. Ik zal haar bevrijden al moest het mij ook het leven kosten,’ zei hij.",1.0,1.0,1.0,0.9,0.9,0.9,0.8,1.0,0.8,0.1,0.1,0.1,0.2
+goej001moed01,goej001,false,"Compose a dialogue, in the style of 'Moeder's raad' by Reinoudina de Goeje, between Frits and the kind lady as they discuss his decision to return the stolen boots.","‘Domme jongen! waarom doe je die laarzen niet aan?’ Frits keek eens op. Het was een dame met een vriendelijk gezicht, die deze vraag deed. In de ogen van die vrouw was iets, dat Frits aan zijn moeder deed denken, en daarom vertelde hij haar oprecht zijn hele geschiedenis, en hoe die laarzen in zijn bezit waren gekomen, en hoe hij niet kon slapen, voordat hij ze terug had gegeven... En de dame luisterde met veel belangstelling naar zijn verhaal, terwijl ze naast hem voortliep. ‘Ziezoo!... Hier is het!’ zei eindelijk Frits, en hij zette de schoenen op dezelfde stoep neer, waar hij ze een paar uren geleden had gehaald. ‘Maar nu zullen ze wel weer worden gestolen!’ merkte de dame op. ‘Misschien wel; maar dan ben ik toch eerlijk!’ hernam Frits.","‘Domme jongen! waarom doe je die laarzen niet aan?’ Frits keek eens op. Het was een dame met een vriendelijk gezicht, die deze vraag deed. In de ogen van die vrouw was iets, dat Frits aan zijn moeder deed denken, en daarom vertelde hij haar oprecht zijn hele geschiedenis, en hoe die laarzen in zijn bezit waren gekomen, en hoe hij niet kon slapen, voordat hij ze terug had gegeven... En de dame luisterde met veel belangstelling naar zijn verhaal, terwijl ze naast hem voortliep. ‘Ziezoo!... Hier is het!’ zei eindelijk Frits, en hij zette de schoenen op dezelfde stoep neer, waar hij ze een paar uren geleden had gehaald. ‘Maar nu zullen ze wel weer worden gestolen!’ merkte de dame op. ‘Misschien wel; maar dan ben ik toch eerlijk!’ hernam Frits.",1.0,1.0,1.0,1.0,0.9,0.8,0.9,0.9,0.9,0.1,0.1,0.2,0.2
+peen001keiz02,peen001,false,"Stel een scène samen, in de stijl van 'Keizer Karel en de Berchemsche boer' door Hippoliet van Peene, die het moment toont waarop Lysje de tafel dekt voor het diner.","lysje,
+de tafel dekken. 
+Vader, over een paar minuten wordt u geserveerd.
+
+pieter. 
+Hoe sneller, hoe beter, mijn kind! want ik heb honger genoeg om in de rug van een paard te bijten. En jij dan, jongen?... Wanneer men de hele dag met de spade heeft gewerkt, kan een goede avondmaaltijd niet gemist worden, toch?
+
+frans. 
+Baasje! Ik weet niets van honger....","lysje, 
+de tafel dekken. 
+Vader, over een paar minuten wordt u geserveerd.
+
+pieter. 
+Hoe sneller, hoe beter, mijn kind! want ik heb honger genoeg om in de rug van een paard te bijten. En jij dan, jongen?... Wanneer men de hele dag met de spade heeft gewerkt, kan een goede avondmaaltijd niet gemist worden, toch?
+
+frans. 
+Baasje! Ik weet niets van honger....",1.0,1.0,1.0,1.0,0.9,0.8,0.8,0.8,1.0,0.1,0.0,0.1,0.1
+fran023kind01,lois006,true,"""Stel een dialoog op, in de stijl van 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' door A. Loisel, tussen Antje en Spiegels terwijl ze zijn voorstel bespreken.""","SPIEGELS: Antje, wat denk je van mijn voorstel? Het is een goede kans voor ons beiden.
+ANTJE: Maar Spiegels, ik weet niet of het wel zo verstandig is. Wat als het niet werkt?
+SPIEGELS: We moeten het gewoon proberen! Wat heb je te verliezen? 
+ANTJE: Ik ben bang dat het ons meer problemen zal geven dan we nu hebben.
+SPIEGELS: Denk aan de voordelen! We kunnen samen iets opbouwen. 
+ANTJE: Misschien heb je gelijk, maar ik wil niet dat we in de problemen komen. 
+SPIEGELS: Vertrouw me, Antje. Samen kunnen we dit aan!","""""
+Spiegels.
+Mijn lieve en het leven, juffrouw Antje, ja het leven. Ik heb vandaag 28 veegbeurten gedaan, ik heb mijn dagelijkse brood verdiend, en ik kom je snel vertellen hoe ik van je hou. - Met uw toestemming! (Hij gaat zitten.) Hoe gaat het met u, juffrouw Antje.
+
+Antje.
+Als het niet voor de krampen was die mijn lieve mevrouw met haar gekke buien en zenuwen me heeft gegeven, zou je er koorts van krijgen.
+
+Spiegels.
+Je gaat niet uit hun dienst, juffrouw Antje. Kom liever met mij mee en kroon je levensdag met je schoen en je zoete kleine mond. - Kom, mijn lieve dame, mijn aangeboden bruid, lieve Antje!
+
+Antje.
+Wat is dat, lieve Antje! Wat denk je dat je doet, meneer Spiegels! Let beter op je woorden. - En wat betreft je voorstel om met mij te trouwen, dat was veel te vroeg voor jou. Maar ik kan dat niet zo gemakkelijk doen; ik moet erover nadenken.
+""""",0.0,0.2385786802030457,0.328,0.6,0.6,0.7,0.3,0.4,0.2,0.1,0.1,0.0,0.2
+dool003sint01,dool003,false,"Write a dialogue, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, between the protagonist and his hunting dog as they venture into the woods.","Zijn jachthond springt hem op de borst, En streelt en liket zijn mond. 't Is de enige vriend nog die hem rest, Maar het stilt hem wee noch wond.","Zijn jachthond springt hem op de borst, En streelt en liket zijn mond. 't Is de enige vriend nog die hem rest, Maar het stilt hem wee noch wond.",1.0,1.0,1.0,0.9,0.8,0.8,1.0,0.8,1.0,0.0,0.2,0.0,0.1
+sche039leve02,sche039,true,"""Stel een monoloog op, in de stijl van 'Het leven van Jan Klaassen, verteld aan de Nederlandsche jeugd' door Jan Schenkman, waarin Jan reflecteert op zijn avonturen en streken.""","""Ach, wat een leven heb ik toch!"" zuchtte Jan, terwijl hij naar de sterren keek. ""Altijd maar in de problemen, altijd maar op zoek naar avontuur. Soms vraag ik me af of ik ooit zal leren om rustig te zijn. Maar dan weer, wat is er leuker dan een goede grap of een stoutigheid? Ik heb zoveel meegemaakt, van het stelen van appels tot het dansen op een touw! Maar telkens als ik denk dat ik het goed doe, komt er weer een straf. Toch kan ik niet anders dan lachen om mijn eigen streken!""","""Ach, wat een leven heb ik toch!"" zuchtte Jan, terwijl hij naar de sterren keek. ""Altijd maar in de problemen, altijd maar op zoek naar avontuur. Soms vraag ik me af of ik ooit zal leren om rustig te zijn. Maar dan weer, wat is er leuker dan een goede grap of een stoutigheid? Ik heb zoveel meegemaakt, van het stelen van appels tot het dansen op een touw! Maar telkens als ik denk dat ik het goed doe, komt er weer een straf. Toch kan ik niet anders dan lachen om mijn eigen streken!""",1.0,1.0,1.0,0.8,0.8,0.8,0.9,0.9,0.8,0.0,0.2,0.0,0.1
+dool003sint01,dool003,false,"Draft a monologue, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, where Bertholf expresses his inner turmoil about his marriage.","‘Genoeg! Ik zal wreken die grievende schand,
+Mijn stam is bezoedeld; mijn adel zal vallen. 
+'t Volk zal mij beschimpen; de donder zal knallen, 
+Mij dreigen met straf, als de vloek van mijn land!’ 
+
+‘Ik zweer het! die toverheks neem ik niet weer! 
+'t Gebod van de kerk doet haar wetten volvoeren; 
+Het dwingt mij de knoop van mijn echt niet te ontsnoeren: 
+Zij sterve! Neen, langer niet rooft ze mijn eer!’","‘Genoeg! Ik zal wreken die grievende schand, 
+Mijn stam is bezoedeld; mijn adel zal vallen. 
+'t Volk zal mij beschimpen; de donder zal knallen, 
+Mij dreigen met straf, als de vloek van mijn land!’ 
+
+‘Ik zweer het! die toverheks neem ik niet weer! 
+'t Gebod van de kerk doet haar wetten volvoeren; 
+Het dwingt mij de knoop van mijn echt niet te ontsnoeren: 
+Zij sterve! Neen, langer niet rooft ze mijn eer!’",1.0,1.0,1.0,0.8,0.9,0.9,1.0,0.9,0.9,0.0,0.1,0.2,0.1
+lenn006zeem01,lenn006,true,"""Stel een dialoog op, in de stijl van 'Zeemansliedtjens' door Jacob van Lennep, tussen Jan Teunisz en de kapitein terwijl ze Jan's laatste wens bespreken.""","- 'Zeker, Jan Teunisz! trouw en alert,
+Je hebt je zeemanstaak vervuld. 
+En met verdriet, dappere maat! 
+Zie ik je wonden.' -
+
+- 'Dank u, kapitein! voor die woorden. 
+Dat troost een stervende man. 
+Ik reis getroost naar betere plaatsen; - 
+Maar - ik heb nog één wens. -
+
+Ik wens dat een van onze dappere mannen, 
+Als ik sterf, mijn vriendschap zal geven, 
+En voor Kaatjen uit Delftshaven 
+Een lok van mijn haar zal knippen.'","- 'Zeker, Jan Teunisz! trouw en alert, 
+Je hebt je zeemanstaak vervuld. 
+En met verdriet, dappere maat! 
+Zie ik je wonden.' -
+
+- 'Dank u, kapitein! voor die woorden. 
+Dat troost een stervende man. 
+Ik reis getroost naar betere plaatsen; - 
+Maar - ik heb nog één wens. -
+
+Ik wens dat een van onze dappere mannen, 
+Als ik sterf, mijn vriendschap zal geven, 
+En voor Kaatjen uit Delftshaven 
+Een lok van mijn haar zal knippen.'",1.0,1.0,1.0,0.9,0.9,0.9,0.9,0.9,0.9,0.0,0.1,0.1,0.2
+fran023kind01,lois006,true,"""Stel een dialoog op, in de stijl van 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' door A. Loisel, tussen Spiegels en Moentjes terwijl ze hun situatie bespreken.""","Moentjes. De bloem van mijn hart is verdampt. Waar kan ze zijn? Ik hoor de stem van de genoemde engel niet; Is ze nog in huis, of is ze in de Zwingelpütstraat? Hoe dan ook, er is hier niemand. We zullen dan gaan, zonder ons te schamen, wachten op Antje, en intussen de pijp van het leven en de sensatie aansteken en door haar zoete geur de kamer sentimenteel laten verdampen en parfumeren. (Hij steekt zijn pijp aan.)  Spiegels (op de weg.) Weer de belman. Ik wil me verstoppen. (Steekt zijn hoofd erin.)","Moentjes. De bloem van mijn hart is verdampt. Waar kan ze zijn? Ik hoor de stem van de genoemde engel niet; Is ze nog in huis, of is ze in de Zwingelpütstraat? Hoe dan ook, er is hier niemand. We zullen dan gaan, zonder ons te schamen, wachten op Antje, en intussen de pijp van het leven en de sensatie aansteken en door haar zoete geur de kamer sentimenteel laten verdampen en parfumeren. (Hij steekt zijn pijp aan.)  Spiegels (op de weg.) Weer de belman. Ik wil me verstoppen. (Steekt zijn hoofd erin.)",1.0,1.0,1.0,1.0,0.9,0.8,0.9,0.9,0.8,0.1,0.1,0.1,0.1
+sche039leve02,sche039,true,"""Stel een dialoog op, in de stijl van 'Het leven van Jan Klaassen, verteld aan de Nederlandsche jeugd' door Jan Schenkman, tussen Jan en de Prins terwijl ze de samenzwering tegen hem bespreken.""","‘Uwe Hoogheid,’ fluisterde Jan, ‘ik heb een vreselijk complot tegen u gehoord! Ze zijn van plan u morgen te doden!’ De Prins, geschrokken, antwoordde: ‘Wat bedoel je, Jan? Wie zou zoiets durven?’ ‘Ik heb ze gehoord bij de dikke boom,’ legde Jan dringend uit, ‘ze hebben granaten klaar om toe te slaan!’ ‘We moeten snel handelen!’ riep de Prins, zijn ogen wijd van angst. ‘Leid me naar de plek, Jan, we moeten deze verraderlijkheid onthullen!’","‘Uwe Hoogheid,’ fluisterde Jan, ‘ik heb een vreselijk complot tegen u gehoord! Ze zijn van plan u morgen te doden!’ De Prins, geschrokken, antwoordde: ‘Wat bedoel je, Jan? Wie zou zoiets durven?’ ‘Ik heb ze gehoord bij de dikke boom,’ legde Jan dringend uit, ‘ze hebben granaten klaar om toe te slaan!’ ‘We moeten snel handelen!’ riep de Prins, zijn ogen wijd van angst. ‘Leid me naar de plek, Jan, we moeten deze verraderlijkheid onthullen!’",1.0,1.0,1.0,1.0,0.9,0.9,0.9,0.9,1.0,0.2,0.2,0.1,0.1
+hoff049nieu02,hoff049,false,"Compose a dialogue, in the style of 'Een nieuw aardig prentenboek als vervolg op het beroemde Hoogduitsche kinderwerk 'Der Struwwelpeter'' by Heinrich Hoffmann, between Karel and the horse after Karel gets hurt.","‘O wee, mijn been, wat smart, wat spijt!’ kermt Karel. ‘Wat heb ik gedaan, o vreselijk paard, dat je zo terug slaat?’ Het paard, dat nog steeds kwaad is, antwoordt: ‘Jij hebt mij geplaagd, nu voel je de pijn, dat is wat je krijgt voor je wrede schijn!’","‘O wee, mijn been, wat smart, wat spijt!’ kermt Karel. ‘Wat heb ik gedaan, o vreselijk paard, dat je zo terug slaat?’ Het paard, dat nog steeds kwaad is, antwoordt: ‘Jij hebt mij geplaagd, nu voel je de pijn, dat is wat je krijgt voor je wrede schijn!’",1.0,1.0,1.0,1.0,0.9,0.8,0.9,0.8,0.9,0.1,0.2,0.0,0.1
+goej001pret01,goej001,false,"Draft a monologue, in the style of 'Prettige daagjes' by Reinoudina de Goeje, where one of the children expresses their feelings about going outside.","‘Maar als men buiten is, vindt men spellen en bezigheden genoeg in de bossen en op de duinen, dat zul je wel zien,’ zei mama, en raadde de kinderen aan dit speelgoed maar netjes aan de kant te zetten.  Dat was snel genoeg gedaan, maar wat toen? Het leek de kinderen toe, alsof er niets meer voor hen te doen viel dan te wachten op het moment dat ze zouden vertrekken en het moest nog langer dan een maand duren voordat ze konden gaan! Hoe kwam die tijd nog om? Dat begrepen ze niet, maar mama hielp hen een beetje op weg en toen ging het beter.","‘Maar als men buiten is, vindt men spellen en bezigheden genoeg in de bossen en op de duinen, dat zul je wel zien,’ zei mama, en raadde de kinderen aan dit speelgoed maar netjes aan de kant te zetten.  Dat was snel genoeg gedaan, maar wat toen? Het leek de kinderen toe, alsof er niets meer voor hen te doen viel dan te wachten op het moment dat ze zouden vertrekken en het moest nog langer dan een maand duren voordat ze konden gaan! Hoe kwam die tijd nog om? Dat begrepen ze niet, maar mama hielp hen een beetje op weg en toen ging het beter.",1.0,1.0,1.0,0.9,1.0,0.9,1.0,1.0,1.0,0.1,0.1,0.1,0.1
+hoff049aard03,hoff049,false,"Create a descriptive passage, in the style of 'Een aardig prentenboek met leerzame vertellingen, naar het beroemde Hoogduitsche kinderwerk 'Der Struwwelpeter' voor Nederlandsche jongens en meisjes bewerkt' by Heinrich Hoffmann, capturing the moment when Hein refuses to eat his soup.","Maar eens smeet Hein zijn lepel neer,
+En riep: ‘Ik lust die soep niet meer! 
+Loop met die nare soep maar heen! 
+Ik wil geen soep meer eten! Neen!’ 
+Dit gaf zijn ouders veel verdriet, 
+Maar ander eten kreeg hij niet; 
+Zodat hij reeds de tweede dag 
+Veel magerder en bleker zag; - 
+En weer smeet Hein zijn lepel neer, 
+En riep: ‘Ik lust die soep niet meer! 
+Loop met die nare soep maar heen! 
+Ik wil geen soep meer eten! Neen!’","Maar eens smeet Hein zijn lepel neer, 
+En riep: ‘Ik lust die soep niet meer! 
+Loop met die nare soep maar heen! 
+Ik wil geen soep meer eten! Neen!’ 
+Dit gaf zijn ouders veel verdriet, 
+Maar ander eten kreeg hij niet; 
+Zodat hij reeds de tweede dag 
+Veel magerder en bleker zag; - 
+En weer smeet Hein zijn lepel neer, 
+En riep: ‘Ik lust die soep niet meer! 
+Loop met die nare soep maar heen! 
+Ik wil geen soep meer eten! Neen!’",1.0,1.0,1.0,0.9,1.0,1.0,0.9,0.9,0.9,0.0,0.2,0.1,0.0

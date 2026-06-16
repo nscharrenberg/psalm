@@ -1,0 +1,157 @@
+metric,metric_clean,category,split,Model1,Model2,Test,TestStat,p_raw,p_adj,Significant,Cohen_d
+BLEU_score,BLEU,Computational,Forget,Finetuned (Dutch),Finetuned (English),MWU,190.0,0.34211225261696365,0.34211225261696365,No,-0.31622776601683833
+BLEU_score,BLEU,Computational,Forget,Finetuned (Dutch),NPO (Dutch),MWU,399.0,1.3324984395412212e-08,5.3299937581648847e-08,Yes,6.250851785020925
+BLEU_score,BLEU,Computational,Forget,Finetuned (Dutch),NPO (English),MWU,392.0,4.211032798757869e-08,1.2633098396273607e-07,Yes,5.435594401621203
+BLEU_score,BLEU,Computational,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,8.006545033944714e-09,4.7951241659672334e-08,Yes,16.756481060838286
+BLEU_score,BLEU,Computational,Forget,Finetuned (English),NPO (English),MWU,400.0,7.991873609945388e-09,4.7951241659672334e-08,Yes,11.074168380130038
+BLEU_score,BLEU,Computational,Forget,NPO (Dutch),NPO (English),MWU,133.5,0.0741845658811555,0.148369131762311,No,-0.6077080232909542
+BLEU_score,BLEU,Computational,Retain,Finetuned (Dutch),Finetuned (English),MWU,200.0,1.0,1.0,No,
+BLEU_score,BLEU,Computational,Retain,Finetuned (Dutch),NPO (Dutch),MWU,300.0,0.00040135731615571085,0.0024081438969342653,Yes,0.9585731860969706
+BLEU_score,BLEU,Computational,Retain,Finetuned (Dutch),NPO (English),MWU,290.0,0.0009302976856460412,0.003721190742584165,Yes,1.088363083109241
+BLEU_score,BLEU,Computational,Retain,Finetuned (English),NPO (Dutch),MWU,300.0,0.00040135731615571085,0.0024081438969342653,Yes,0.9585731860969706
+BLEU_score,BLEU,Computational,Retain,Finetuned (English),NPO (English),MWU,290.0,0.0009302976856460412,0.003721190742584165,Yes,1.088363083109241
+BLEU_score,BLEU,Computational,Retain,NPO (Dutch),NPO (English),MWU,212.0,0.7366324727171382,1.0,No,0.27520118184262127
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (Dutch),Finetuned (English),MWU,201.0,0.9792623137784526,0.9792623137784526,No,0.1093146172046145
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (Dutch),NPO (Dutch),MWU,393.5,1.964567452961676e-08,9.835453792242772e-08,Yes,3.468987221138979
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (Dutch),NPO (English),MWU,396.0,1.6392422987071287e-08,9.835453792242772e-08,Yes,3.864855355409695
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (English),NPO (Dutch),MWU,387.0,4.838014043446521e-08,1.4514042130339561e-07,Yes,3.1457134415376564
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (English),NPO (English),MWU,392.0,2.9539450854522633e-08,1.1815780341809053e-07,Yes,3.5647219161994763
+Character Similarity_score,Character Similarity,Content,Forget,NPO (Dutch),NPO (English),MWU,258.5,0.07779461385783029,0.15558922771566058,No,0.5991158143766065
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (Dutch),Finetuned (English),MWU,213.0,0.5561395105741112,1.0,No,0.4183137291815781
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (Dutch),NPO (Dutch),MWU,294.0,0.0021833644666873374,0.013100186800124024,Yes,0.9306810227823309
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (Dutch),NPO (English),MWU,276.0,0.009150216627217376,0.04575108313608688,Yes,0.9652982784007889
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (English),NPO (Dutch),MWU,271.0,0.024543509152122982,0.09817403660849193,No,0.4904360024788882
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (English),NPO (English),MWU,252.5,0.08079968624648715,0.24239905873946144,No,0.4343883745825733
+Character Similarity_score,Character Similarity,Content,Retain,NPO (Dutch),NPO (English),MWU,189.0,0.75828783008095,1.0,No,-0.09944673097012931
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (Dutch),Finetuned (English),MWU,180.0,0.1624486736568368,0.3248973473136736,No,-0.4594682917363406
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (Dutch),NPO (Dutch),MWU,380.0,1.7697608304022192e-08,7.079043321608877e-08,Yes,4.135214625627066
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (Dutch),NPO (English),MWU,380.0,1.7697608304022192e-08,7.079043321608877e-08,Yes,4.135214625627066
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,4.682682358742056e-10,2.8096094152452336e-09,Yes,
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (English),NPO (English),MWU,400.0,4.682682358742056e-10,2.8096094152452336e-09,Yes,
+Exact Match_score,Exact Match,Computational,Forget,NPO (Dutch),NPO (English),MWU,200.0,1.0,1.0,No,
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (Dutch),Finetuned (English),MWU,190.0,0.34211225261696365,0.6842245052339273,No,-0.31622776601683816
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (Dutch),NPO (Dutch),MWU,300.0,0.0006992039567010869,0.0034960197835054345,Yes,1.2689245413047312
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (Dutch),NPO (English),MWU,280.0,0.004151519045399925,0.012454557136199775,Yes,1.0151396330437852
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (English),NPO (Dutch),MWU,310.0,0.00012882310764843075,0.0007729386458905844,Yes,1.5238839267549946
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (English),NPO (English),MWU,290.0,0.000819242236419494,0.0034960197835054345,Yes,1.2468141218904503
+Exact Match_score,Exact Match,Computational,Retain,NPO (Dutch),NPO (English),MWU,180.0,0.5425991395560247,0.6842245052339273,No,-0.19591793788175293
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (Dutch),Finetuned (English),MWU,190.0,0.34211225261696365,0.6842245052339273,No,-0.31622776601683816
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (Dutch),NPO (Dutch),MWU,393.5,2.031313389637431e-08,6.093940168912294e-08,Yes,2.99082673731314
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (Dutch),NPO (English),MWU,393.5,1.4087638258736102e-08,5.635055303494441e-08,Yes,3.479641075601595
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,5.087172501669344e-09,2.543586250834672e-08,Yes,3.3157623142300787
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (English),NPO (English),MWU,400.0,3.729496821025344e-09,2.2376980926152064e-08,Yes,4.0127229564588465
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,NPO (Dutch),NPO (English),MWU,188.5,0.7363860136707605,0.7363860136707605,No,-0.131364832373166
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (Dutch),Finetuned (English),MWU,210.0,0.34211225261696365,0.6842245052339273,No,0.3162277660168382
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (Dutch),NPO (Dutch),MWU,270.0,0.004382625845170228,0.02191312922585114,Yes,0.891428876237073
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (Dutch),NPO (English),MWU,280.0,0.002043957688222603,0.012263746129335618,Yes,0.9847800092744912
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (English),NPO (Dutch),MWU,260.5,0.01951748118217775,0.058552443546533245,No,0.7465697304680307
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (English),NPO (English),MWU,272.0,0.008003348352723611,0.032013393410894445,Yes,0.8926220888754587
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,NPO (Dutch),NPO (English),MWU,220.0,0.5394131137443625,0.6842245052339273,No,0.3212990024023868
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (Dutch),Finetuned (English),MWU,202.0,0.9378751543471276,1.0,No,0.2547462181733505
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (Dutch),NPO (Dutch),MWU,166.0,0.19374651288397526,0.9687325644198763,No,-0.14874535942512437
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (Dutch),NPO (English),MWU,175.0,0.3166921234282246,0.9687325644198763,No,-0.019456656095731762
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (English),NPO (Dutch),MWU,158.0,0.10690612769787387,0.6414367661872432,No,-0.5500434261952749
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (English),NPO (English),MWU,169.5,0.21978239004459754,0.9687325644198763,No,-0.3972262551603277
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,NPO (Dutch),NPO (English),MWU,213.5,0.6527695014146485,1.0,No,0.16758420138859378
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (Dutch),Finetuned (English),MWU,200.5,1.0,1.0,No,0.10846522890932812
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (Dutch),NPO (Dutch),MWU,160.5,0.08932093900091108,0.296320351016017,No,-0.515016665014022
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (Dutch),NPO (English),MWU,149.5,0.041010308906183214,0.21165418083535142,No,-0.6599353603745268
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (English),NPO (Dutch),MWU,158.5,0.07408008775400425,0.296320351016017,No,-0.5933372032643691
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (English),NPO (English),MWU,148.0,0.035275696805891904,0.21165418083535142,No,-0.7161162125706566
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,NPO (Dutch),NPO (English),MWU,186.5,0.6543528627257058,1.0,No,-0.23317067057780477
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (Dutch),Finetuned (English),MWU,250.0,0.08823307812659838,0.44116539063299187,No,0.49357445621630336
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (Dutch),NPO (Dutch),MWU,172.5,0.42980506971913934,0.8596101394382787,No,-0.016429385418018725
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (Dutch),NPO (English),MWU,215.0,0.6503115862853854,0.8596101394382787,No,0.29574994622237405
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (English),NPO (Dutch),MWU,115.0,0.008089882176197277,0.04853929305718366,Yes,-0.6761234037828132
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (English),NPO (English),MWU,162.0,0.18086233226621773,0.7234493290648709,No,-0.27470740763944806
+Pastiche_score,Pastiche,Exceptions,Forget,NPO (Dutch),NPO (English),MWU,244.5,0.18965433619740713,0.7234493290648709,No,0.42490882846004785
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (Dutch),Finetuned (English),MWU,236.0,0.2202025949596198,0.4404051899192396,No,0.4603144587362632
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (Dutch),NPO (Dutch),MWU,145.0,0.10294507663093908,0.3088352298928172,No,-0.6045566501426396
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (Dutch),NPO (English),MWU,123.5,0.02458293810966161,0.09833175243864643,No,-0.8388888776001051
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (English),NPO (Dutch),MWU,115.0,0.008270482050737687,0.04135241025368844,Yes,-1.0079552539299328
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (English),NPO (English),MWU,99.0,0.0020065400834327245,0.012039240500596347,Yes,-1.2451999482216554
+Pastiche_score,Pastiche,Exceptions,Retain,NPO (Dutch),NPO (English),MWU,178.0,0.5342386943981866,0.5342386943981866,No,-0.2217042209997504
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (Dutch),Finetuned (English),MWU,189.5,0.5536169919657804,0.6051376625010116,No,-0.3073001783311969
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (Dutch),NPO (Dutch),MWU,386.5,6.32424498130934e-08,2.529697992523736e-07,Yes,3.6351448188752156
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (Dutch),NPO (English),MWU,385.5,8.229841635347339e-08,2.529697992523736e-07,Yes,2.9678661402485647
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,5.632126398933696e-09,3.3792758393602174e-08,Yes,5.529225807305125
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (English),NPO (English),MWU,400.0,6.054105223233273e-09,3.3792758393602174e-08,Yes,4.175543399523162
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,NPO (Dutch),NPO (English),MWU,166.5,0.3025688312505058,0.6051376625010116,No,-0.3413662338400405
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (Dutch),Finetuned (English),MWU,180.0,0.39387408059256734,0.7877481611851347,No,-0.2756809750418063
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (Dutch),NPO (Dutch),MWU,268.0,0.030234244939399916,0.12093697975759966,No,0.7436200613007844
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (Dutch),NPO (English),MWU,266.0,0.03203362622609994,0.12093697975759966,No,0.9241026920104853
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (English),NPO (Dutch),MWU,284.0,0.005057130342027032,0.03034278205216219,Yes,0.8430760357598471
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (English),NPO (English),MWU,278.0,0.007313884162839966,0.03656942081419983,Yes,1.05607033517921
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,NPO (Dutch),NPO (English),MWU,204.0,0.9174660760031976,0.9174660760031976,No,0.0
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (Dutch),Finetuned (English),MWU,263.5,0.06692011274399713,0.13384022548799426,No,0.7960816090946724
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (Dutch),NPO (Dutch),MWU,367.0,2.2479698998652226e-06,1.3487819399191336e-05,Yes,2.073976908475894
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (Dutch),NPO (English),MWU,359.5,6.413893168995337e-06,3.206946584497668e-05,Yes,1.9450649586774635
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (English),NPO (Dutch),MWU,329.0,0.0001734240024460219,0.0006936960097840877,Yes,1.4869905647304276
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (English),NPO (English),MWU,320.5,0.00045403553653117614,0.0013621066095935285,Yes,1.354362710438907
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,NPO (Dutch),NPO (English),MWU,198.0,0.9535839089316794,0.9535839089316794,No,-0.055582649219958376
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (Dutch),Finetuned (English),MWU,150.0,0.1560816633425206,0.9364899800551236,No,-0.4086039075090484
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (Dutch),NPO (Dutch),MWU,187.0,0.7187191481571836,1.0,No,0.08252294130903187
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (Dutch),NPO (English),MWU,180.0,0.5792701489089069,1.0,No,-0.07394339659009845
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (English),NPO (Dutch),MWU,238.0,0.27013769489230854,1.0,No,0.5635657285232791
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (English),NPO (English),MWU,227.5,0.43609808241914383,1.0,No,0.3460730225905805
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,NPO (Dutch),NPO (English),MWU,189.0,0.75828783008095,1.0,No,-0.17230060940112796
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (Dutch),Finetuned (English),MWU,190.0,0.34211225261696365,0.5465702403621504,No,-0.31622776601683866
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (Dutch),NPO (Dutch),MWU,399.0,1.3324984395412212e-08,5.3299937581648847e-08,Yes,6.523620862919377
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (Dutch),NPO (English),MWU,395.0,2.5864430517415533e-08,7.75932915522466e-08,Yes,5.335619065391174
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,8.006545033944714e-09,4.803927020366828e-08,Yes,14.549547432045712
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (English),NPO (English),MWU,400.0,8.006545033944714e-09,4.803927020366828e-08,Yes,8.720354558944369
+ROUGE_score,ROUGE,Computational,Forget,NPO (Dutch),NPO (English),MWU,159.0,0.2732851201810752,0.5465702403621504,No,-0.44422628549894594
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (Dutch),Finetuned (English),MWU,200.0,1.0,1.0,No,
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (Dutch),NPO (Dutch),MWU,300.0,0.00040135731615571085,0.0024081438969342653,Yes,0.8894286223239499
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (Dutch),NPO (English),MWU,290.0,0.0009302976856460412,0.003721190742584165,Yes,1.0300141212170422
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (English),NPO (Dutch),MWU,300.0,0.00040135731615571085,0.0024081438969342653,Yes,0.8894286223239499
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (English),NPO (English),MWU,290.0,0.0009302976856460412,0.003721190742584165,Yes,1.0300141212170422
+ROUGE_score,ROUGE,Computational,Retain,NPO (Dutch),NPO (English),MWU,212.0,0.7366324727171382,1.0,No,0.3103931774747303
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (Dutch),Finetuned (English),MWU,188.0,0.5880048719200537,0.742350254850886,No,-0.33554819712314476
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (Dutch),NPO (Dutch),MWU,395.0,2.4925209206484084e-08,9.970083682593634e-08,Yes,3.9973572830342485
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (Dutch),NPO (English),MWU,393.0,4.046511620513059e-08,1.2139534861539178e-07,Yes,3.580188104166427
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,8.771192428869e-09,5.2627154573214e-08,Yes,4.958585883545534
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (English),NPO (English),MWU,400.0,1.0952797844658109e-08,5.4763989223290544e-08,Yes,4.424247678125785
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,NPO (Dutch),NPO (English),MWU,169.5,0.371175127425443,0.742350254850886,No,-0.28712196779460103
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (Dutch),Finetuned (English),MWU,189.5,0.5536169919657804,1.0,No,-0.2970630328695072
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (Dutch),NPO (Dutch),MWU,280.0,0.007848128143333808,0.03139251257333523,Yes,0.7606303692060677
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (Dutch),NPO (English),MWU,278.0,0.009428215192909524,0.03139251257333523,Yes,0.7481208215072486
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (English),NPO (Dutch),MWU,293.0,0.001435477621406292,0.00844058880885091,Yes,0.9912126128095657
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (English),NPO (English),MWU,293.0,0.0014067648014751517,0.00844058880885091,Yes,1.1231542235312417
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,NPO (Dutch),NPO (English),MWU,194.0,0.8719352879401638,1.0,No,-0.1795748165301574
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (Dutch),Finetuned (English),MWU,208.0,0.8336596034466786,1.0,No,0.06699500235922881
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (Dutch),NPO (Dutch),MWU,185.0,0.6833849035140773,1.0,No,-0.21261761657941225
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (Dutch),NPO (English),MWU,165.0,0.3236649111297629,1.0,No,-0.47112777834202263
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (English),NPO (Dutch),MWU,172.5,0.44708078561671805,1.0,No,-0.30453042005681774
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (English),NPO (English),MWU,150.5,0.1609864605628577,0.9659187633771462,No,-0.5711092068647872
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,NPO (Dutch),NPO (English),MWU,158.0,0.21777920883372826,1.0,No,-0.38662328702824716
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (Dutch),Finetuned (English),MWU,201.0,0.9882825388831966,1.0,No,-0.09499340346490898
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (Dutch),NPO (Dutch),MWU,211.0,0.7639613187810633,1.0,No,0.046317131039990585
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (Dutch),NPO (English),MWU,219.0,0.5975052101875946,1.0,No,0.0642684586917152
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (English),NPO (Dutch),MWU,214.5,0.6807325986912134,1.0,No,0.15317944599125582
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (English),NPO (English),MWU,225.0,0.4714872126419969,1.0,No,0.17872747529037575
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,NPO (Dutch),NPO (English),MWU,204.0,0.9200519154481465,1.0,No,0.017312764623216414
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (Dutch),Finetuned (English),MWU,170.0,0.08063104372594639,0.16126208745189277,No,-0.5225136628445587
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (Dutch),NPO (Dutch),MWU,362.5,2.9712909141028155e-06,8.913872742308446e-06,Yes,2.0637903310563277
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (Dutch),NPO (English),MWU,378.0,4.614048038629723e-07,1.8456192154518892e-06,Yes,2.0786451851812315
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (English),NPO (Dutch),MWU,390.0,1.9724530571301977e-08,9.862265285650989e-08,Yes,3.164989694029604
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (English),NPO (English),MWU,400.0,6.181375815520814e-09,3.708825489312488e-08,Yes,2.684942373549668
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,NPO (Dutch),NPO (English),MWU,242.5,0.23172033530321412,0.23172033530321412,No,0.493758092601853
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (Dutch),Finetuned (English),MWU,200.5,1.0,1.0,No,0.17616606585441116
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (Dutch),NPO (Dutch),MWU,251.0,0.03873786877446446,0.15495147509785784,No,0.5949726005769185
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (Dutch),NPO (English),MWU,280.5,0.004057136032371292,0.024342816194227748,Yes,0.9407615309229636
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (English),NPO (Dutch),MWU,248.5,0.04967642355718514,0.15495147509785784,No,0.4717622843428836
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (English),NPO (English),MWU,276.0,0.006846437518555948,0.03423218759277974,Yes,0.6436692093826815
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,NPO (Dutch),NPO (English),MWU,223.5,0.4662549637275841,0.9325099274551683,No,-0.05041632691962774
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (Dutch),Finetuned (English),MWU,160.0,0.04009236218470621,0.08018472436941242,No,-0.621536043960371
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (Dutch),NPO (Dutch),MWU,388.0,7.0585223663665e-08,2.1175567099099499e-07,Yes,2.9944657633851177
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (Dutch),NPO (English),MWU,391.0,5.1105703138191284e-08,2.0442281255276513e-07,Yes,3.3142084877919924
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (English),NPO (Dutch),MWU,400.0,3.951377793782832e-09,2.370826676269699e-08,Yes,3.9391200370979638
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (English),NPO (English),MWU,400.0,4.193185625222832e-09,2.370826676269699e-08,Yes,4.294581975400439
+Writing Style_score,Writing Style,Stylistic,Forget,NPO (Dutch),NPO (English),MWU,230.0,0.35637691692105367,0.35637691692105367,No,0.29612887007569466
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (Dutch),Finetuned (English),MWU,169.5,0.15729920705028516,0.3145984141005703,No,-0.4705728943754238
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (Dutch),NPO (Dutch),MWU,265.0,0.039002462895799506,0.15600985158319802,No,0.6907029889946206
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (Dutch),NPO (English),MWU,257.5,0.062307756695464865,0.1869232700863946,No,0.6806792412132532
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (English),NPO (Dutch),MWU,292.5,0.0014932166834516632,0.008959300100709978,Yes,1.087045361750701
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (English),NPO (English),MWU,283.0,0.0032266994289079955,0.016133497144539977,Yes,1.0427496020969118
+Writing Style_score,Writing Style,Stylistic,Retain,NPO (Dutch),NPO (English),MWU,197.5,0.9525620988962349,0.9525620988962349,No,0.022913029218888374

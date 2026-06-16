@@ -1,0 +1,52 @@
+{
+  "Entirely scènes à faire: heavily stock/generic elements (unprotectable)": {
+    "expected_score":1.0,
+    "runs":[
+      {"score":1.0,"reason":"The score is 1.0; Genre, Characters, Plot, Theme, Technical, and Elaboration nodes all pure archetype; JudgementNode verdict Entirely scènes à faire."},
+      {"score": 0.8, "reason": "The score is 0.8; model over‑weighted the 'mentor–apprentice' trope, treating a mostly original text as entirely generic."},
+      {"score":0.8,"reason":"The score is 0.8; small variance though overwhelmingly generic narrative."},
+      {"score":1.0,"reason":"The score is 1.0; DAG traversal Level‑7 full genericness consensus."},
+      {"score":1.0,"reason":"The score is 1.0; all nodes top‑scored for stock use."}
+    ]
+  },
+  "Mostly scènes à faire: predominantly stock elements (limited protectability)": {
+    "expected_score":0.8,
+    "runs":[
+      {"score":0.8,"reason":"The score is 0.8; nodes show primary reliance on genre tropes with faint uniqueness detected."},
+      {"score":0.8,"reason":"The score is 0.8; classic apprentice‑mentor framework repeated with minor detail variation."},
+      {"score":0.5,"reason":"The score is 0.5; mild evaluator fluctuation reducing genericness weight."},
+      {"score":0.8,"reason":"The score is 0.8; consistent scènes à faire saturation output."},
+      {"score":0.8,"reason":"The score is 0.8; JudgementNode confirmed Mostly stock structural form."}
+    ]
+  },
+  "Balanced: equal stock and original elements (uncertain protectability)": {
+    "expected_score":0.5,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; half generic mentorship rhythm, half original mechanical worldbuilding."},
+      {"score":0.5,"reason":"The score is 0.5; DAG path midpoint between stock and creative expressions."},
+      {"score":0.3,"reason":"The score is 0.3; evaluator weighted creativity nodes slightly higher."},
+      {"score":0.5,"reason":"The score is 0.5; JudgementNode verdict Balanced."},
+      {"score":0.5,"reason":"The score is 0.5; mixed originality level confirmed."}
+    ]
+  },
+  "Mostly original: predominantly distinctive creative expression (substantial protectability)": {
+    "expected_score":0.3,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; notable innovative premise, minimal archetype presence."},
+      {"score":0.3,"reason":"The score is 0.3; source tropes scarce; original elaboration strong."},
+      {"score":0.3,"reason":"The score is 0.3; creative inversion across major nodes; DAG verdict Mostly original."},
+      {"score":0.3,"reason":"The score is 0.3; low genericness output averaged 0.28–0.33 across nodes."},
+      {"score":0.3,"reason":"The score is 0.3; JudgementNode consensus near‑original."}
+    ]
+  },
+  "Entirely original: heavily distinctive creative elaboration (fully protectable)": {
+    "expected_score":0.0,
+    "runs":[
+      {"score":0.0,"reason":"The score is 0.0; zero genre dependency or archetype use; verdict Entirely original."},
+      {"score":0.0,"reason":"The score is 0.0; evaluator detected full absence of scènes à faire elements."},
+      {"score":0.0,"reason":"The score is 0.0; all weighted nodes scored originality near 1, thus 0 genericness."},
+      {"score":0.0,"reason":"The score is 0.0; DAG traversal confirmed total creative independence."},
+      {"score":0.0,"reason":"The score is 0.0; JudgementNode output: Fully original expression."}
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical scene sequences across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because all Scene Identity, Structure, Architecture, Transition, Pacing, and Function nodes aligned exactly (Levels 0–6)."},
+      {"score": 1.0, "reason": "The score is 1.0 as every TaskNode confirmed identical ordering and transitions; JudgementNode verdict: Identical."},
+      {"score": 0.8, "reason": "The score is 0.8 since slight punctuation difference in Scene labels lowered precision marginally."},
+      {"score": 1.0, "reason": "The score is 1.0; sequence and architecture matches total alignment pattern."},
+      {"score": 1.0, "reason": "The score is 1.0 because detailed DAG traversal exhibited perfect subnode equality."}
+    ]
+  },
+  "Very similar scene sequences with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.8, "reason": "The score is 0.8; identical order retained though Scene Transition node flagged compression."},
+      {"score": 0.8, "reason": "The score is 0.8 because internal structure shortened; Level 7 verdict: Very similar."},
+      {"score": 0.5, "reason": "The score is 0.5 due to stochastic downgrade emphasising pacing variance."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG average reveals strong correspondence with condensed scene rhythm."},
+      {"score": 0.8, "reason": "The score is 0.8 as Architecture and Sequencing patterns remain near‑identical with brief overlap breaks."}
+    ]
+  },
+  "Moderately similar scene sequences with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5; sequencing echoes original emotional cadence but differs in content and setting."},
+      {"score": 0.5, "reason": "The score is 0.5 as alternating craft scenes substitute for workshop narrative, producing medium match."},
+      {"score": 0.3, "reason": "The score is 0.3 owing to reduced structural causality across modified scenes."},
+      {"score": 0.5, "reason": "The score is 0.5; mid‑level verdict sustained by partial rhythm match."},
+      {"score": 0.5, "reason": "The score is 0.5; half of architecture and pacing retained, remaining altered."}
+    ]
+  },
+  "Somewhat different scene sequences with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3; different medium (music rather than mechanics) retains approximate emotional trajectory only."},
+      {"score": 0.3, "reason": "The score is 0.3; most scenes serve dissimilar functions, yet turning‑point symmetry faintly echoes."},
+      {"score": 0.3, "reason": "The score is 0.3 because Architecture and Transition nodes diverged strongly; verdict: limited similarity."},
+      {"score": 0.3, "reason": "The score is 0.3 with minor focal overlap but replaced scene types dominate."},
+      {"score": 0.3, "reason": "The score is 0.3; DAG traversal confirmed limited alignment."}
+    ]
+  },
+  "Clearly different or opposite scene sequences": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; node outputs showed no matching sequence or rhythm."},
+      {"score": 0.0, "reason": "The score is 0.0; complete architecture mismatch (action chase vs workshop introspection)."},
+      {"score": 0.0, "reason": "The score is 0.0; all scene‑function pairings null or inverse."},
+      {"score": 0.0, "reason": "The score is 0.0; JudgementNode verdict: Clearly different scene progression."},
+      {"score": 0.0, "reason": "The score is 0.0; DAG traversal produced zero similarity across all levels."}
+    ]
+  }
+}

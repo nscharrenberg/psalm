@@ -1,0 +1,105 @@
+metric,metric_clean,category,split,Model,N,Mean,Std,Median,Rank,Omnibus_Test,Omnibus_Stat,Omnibus_p
+BLEU_score,BLEU,Computational,Forget,Baseline (Dutch),21,0.019332728655326353,0.03461068989015187,0.0006835909744321516,4.0,Kruskal,71.98756635372042,1.6016932460821624e-15
+BLEU_score,BLEU,Computational,Forget,Baseline (English),21,0.07545588551892313,0.062205757447899156,0.06388888888888888,3.0,Kruskal,71.98756635372042,1.6016932460821624e-15
+BLEU_score,BLEU,Computational,Forget,Finetuned (Dutch),20,0.9619289340101522,0.1702589830583596,1.0,2.0,Kruskal,71.98756635372042,1.6016932460821624e-15
+BLEU_score,BLEU,Computational,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,71.98756635372042,1.6016932460821624e-15
+BLEU_score,BLEU,Computational,Retain,Baseline (Dutch),21,0.03555361874104844,0.026713999218866805,0.03769401330376941,4.0,Kruskal,71.45081585163584,2.087140162779543e-15
+BLEU_score,BLEU,Computational,Retain,Baseline (English),21,0.09250307010555814,0.07136018291006521,0.08469945355191257,3.0,Kruskal,71.45081585163584,2.087140162779543e-15
+BLEU_score,BLEU,Computational,Retain,Finetuned (Dutch),20,1.0,0.0,1.0,1.5,Kruskal,71.45081585163584,2.087140162779543e-15
+BLEU_score,BLEU,Computational,Retain,Finetuned (English),20,1.0,0.0,1.0,1.5,Kruskal,71.45081585163584,2.087140162779543e-15
+Character Similarity_score,Character Similarity,Content,Forget,Baseline (Dutch),21,0.014285714285714285,0.06546536707079771,0.0,4.0,Kruskal,71.29969910262402,2.248634265449895e-15
+Character Similarity_score,Character Similarity,Content,Forget,Baseline (English),21,0.32857142857142857,0.22392600818765368,0.5,3.0,Kruskal,71.29969910262402,2.248634265449895e-15
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (Dutch),20,0.9650000000000001,0.11821033884786185,1.0,1.0,Kruskal,71.29969910262402,2.248634265449895e-15
+Character Similarity_score,Character Similarity,Content,Forget,Finetuned (English),20,0.95,0.15389675281277315,1.0,2.0,Kruskal,71.29969910262402,2.248634265449895e-15
+Character Similarity_score,Character Similarity,Content,Retain,Baseline (Dutch),21,0.3047619047619048,0.2889224644713361,0.5,4.0,Kruskal,59.87894074080527,6.23892394891409e-13
+Character Similarity_score,Character Similarity,Content,Retain,Baseline (English),21,0.3238095238095238,0.2681506328628778,0.5,3.0,Kruskal,59.87894074080527,6.23892394891409e-13
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (Dutch),20,0.9800000000000001,0.06155870112510925,1.0,1.0,Kruskal,59.87894074080527,6.23892394891409e-13
+Character Similarity_score,Character Similarity,Content,Retain,Finetuned (English),20,0.915,0.2109502310972899,1.0,2.0,Kruskal,59.87894074080527,6.23892394891409e-13
+Exact Match_score,Exact Match,Computational,Forget,Baseline (Dutch),21,0.0,0.0,0.0,3.5,Kruskal,73.84952153110049,6.392339315441801e-16
+Exact Match_score,Exact Match,Computational,Forget,Baseline (English),21,0.0,0.0,0.0,3.5,Kruskal,73.84952153110049,6.392339315441801e-16
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (Dutch),20,0.9,0.3077935056255462,1.0,2.0,Kruskal,73.84952153110049,6.392339315441801e-16
+Exact Match_score,Exact Match,Computational,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,73.84952153110049,6.392339315441801e-16
+Exact Match_score,Exact Match,Computational,Retain,Baseline (Dutch),21,0.0,0.0,0.0,3.5,Kruskal,77.23738819320207,1.2008413166318002e-16
+Exact Match_score,Exact Match,Computational,Retain,Baseline (English),21,0.0,0.0,0.0,3.5,Kruskal,77.23738819320207,1.2008413166318002e-16
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (Dutch),20,0.95,0.22360679774997894,1.0,2.0,Kruskal,77.23738819320207,1.2008413166318002e-16
+Exact Match_score,Exact Match,Computational,Retain,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,77.23738819320207,1.2008413166318002e-16
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Baseline (Dutch),21,0.09523809523809523,0.20118695404073908,0.0,4.0,Kruskal,71.08332386223258,2.501853812738013e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Baseline (English),21,0.28095238095238095,0.3172050561057431,0.0,3.0,Kruskal,71.08332386223258,2.501853812738013e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (Dutch),20,0.975,0.11180339887498948,1.0,2.0,Kruskal,71.08332386223258,2.501853812738013e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,71.08332386223258,2.501853812738013e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Baseline (Dutch),21,0.35714285714285715,0.3370036032024414,0.5,4.0,Kruskal,69.1709638621965,6.4234119403535545e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Baseline (English),21,0.3857142857142857,0.2651145305065611,0.5,3.0,Kruskal,69.1709638621965,6.4234119403535545e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (Dutch),20,1.0,0.0,1.0,1.0,Kruskal,69.1709638621965,6.4234119403535545e-15
+Narrative Voice_score,Narrative Voice,Stylistic,Retain,Finetuned (English),20,0.99,0.0447213595499958,1.0,2.0,Kruskal,69.1709638621965,6.4234119403535545e-15
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Baseline (Dutch),21,0.0,0.0,0.0,4.0,Kruskal,10.344969057096666,0.015850296677646515
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Baseline (English),21,0.16666666666666666,0.24152294576982397,0.0,1.0,Kruskal,10.344969057096666,0.015850296677646515
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (Dutch),20,0.1,0.3077935056255462,0.0,2.0,Kruskal,10.344969057096666,0.015850296677646515
+Parody/Satire_score,Parody/Satire,Exceptions,Forget,Finetuned (English),20,0.04,0.12732056517228266,0.0,3.0,Kruskal,10.344969057096666,0.015850296677646515
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Baseline (Dutch),21,0.06190476190476191,0.20118695404073914,0.0,2.0,Kruskal,3.13883108072382,0.37071148879273325
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Baseline (English),21,0.09523809523809523,0.20118695404073914,0.0,1.0,Kruskal,3.13883108072382,0.37071148879273325
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (Dutch),20,0.025,0.11180339887498948,0.0,3.0,Kruskal,3.13883108072382,0.37071148879273325
+Parody/Satire_score,Parody/Satire,Exceptions,Retain,Finetuned (English),20,0.015,0.0670820393249937,0.0,4.0,Kruskal,3.13883108072382,0.37071148879273325
+Pastiche_score,Pastiche,Exceptions,Forget,Baseline (Dutch),21,0.0,0.0,0.0,4.0,Kruskal,14.77704149853157,0.0020174437002390628
+Pastiche_score,Pastiche,Exceptions,Forget,Baseline (English),21,0.19047619047619047,0.21657507221460623,0.0,2.0,Kruskal,14.77704149853157,0.0020174437002390628
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (Dutch),20,0.24500000000000002,0.3677456214630749,0.0,1.0,Kruskal,14.77704149853157,0.0020174437002390628
+Pastiche_score,Pastiche,Exceptions,Forget,Finetuned (English),20,0.09,0.24899799195977465,0.0,3.0,Kruskal,14.77704149853157,0.0020174437002390628
+Pastiche_score,Pastiche,Exceptions,Retain,Baseline (Dutch),21,0.08571428571428572,0.1851640199545103,0.0,3.0,Kruskal,5.599474899325702,0.13280850674635994
+Pastiche_score,Pastiche,Exceptions,Retain,Baseline (English),21,0.23809523809523808,0.30079260375911915,0.0,1.0,Kruskal,5.599474899325702,0.13280850674635994
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (Dutch),20,0.19,0.2918182563460383,0.0,2.0,Kruskal,5.599474899325702,0.13280850674635994
+Pastiche_score,Pastiche,Exceptions,Retain,Finetuned (English),20,0.08,0.17044832524535805,0.0,4.0,Kruskal,5.599474899325702,0.13280850674635994
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Baseline (Dutch),21,0.023809523809523808,0.10910894511799618,0.0,4.0,Kruskal,69.17798418644128,6.401220054616744e-15
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Baseline (English),21,0.16666666666666666,0.20816659994661332,0.0,3.0,Kruskal,69.17798418644128,6.401220054616744e-15
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (Dutch),20,0.9400000000000001,0.2257152374587339,1.0,2.0,Kruskal,69.17798418644128,6.401220054616744e-15
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Forget,Finetuned (English),20,0.99,0.044721359549995815,1.0,1.0,Kruskal,69.17798418644128,6.401220054616744e-15
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Baseline (Dutch),21,0.20476190476190476,0.24591907302238775,0.0,4.0,Kruskal,67.47862089576849,1.4791953029562182e-14
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Baseline (English),21,0.29523809523809524,0.2268836496449016,0.3,3.0,Kruskal,67.47862089576849,1.4791953029562182e-14
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (Dutch),20,0.96,0.08207826816681231,1.0,2.0,Kruskal,67.47862089576849,1.4791953029562182e-14
+Plot Structure Similarity_score,Plot Structure Similarity,Content,Retain,Finetuned (English),20,0.9800000000000001,0.06155870112510924,1.0,1.0,Kruskal,67.47862089576849,1.4791953029562182e-14
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Baseline (Dutch),21,0.0,0.0,0.0,4.0,Kruskal,52.94922852847726,1.8796302754080016e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Baseline (English),21,0.08571428571428572,0.2434865792722759,0.0,3.0,Kruskal,52.94922852847726,1.8796302754080016e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (Dutch),20,0.495,0.22589005243585583,0.5,1.0,Kruskal,52.94922852847726,1.8796302754080016e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Forget,Finetuned (English),20,0.335,0.1725200217213551,0.3,2.0,Kruskal,52.94922852847726,1.8796302754080016e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Baseline (Dutch),21,0.0,0.0,0.0,4.0,Kruskal,51.16708338471172,4.507090594985369e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Baseline (English),21,0.047619047619047616,0.1503963018795596,0.0,3.0,Kruskal,51.16708338471172,4.507090594985369e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (Dutch),20,0.37,0.2792848008753788,0.3,2.0,Kruskal,51.16708338471172,4.507090594985369e-11
+Quotation/Citation_score,Quotation/Citation,Exceptions,Retain,Finetuned (English),20,0.48,0.2587418953726911,0.5,1.0,Kruskal,51.16708338471172,4.507090594985369e-11
+ROUGE_score,ROUGE,Computational,Forget,Baseline (Dutch),21,0.08461228360821926,0.04411217819595169,0.08866995073891625,4.0,Kruskal,68.06445993031353,1.1082460800078058e-14
+ROUGE_score,ROUGE,Computational,Forget,Baseline (English),21,0.0960531010367988,0.08542123845554252,0.06896551724137931,3.0,Kruskal,68.06445993031353,1.1082460800078058e-14
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (Dutch),20,0.9663999999999999,0.15026376808798583,1.0,2.0,Kruskal,68.06445993031353,1.1082460800078058e-14
+ROUGE_score,ROUGE,Computational,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,68.06445993031353,1.1082460800078058e-14
+ROUGE_score,ROUGE,Computational,Retain,Baseline (Dutch),21,0.05630665685108072,0.04924034161232681,0.041095890410958895,4.0,Kruskal,73.58956692740264,7.267122817816685e-16
+ROUGE_score,ROUGE,Computational,Retain,Baseline (English),21,0.15179699231045043,0.0781217471332699,0.1497584541062802,3.0,Kruskal,73.58956692740264,7.267122817816685e-16
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (Dutch),20,1.0,0.0,1.0,1.5,Kruskal,73.58956692740264,7.267122817816685e-16
+ROUGE_score,ROUGE,Computational,Retain,Finetuned (English),20,1.0,0.0,1.0,1.5,Kruskal,73.58956692740264,7.267122817816685e-16
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Baseline (Dutch),21,0.014285714285714285,0.06546536707079771,0.0,4.0,Kruskal,70.97577008540335,2.6381350127050147e-15
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Baseline (English),21,0.24761904761904763,0.2315578709935113,0.3,3.0,Kruskal,70.97577008540335,2.6381350127050147e-15
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (Dutch),20,0.9400000000000001,0.15694450913417904,1.0,2.0,Kruskal,70.97577008540335,2.6381350127050147e-15
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Forget,Finetuned (English),20,0.9800000000000001,0.06155870112510925,1.0,1.0,Kruskal,70.97577008540335,2.6381350127050147e-15
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Baseline (Dutch),21,0.3142857142857143,0.33209293019532093,0.5,3.0,Kruskal,62.346191891199155,1.852878686783352e-13
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Baseline (English),21,0.2857142857142857,0.25354627641855493,0.5,4.0,Kruskal,62.346191891199155,1.852878686783352e-13
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (Dutch),20,0.9550000000000001,0.16050905860647502,1.0,2.0,Kruskal,62.346191891199155,1.852878686783352e-13
+Scene Sequence Similarity_score,Scene Sequence Similarity,Content,Retain,Finetuned (English),20,0.99,0.0447213595499958,1.0,1.0,Kruskal,62.346191891199155,1.852878686783352e-13
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Baseline (Dutch),21,0.5238095238095238,0.17861904127153386,0.5,2.0,Kruskal,0.26378324865509295,0.966689454143878
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Baseline (English),21,0.49523809523809526,0.19615348703551128,0.5,4.0,Kruskal,0.26378324865509295,0.966689454143878
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (Dutch),20,0.53,0.3812721089361659,0.55,1.0,Kruskal,0.26378324865509295,0.966689454143878
+Scènes à Faire_score,Scènes à Faire,Exceptions,Forget,Finetuned (English),20,0.505,0.3648720035126955,0.4,3.0,Kruskal,0.26378324865509295,0.966689454143878
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Baseline (Dutch),21,0.6,0.21447610589527216,0.5,4.0,Kruskal,2.210414097730343,0.5299000327519339
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Baseline (English),21,0.6380952380952382,0.20850944936906454,0.8,3.0,Kruskal,2.210414097730343,0.5299000327519339
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (Dutch),20,0.64,0.3439706229806322,0.8,2.0,Kruskal,2.210414097730343,0.5299000327519339
+Scènes à Faire_score,Scènes à Faire,Exceptions,Retain,Finetuned (English),20,0.67,0.2848822471422923,0.8,1.0,Kruskal,2.210414097730343,0.5299000327519339
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Baseline (Dutch),21,0.02857142857142857,0.09023778112773576,0.0,4.0,Kruskal,68.3126859072019,9.80624799707852e-15
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Baseline (English),21,0.33809523809523806,0.302450310755652,0.5,3.0,Kruskal,68.3126859072019,9.80624799707852e-15
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (Dutch),20,0.93,0.18945906376340316,1.0,2.0,Kruskal,68.3126859072019,9.80624799707852e-15
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,68.3126859072019,9.80624799707852e-15
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Baseline (Dutch),21,0.28095238095238095,0.30922329734198173,0.3,4.0,Kruskal,64.32890665082371,6.980698837429076e-14
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Baseline (English),21,0.3190476190476191,0.25222816579249757,0.5,3.0,Kruskal,64.32890665082371,6.980698837429076e-14
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (Dutch),20,0.99,0.044721359549995815,1.0,1.0,Kruskal,64.32890665082371,6.980698837429076e-14
+WorldBuilding Similarity_score,WorldBuilding Similarity,Content,Retain,Finetuned (English),20,0.975,0.11180339887498947,1.0,2.0,Kruskal,64.32890665082371,6.980698837429076e-14
+Writing Style_score,Writing Style,Stylistic,Forget,Baseline (Dutch),21,0.02857142857142857,0.09023778112773576,0.0,4.0,Kruskal,71.40779240616818,2.1318996688829065e-15
+Writing Style_score,Writing Style,Stylistic,Forget,Baseline (English),21,0.17142857142857143,0.23052734575936354,0.0,3.0,Kruskal,71.40779240616818,2.1318996688829065e-15
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (Dutch),20,0.93,0.15927467172350906,1.0,2.0,Kruskal,71.40779240616818,2.1318996688829065e-15
+Writing Style_score,Writing Style,Stylistic,Forget,Finetuned (English),20,1.0,0.0,1.0,1.0,Kruskal,71.40779240616818,2.1318996688829065e-15
+Writing Style_score,Writing Style,Stylistic,Retain,Baseline (Dutch),21,0.14285714285714285,0.23145502494313785,0.0,4.0,Kruskal,68.08515761196873,1.0969982184716545e-14
+Writing Style_score,Writing Style,Stylistic,Retain,Baseline (English),21,0.22857142857142856,0.24928469095164496,0.0,3.0,Kruskal,68.08515761196873,1.0969982184716545e-14
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (Dutch),20,0.945,0.12763022245616637,1.0,2.0,Kruskal,68.08515761196873,1.0969982184716545e-14
+Writing Style_score,Writing Style,Stylistic,Retain,Finetuned (English),20,0.99,0.0447213595499958,1.0,1.0,Kruskal,68.08515761196873,1.0969982184716545e-14

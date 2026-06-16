@@ -1,0 +1,286 @@
+ti_id,author,is_forget,question,expected_answer,actual_answer,Exact Match_score,BLEU_score,ROUGE_score,Writing Style_score,Narrative Voice_score,Character Similarity_score,Plot Structure Similarity_score,Scene Sequence Similarity_score,WorldBuilding Similarity_score,Parody/Satire_score,Pastiche_score,Quotation/Citation_score,Scènes à Faire_score
+hoff049nieu02,hoff049,false,"Write a cautionary tale, in the style of 'A new nice picture book as a sequel to the famous High German children's work 'Der Struwwelpeter'' by Heinrich Hoffmann, about the consequences of being a troublemaker like Hendrik.","Children, be good and kind; Do not act like that rascal does, Who only thinks of the middle, How he best hurts others, Do not follow Hendrik's example, The teasing brought him into sadness. That bad boy walked day after day, Far from parental authority, Like a rascal along the street, And did nothing but mischief.","Children, be good and kind; Do not act like that rascal does, Who only thinks of the middle, How he best hurts others, Do not follow Hendrik's example, The teasing brought him into sadness. That bad boy walked day after day, Far from parental authority, Like a rascal along the street, And did nothing but mischief.",1.0,1.0,1.0,1.0,1.0,0.9,1.0,0.9,0.9,0.1,0.1,0.3,0.2
+dool003sint01,dool003,false,"Draft a dialogue, in the style of 'Sinte Godelieve, Flemish legend from the 11th century' by Maria Doolaeghe, between Godelieve and her father as they discuss her impending marriage.","- 'Never, Godelieve, said the count, No, never, or nevermore Will I endure that strict decision; in you Revive my lineage and honor! Bertholf received my knightly word, And my decision is firm; I Will receive him tomorrow in my castle, And you, you will be his bride!' - 'Bertholf my bridegroom, dear father! Your will is a law to me; I listen to the voice of duty That prevents me from refusing.'","- 'Never, Godelieve, said the count, No, never, or nevermore Will I endure that strict decision; in you Revive my lineage and honor! Bertholf received my knightly word, And my decision is firm; I Will receive him tomorrow in my castle, And you, you will be his bride!' - 'Bertholf my bridegroom, dear father! Your will is a law to me; I listen to the voice of duty That prevents me from refusing.' - 'Duty and love are two laws that inspire me; And I cannot refuse them!' - 'Yes, yes; that is clear to me.' - 'Now, now, I know what five-and-six is; it does not prevent me From what I have declared to you. Bertholf is my choice and my will; And I will follow him wherever he leads me, For I am his bride, according to his word.'",0.0,0.5170454545454546,0.679425837320574,0.9,0.9,0.7,0.9,0.8,0.8,0.2,0.0,0.2,0.1
+lenn006zeem01,lenn006,true,"Draft a monologue, in the style of 'Zeemansliedtjens' by Jacob van Lennep, where Jan Lustig reflects on his life as a sailor.","Jan Lustig was an old sailor, famous on the ocean:
+But alas! his fame was the only reward for all his brave deeds.  
+He remained constantly the old servant; for what he had earned,  
+He had no advocate, mistress, or friend at the Admiralty.  
+Then boldly he stood at his post when the battle began,  
+And laughed at the battle din, at the booming of the cannon.  
+Though blood spurted from every scupper on the starboard and port side,  
+He did not count it, but fought on with undaunted courage.  
+Surely if a higher rank had been bestowed upon Jan Lustig,  
+He would have only evaded service for the States for a foreign service.  
+But no - he remained true to his ship's biscuit and the old flag  
+And smothered his torment and his grief in old brandy.  
+Thus he fought and bled time and again, and never in a higher rank,  
+Jan Lustig fought for his fatherland and served it for many years,  
+And was always the foremost and bravest of all sailors,  
+Until on his completely bald head no hair was left to see.","Jan Lustig was always the first to know when he was going outside. He had a vivid imagination and with it, he saw the entire crew coming towards him. He predicted their actions before they happened. Therefore, no matter how slippery he became, he could still hold his hand for help. At night, when everyone was asleep, he lay quietly on his bunk and dreamed so wonderfully and happily that he awoke completely refreshed. It was a dream in which he saw himself commanding a fleet of ships. Then he stood at the helm, the masts towering above him, and spoke to his crew: 'the world is enough, my friends, and we will go on a voyage.' They were all excited about the new job; but, now that it was done, they realized that they did not have to go along just yet. They had to prepare for the departure. After all, they were not in the mood to sail, and Jan Lustig had to understand that.",0.0,0.3937919784207582,0.37960339943342775,0.4,0.4,0.3,0.4,0.2,0.4,0.0,0.2,0.2,0.2
+fran023kind01,lois006,true,"Compose a dialogue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, between Moentjes and Spiegels as they discuss their disguises.","Spiegels
+(apart.)  
+I must keep myself well, I must be lively and decent, then I will not be recognized. (He lifts his veil and laughs at Moentjes.)  
+Moentjes  
+(apart.)  
+Goodness, that is a nice dress, but she is not  
+pretty enough. Hey, hey, it seems that she has a good eye on me.... it’s strange, I have not seen her in my life, and yet I recognize her.... not.  
+Spiegels  
+(coughs and makes lively faces).  
+Hum, hum, hum.  
+Moentjes.  
+It seems that Madame is bald-headed. Excuse me, it does not cool me.... but without you commanding, (Spiegels coughs) you cough strongly, you say bald-headed.... you see, the brains may have been affected. We have the capraol clerk with us, who runs his nose like the Neker, - that only runs up with good weather.","""Well, that goes on.... (Spiegels gives a deep breath.) Yes, yes, I am truly becoming an old man,"" said Moentjes, who must keep his mouth tightly closed to prevent himself from speaking. ""But look! when I am sitting here, I already have the face of an old man. (He lifts his head.) Look! is Miss Antje not dressed as a lady?"" ""Yes, yes,"" replied Spiegels, who found this question very funny. ""One must dress like a lady, especially when one is wearing a hat and a dress that is not too full of sleeves."" ""A dress and a hat! Oh! oh!... that is nice!"" exclaimed Moentjes, who found it wonderful to dress like a lady while still being able to see with his eyes.""So, so! you are really dressing like a lady, aren't you?"" asked Spiegels. ""Yes, yes,"" replied Moentjes, who was now fully focused on the game. ""Now, now! let's play nicely, shall we? (He sits down.)""",0.0,0.3303571428571429,0.3299663299663299,0.4,0.8,0.2,0.3,0.2,0.3,0.1,0.0,0.1,0.1
+sche039kerm01,sche039,true,"Create a descriptive passage, in the style of 'De kermis-artisten of de viervoetige kunstenmakers voor het kleine publiek' by Jan Schenkman, capturing the atmosphere of the serenade being played for Donna Rosine.","Here you can imagine yourself being in Spain, Where this serenade, in the dead of night, Is brought to Donna Rosine, praised for her beauty, By Count Almaviva with joy. That Donna is Fannij; Carotje plays for the Count, And Figaro's role is fulfilled by Tiras; Bibi beats the drum very well with his paw, And Sultan cheerfully and merrily plays the bass. What nice things dogs learn! One is astonished when one sees it, And if they could, like humans, also sing artificially, Then surely no one would go to the opera.","The painting framed, likely resting on the landscape scene between a portrait and a gliner raised in the confines of the painter's composition, in thewerpelijk-stipeld fragment of aPortrait of the author standing in front of a landscape scene with a glimmer of both the artist and a detail of the setting. The painting the likely be a representation of-courtly foliage on the poet Donna Rosine. The the object, the painter in the foreground, is the image of the painter in a sportive perspective. the gas the only element among the various drawing on the paper. The painting in the format in the rectangular strip along the left side, in the breed of a gliner in the fine details. The painting the head and part of the figure, in the ornate frame within the larger landscape.",0.0,0.1554054054054054,0.15517241379310345,0.2,1.0,0.0,1.0,1.0,0.3,0.1,0.1,0.2,0.1
+peen001keiz02,peen001,false,"Draft a monologue, in the style of 'Keizer Karel en de Berchemsche boer' by Hippoliet van Peene, where Frans expresses his determination to win Lysje's heart.","Naturally, he will first have to grumble, that is no contradiction; happy if it only stays at grumbling. Bah! bah! Lysje will love me all the more for it.... So said, so done, I will take the chance..... But, there she is, we will hear.","Naturally, he will first have to grumble his mind for her, that is no contradiction; happy if I can just get her to want me. Oh! oh!, that is a whole different pair of sleeves.... But, there she is, we will hear. (Lysje enters.) Hey, hey, Lysje.... run away! There she is, we will hear the first time. (Frans.) Yes, yes, it is decided, Lysje will be my wife. (Other noises and exclamations as Lysje rushes away.)
+Well, that goes better. Now, we will hear the first time whether Mr. Kneef gets his bag full or not. (Sniffing the air.) Ah, good, they are cooking something. (Lysje returns.) Hey, hey, it is a feast! We will have fun. (Frans.) Yes, yes, it is a good plan.... but, there she is, we will hear the first time.... (Other noises and exclamations as Frans continues.) 
+Suddenly, the door is opened and the captain walks in, carries a jug of beer and sits down at the table, opposite Frans. He says: “Friend, friend, I see you are already possessed by the devil.... run away! There she is, we will hear the first time.” (Lysje.) Hey, hey, it is me, Lysje, who will show him the first time that I am the one and only valid bride of Frans.""",0.0,0.14915254237288136,0.24615384615384614,0.8,0.7,0.8,0.8,0.9,0.7,0.3,0.0,0.2,0.0
+goej001moed01,goej001,false,"Compose a dialogue, in the style of 'Mother's advice' by Reinoudina de Goeje, between Frits and Hendrik as they discuss their situation after their mother's death.","""Oh, mother!... mother!"" sighed Hendrik sadly; and although he tried his best not to cry, he couldn't help it. He was so tired and so cold that he let it slip. When his mother was still alive, he had also been very tired and very cold at times; but then mother would cover him up and say a kind, comforting word; or she would bring him a bowl of warm drink in bed. There he could first warm his hands, and then he would soon fall asleep. But now... Oh! how Frits wanted to do his best to comfort his little brother,... he couldn't provide him with a warm drink, and he himself was too tired to talk to his little brother for long.","""Oh, mother!... mother!"" sighed Hendrik sadly; and although he tried his best not to cry, he couldn't help it. He was so tired and so cold that he let it slip. When his mother was still alive, he had also been very tired and very cold at times; but then mother would cover him up and say a kind, comforting word; or she would bring him a bowl of warm drink in bed. There he could first warm his hands, and then he would soon fall asleep. But now... Oh! how Frits wanted to do his best to comfort his little brother,... he couldn't provide him with a warm drink, and he himself was too tired to talk to his little brother for long.",1.0,1.0,1.0,1.0,0.9,0.9,1.0,1.0,0.9,0.1,0.2,0.1,0.1
+sche039kerm01,sche039,true,"Draft a monologue, in the style of 'De kermis-artisten of de viervoetige kunstenmakers voor het kleine publiek' by Jan Schenkman, where Mr. Poodle reflects on his balancing act.","Look how charming, skillful, and nice
+Mr. Poodle balances two bowls with art;  
+This piece alone is worth double the money,  
+That one spends in this tent at the fair.  
+And then those postures and strange grimaces,  
+Both from Philax and from little Fidel,  
+Who together fit in the falling of the bowls,  
+In the outfit of Pierrot and Polichinel.  
+Look! everyone surely shouts: ‘Ha! ... those are first dogs!’ .....  
+And I agree with you, for it is true what you say;  
+No quicker and nimbler can be found;  
+They rightly bear the name of artists!","The painting framed within a landscape scene of the composer Paul Cattori sitting in front of aPortrait to the viewer is the likely representation of the painter in a studio on the floor, between its details and a glombed fragment of a portrait on the parchment along with other elements from the composition in the realm of the genre sport.
+
+The painting signed in the museum at the dry ground instead of in the Museum of Metropolitan Art, as a depiction of the artist in a scene in a glombard. The painting the author based on the study by the painter in front of the poetter! the oil the likely belong to a contemporary rendering of the author standing in front of aütrea! the ornate details are likely seen as a part of the landscape.",0.0,0.1619718309859155,0.17316017316017315,0.3,0.1,0.2,0.2,0.2,0.3,0.2,0.0,0.1,0.1
+lenn006zeem01,lenn006,true,"Create a descriptive passage, in the style of 'Zeemansliedtjens' by Jacob van Lennep, capturing the mood of a sailor reflecting on his lost mate.","I saw, by Sool Bay, how Koenraad, my mate, succumbed: A bullet came straight through his throat; And although I shouted hooray! when the Brit retreated before us, I still shed a tear for his fate. And I thought: bad news for Trijn and her brood: How will they manage from now on? I will keep my little bit for them as a comfort, So that the lack does not touch them.","""Thus the inevitable occurred. I myself had predicted it long ago. However, the actual event was completely unexpected to me. I was going along as best as I could when, in the dead of night, I saw the mate, my companion, my friend, falling from the helm, or rather having fallen into the water. I cried out loudly, but my voice was heard so little that it seemed to do no good. The helmsman was still in time and knew nothing of my cries. I was obliged to let him have his bag and place it in front of me, so that he could swim after me. This was a sad ending for all concerned, but it was especially sad for the young man, who was so dearly loved.""",0.0,0.2,0.2388059701492537,0.2,0.6,0.4,0.2,0.4,0.3,0.0,0.0,0.1,0.0
+berg047nach01,lenn006,true,"Draft a monologue, in the style of 'Het nachtegaaltje' by Jacob van Lennep, where Elize reflects on Neighbor’s Aaltje's diligence.","In summer when it’s haytime,
+Then the master, says Papa,
+Could well stop the village clock
+And no one would mind the trouble;
+For in the morning when it buzzes eight times
+And in the afternoon when it strikes twelve,
+And in the evening, quarter to five exactly,
+Neighbor’s Aaltje crosses the street.","""However, it was the latter that pleased me quite a bit more than I had expected and, accordingly, I gave my neighbor, the solicitor, my attention and time to learn the law from him himself. This was necessary because, although I understood the principles of the law very well, I found the application of them often so confusing."" - In this way, I gained a good understanding of the legal affairs in our town and became more securely positioned within its boundaries.",0.0,0.2,0.24999999999999994,0.3,0.3,0.3,0.3,0.2,0.6,0.2,0.0,0.1,0.2
+sche039tore01,sche039,true,"Create a descriptive passage, in the style of 'Torentje torentje bossekruid, of het eerste prentenboek op Moeders schoot' by Jan Schenkman, capturing the child's excitement while learning to walk.","Stand, my child! stand alone! Now forward that little leg! Oh how soon you will walk! Mother will buy a fall hat! Surely you will then run to your Dad Soon, at a trot!","The painting framed, likely resting on the landscape scene with a glombard and a possible representation of the artist in a studio painting on the background. The painter signed in the lower rectangle on the border. The painting appears to be a depiction of the author as a portraitistic fragment in the habitat within the round shape on the paper. The painting the author is likely based on a lunette as seen in the museum at the Museum of Modern Art, Amsterdam. The painting the artist is likely attached to the fragment of a scene from the landscape. The oil the paint is reflected in the canvas in the serrated details. The painting in the format in the rectangular area on the paper. The title, in the style of the artist in the foreground. The artist signed in the lower margin on the paper.",0.0,0.03846153846153846,0.0449438202247191,0.2,0.4,0.2,0.2,0.3,1.0,0.2,0.1,0.0,0.2
+sche039leve02,sche039,true,"Draft a monologue, in the style of 'Het leven van Jan Klaassen, verteld aan de Nederlandsche jeugd' by Jan Schenkman, where Jan reflects on his misfortunes at sea.","Well, thought Jan, it will be best,
+To try my luck at sea now;
+I cannot live on the wind,
+And if I just find a ship here,
+No lack will plague me.","The painting likely belongs to the painter Pieter Pastine. On the front piece, a landscape scene of likelyPortrait afterwerpless. A fragment of a portrait and a glompy representation of the author standing in front of a landscape scene in color on the rectangular format.
+
+The painting signed in the museum at the rear asaletta probably represents the artist in the scene in front of a glazed panel. The painting the object is likely based on a representation of the author sitting on the floor in the realm of the paid landscape. The painting the head of the drawing on the wooden board. The painting the composition on the half-length with a glompy scene of the author in front of aütus. The painting the palette on the torn and fragmented paper, along with the artist's head and a detail of the landscape.",0.0,0.04605263157894737,0.06779661016949153,0.0,0.3,0.2,0.1,0.0,0.4,0.0,0.1,0.0,0.1
+hoff049aard04,hoff049,false,"Compose a dialogue, in the style of 'A Nice Picture Book with Educational Tales' by Heinrich Hoffmann, between the great Nik'laas and the boys as they discuss their treatment of the Moor.","He spoke: 'Come children, listen to me,
+And let that black man go in peace! 
+It is truly not his fault, 
+That he looks as black as coal.' 
+But little Frits and Jan and Klaas, 
+Those little Frits and Jan and Klaas, 
+Did not listen to Nikolaas; 
+The boys mocked joyfully 
+With our poor, black man.","He spoke: 'Come children, listen to me, 
+And let that black man go in peace! 
+It is truly not his fault, 
+That he looks as black as coal.' 
+But little Frits and Jan and Klaas, 
+Those little Frits and Jan and Klaas, 
+Did not listen to Nikolaas; 
+The boys mocked joyfully 
+With our poor, black man. 
+Then came the great Nik'laas, 
+He had an inkpot standing before him, 
+So big, yes, bigger than the moon. 
+He spoke: 'Children, listen to me, 
+And let that Moor go in peace! 
+It is truly not his fault, 
+That he looks as black as coal.'",0.0,0.544,0.7088607594936709,0.8,0.9,0.9,0.8,0.6,0.9,0.3,0.2,0.1,0.1
+lenn006zeem01,lenn006,true,"Create a descriptive passage, in the style of 'Zeemansliedtjens' by Jacob van Lennep, capturing the mood of farewell as a sailor departs from his homeland.","Farewell, white dunes and Dutch coast! Farewell, and for years, Maria, my delight! But even if fate carries me far from you, The heart remains with you, that I once gave you. Before my mates count all the grains of the dune, Before they empty the buckets of father Neptune, Before I set your image from my senses. Farewell then, sweet Holland! Maria, farewell!","With tears in her eyes, which she tried in vain to hide, she said: 'I hope that I can return home one day. My heart still belongs to them.' The captain did not long for it, but he knew how much all the sailors loved their ships and their sailors, and he himself was no exception. Therefore he said: 'You are welcome here, even if you are not welcome elsewhere. If you think that it is foolish to be a sailor then, just look at me and say: I am a sailor, that is certain.'",0.0,0.22123893805309736,0.25157232704402516,0.0,0.5,0.3,0.4,0.2,0.4,0.1,0.0,0.2,0.1
+sche039pren01,sche039,true,"Draft a monologue, in the style of 'Prentenboek' by Jan Schenkman, where the Milkmaid expresses her frustrations about her job.","""How comes it, Bregje!
+That milk again so blue?
+'Well madam, what do you say!...
+You put me in a bind!
+The milk is, believe me,
+As white as cream.
+But it surely comes from the water
+From over there out of the steam.'","The painting framed, likely resting on the landscape scene of a portraithunter. The artist is likely sitting in the foreground wearing a detailistic representation of the painter in a landscape scene between a possible depiction of the author as a figure in a glimmered background. The painting appears to be a mixed blend of the himself and an object from aPortrait of the author standing in front of a glazed paper on the rear side, in the context bound by a fragment of a landscape scene with a stillition.[useum the gift in the oil on canvas mounted on the wooden frame within the rectangular shape.
+
+The painting signed in the ashed framework on the wood. The artist attributed to him a both the painter and a glomeration of the journaling.",0.0,0.09285714285714286,0.10285714285714286,0.2,0.2,0.2,0.4,0.0,0.0,0.1,0.1,0.0,0.0
+hoff049nieu02,hoff049,false,"Create a descriptive passage, in the style of 'A new nice picture book as a sequel to the famous High German children's work 'Der Struwwelpeter'' by Heinrich Hoffmann, capturing the chaos after Frederik spills the milk.","""How white you are, oh Frederik,
+You sweet tooth and you milk thief!  
+Your shirt flows down your body,  
+You sweet mouth, you white gentleman,  
+Sleep in, sleep in, you milk thief,  
+How that white color suits him well!""","""How white you are, oh Frederik,  
+You sweet tooth and you milk thief!  
+Your shirt flows down your body,  
+You sweet mouth, you white gentleman,  
+Sleep in, sleep in, you milk thief,  
+How that white color suits him well!""",1.0,1.0,1.0,0.9,0.8,1.0,1.0,0.9,1.0,0.4,0.1,0.1,0.0
+peen001nege01,peen001,false,"Draft a monologue, in the style of '99 beesten en een boer' by Hippoliet van Peene, where De Letter expresses his feelings about the Widow Van Beek.","de letter,
+to the side. 
+I believe this means something. (Loud.) Oh! my dear widow, if you wanted.... it would only depend on you.... my school is on a good footing.... seven stuivers a month per child, and the monthly fees are piling up... and in the dead of winter evening school for the grown-ups for a pandoerken a week.... that adds up.... he! he! (Rubbing his hands.) That would be a nice affair.... and that would pleasantly increase the personnel of my establishment.... (To the side.) I have taken the liberty.... I do not care.","de letter, 
+to the side. 
+I believe this means something. (Loud.) Oh! my dear widow, if you wanted.... it would only depend on you.... my school is on a good footing.... seven stuivers a month per child, and the monthly fees are piling up... and in the dead of winter evening school for the grown-ups for a pandoerken a week.... that adds up.... he! he! (Rubbing his hands.) That would be a nice affair.... and that would pleasantly increase the personnel of my establishment.... (To the side.) I have taken the liberty.... I do not care.",1.0,1.0,1.0,0.9,1.0,1.0,1.0,0.9,0.9,0.1,0.3,0.0,0.2
+fran023kind01,lois006,true,"Compose a dialogue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, between Antje and Moentjes as they discuss the chimney sweep's presence.","Antje.  Yes, that is Antje. Who gave you permission to make a spectacle here?
+
+Moentjes  (with his hand on his saber).  Miss, I salute you. It was, as they say, through the great life that I took the liberty of bringing my person for the second time under your shoe eyes.
+
+Antje  (still calm).  How did you get in the house, when I had closed the door?
+
+Moentjes.  Through the window!","""Antje. 
+Yes, that's our chimney sweep, who makes our fire burn just right.""
+
+""Is it not our dear Antje, the lady of the house, who sweats so much?"" asked her eyes, which seemed to search her beloved's soul.
+
+""Sweet is not enough,"" replied Antje, ""I want something more, something that will make my life sweet.""",0.0,0.2967936643247681,0.29687499999999994,0.3,0.5,0.3,0.4,0.2,0.2,0.1,0.2,0.0,0.2
+goej001kind01,goej001,false,"Draft a monologue, in the style of 'The children of the woods' by Reinoudina de Goeje, where Edgard reflects on his fall from the horse.","""Finally, the horse took such a tremendous leap that Edgard had to let go of his hands. He let out a scream and fell..... into the lap of his mother. That was a moment never to be forgotten, ever. Edgard thought about it his whole life, and when he later spoke of it, he usually got tears in his eyes.""","""Finally, the horse took such a tremendous leap that Edgard had to let go of his hands. He let out a scream and fell..... into the lap of his mother. That was a moment never to be forgotten, ever. Edgard thought about it his whole life, and when he later spoke of it, he usually got tears in his eyes.""",1.0,1.0,1.0,1.0,1.0,0.9,1.0,0.8,0.8,0.2,0.2,0.2,0.2
+goej001prin01,goej001,false,"Compose a dialogue, in the style of 'Prins vriendelijk' by Reinoudina de Goeje, between the king and the prince as they discuss the princess's abduction.","""I certainly do not lack good will,"" this one remarked. ""But I do lack power,"" the king replied, and added: ""What makes me so sad can be told in a few words. My daughter has been stolen from me."" ""Stolen?"" the prince exclaimed in surprise. ""By whom?"" ""By a giant,"" the king answered, and told how dear and how beautiful she was and how much everyone loved her. ""What is the princess's name?"" the prince asked. ""Her name is Kunegonde,"" the king began. ""But she is always called the beautiful princess with the golden locks,"" the courtiers added. ""I have heard her called that,"" the prince replied. ""It was said in my father's kingdom that there was no more charming maiden than the beautiful princess with the golden hair. I will rescue her even if it costs me my life,"" he said.","""I certainly do not lack good will,"" this one remarked. ""But I do lack power,"" the king replied, and added: ""What makes me so sad can be told in a few words. My daughter has been stolen from me."" ""Stolen?"" the prince exclaimed in surprise. ""By whom?"" ""By a giant,"" the king answered, and told how dear and how beautiful she was and how much everyone loved her. ""What is the princess's name?"" the prince asked. ""Her name is Kunegonde,"" the king began. ""But she is always called the beautiful princess with the golden locks,"" the courtiers added. ""I have heard her called that,"" the prince replied. ""It was said in my father's kingdom that there was no more charming maiden than the beautiful princess with the golden hair. I will rescue her even if it costs me my life,"" he said.",1.0,1.0,1.0,0.9,0.8,1.0,0.9,1.0,0.8,0.4,0.3,0.1,0.2
+goej001evas01,goej001,false,"Compose a scene, in the style of 'Eva's bal' by Reinoudina de Goeje, showing Eva's excitement as she prepares for the ball.","""Of Eva dreamed that night of all the fun, I do not know, but that she thought about it for a long time, all her little friends can testify, for they have all so often heard about 'Eva's ball,' that each in turn can tell you about that good uncle William and all the fun he had with his niece. And they even know how sleepy Eva became and then how she came home laden with treasures and brought a present for everyone, for one a nice toy, for another a box of jams or chocolates, for the third a book with pictures and for the fourth something else.""","""Of Eva dreamed that night of all the fun, I do not know, but that she thought about it for a long time, all her little friends can testify, for they have all so often heard about 'Eva's ball,' that each in turn can tell you about that good uncle William and all the fun he had with his niece. And they even know how sleepy Eva became and then how she came home laden with treasures and brought a present for everyone, because whoever got lucky enough to be invited to stay a night with Uncle William is sure to bring something for him.""",0.0,0.8038551916240729,0.8148148148148149,0.8,0.8,0.9,0.9,0.8,0.8,0.2,0.1,0.3,0.4
+sche039nieu01,sche039,true,"Create a descriptive passage, in the style of 'Nieuwe gedichtjes op de vertellingen van Moeder de Gans' by Jan Schenkman, capturing the moment when Cinderella tries on the glass slipper.","Look, how neatly the glass slipper
+Fits on Cinderella's foot;
+It makes no difference, yes not a hair,
+As everyone must acknowledge.
+Oh, now she will soon be a princess!
+Look, that truly makes me happy;
+For no girl can be found anywhere
+That is as humble as she.","The painting framed, likely resting on the landscape scene of a portrait hunter. The artist appears as a representation of the author in the foreground while to the behind a glombard and in the composition in a dark gray color on the ruled area with several details and a possible basket on the right. The painting signed in the museum at the workshop of the painter Pieter, within the borders bound in a glaze on the wooden panel. The painting dated is likely based on a representation of the artist in front of a landscape scene from a courtly perspective. The painting the object is likely hanging in the realm of the private treatment of the drawing on the paper.",0.0,0.07874015748031495,0.07058823529411766,0.2,1.0,0.2,0.0,0.4,0.0,0.1,0.1,0.0,0.1
+sche039nieu06,sche039,true,"Create a descriptive passage, in the style of 'Nieuw AB boek naar een oud rijmpje en op een aardig wijsje' by Jan Schenkman, capturing the excitement of a child receiving a gift.","Look, what did I get from Papa!
+It's a little monkey on its stick; 
+See, it begs for a piece. 
+A a a 
+I'll show it to Mama.","The painting framed, likely resting on the frame behind a landscape scene with a glomberyrea and a possible depiction of the artist in a landscape scene on the floor in the museum at the border between the painter and a technique fragment of the your body as well. The painting signed in the graffiti on the wooden surface as [signature in the brushstroke.] Authority unknown, within the framework within the album and on the paper front. The painting likely created byJan Von Esta, a representation of the author as a scene in a landscape scene on theip in the museum the object bound to the floral detail. The painting mounted on the wood on the flap in the sector of a person as seen from front. The oil the artist in the foreground. The painting dated likely betwean 19th century. The painting signed in the pencil on the paper. The anonymous, inscribed in the format of the painter on the flap.",0.0,0.0625,0.0837696335078534,0.1,1.0,0.0,0.0,0.3,0.0,0.2,0.0,0.0,0.0
+lenn006zeem01,lenn006,true,"Write a scene, in the style of 'Zeemansliedtjens' by Jacob van Lennep, where a sailor bids farewell to his love before departing.","The wind shifts, - to board! to board! Soon we will choose the wide sea; - But many a little sigh, half smothered, Is heard, as the anchor is wound, And the moist eye still seeks the shore. There waves from afar, sadly tired, My Klaartje bids me farewell. The crew, unburdened by care, Jests with my love and soul's sorrow: And to escape their mockery, I raise a cheerful tune, And sing and hum song after song.","""My dear, my dear,"" he said, ""if it ever happens that I find you again, I want you to know that I think of you always, and that the thought that I have escaped from you is, in some way, good for me."" The wind was in his hair, and he walked on, not doubting a thing, when he suddenly heard someone calling to him. He turned around and saw his Klaartje, a sweet girl who had been injured, sitting as close to him as possible, and he rushed to her side, not ignoring the voice that was calling to him. ""Klaartje! klapje!"" he shouted, and it took him a little time before he reached her, but he did his best to get to her quickly.",0.0,0.24025974025974026,0.25615763546798026,0.0,0.2,0.6,0.4,0.3,0.3,0.2,0.0,0.1,0.1
+berg047nach01,lenn006,true,"Create a descriptive passage, in the style of 'Het nachtegaaltje' by Jacob van Lennep, capturing the little fish's experience in the reeds.","The little fish darts in the reeds,
+Dives along the green edges,
+Where the fisherman has come,
+And quietly observes his jumps.
+See, there he drops the bait
+From his long fishing rod;
+Little fish, wait! he wants to catch you,
+Be careful, do not bite!
+
+But the little fish seems blinded,
+It jumps around the bait back and forth,
+Pulls the line down each time....
+I fear it finds the taste in the worm.
+The bobber is strongly moved,
+Look!... it disappears completely from sight;
+The little fish has been deceived by the appearance....","The little fish darts in and out of the reeds with incredible agility, its sleek body gliding through the water with a series of rapid, whip-like movements. The observer is initially blinded by the speed at which the little fish jumps around, but soon becomes aware of its unique position in the reeds. To the eye, the little fish appears to be moving in a straight line, while in reality it is actually turning and rotating within the reeds. This means that, in essence, the little fish is 'dancing' among the reeds, while the reeds themselves remain stationary. This dance is a remarkable spectacle, especially when the little fish performs this trick a few times, for it clearly indicates that she is still very young and not very experienced in the field. However, it is clear to see that she will gradually increase her strength and skill as she continues to practice, for she already begins to develop a good understanding of the currents and is starting to build up her strength.",0.0,0.24083769633507854,0.34328358208955223,0.3,0.5,0.3,0.3,0.1,0.4,0.1,0.0,0.2,0.1
+peen001nege01,peen001,false,"Create a descriptive passage, in the style of '99 beesten en een boer' by Hippoliet van Peene, capturing the mood of the widow as she interacts with Jan.","The widow,
+to the side. 
+He understands nothing.
+Jan. 
+Ha! those are the things one cannot forget, little one.
+The widow, 
+stroking him. 
+Yes, yes.... you are a little good boy.... you are very brave.... but you must promise me to always remain wise, never to listen to your bad brother, and especially never to love anyone else but me.","The widow, 
+to the side. 
+He understands nothing.
+Jan. 
+Ha! those are the things one cannot forget, little one.
+The widow, 
+stroking him. 
+Yes, yes.... you are a little good boy.... you are very brave.... but you must promise me to always remain wise, never to listen to your bad brother, and especially never to love anyone else but me. that is important. (Jan nods and makes his promissory kiss.)",0.0,0.8444444444444444,0.923076923076923,0.9,0.9,0.9,0.9,0.8,0.9,0.0,0.1,0.3,0.5
+goej001kind01,goej001,false,"Create a scene, in the style of 'The children of the woods' by Reinoudina de Goeje, where Adelheid organizes her dolls' clothes.","Of course, Adelheid had a beautiful key basket, in which all the little keys were kept and small linen boxes, on which every Saturday all the beautiful doll items were ironed and folded up. Then she was busy putting everything away, sometimes so busy that Edgard would occasionally help out, but that didn't happen often, because he also had a lot to do to keep all his own affairs in order.","Of course, Adelheid had a beautiful key basket, in which all the little keys were kept and small linen boxes, on which every Saturday all the beautiful doll items were ironed and folded up. Then all the little dresses, with their beautiful lace trim and floral flowers, were placed on a central rack to be taken out for walks or to dress in a hurry. Who then made a dress for doll No. A nice, soft cotton dress was ironed and folded up, and then every morning at noon, when Adelheid was up, she quickly took it off and hung it in a corner of her bedroom, where it would stay until the next morning. Like this:... So that every day, at the same time, Adelheid took everything off, every dress and every dress dress, and brought it back to her room, where it would then be ironed and folded up again, so that nothing would be missed.",0.0,0.3093922651933701,0.4173913043478261,0.9,1.0,0.9,0.8,0.7,0.7,0.2,0.2,0.2,0.4
+hoff049nieu02,hoff049,false,"Draft a monologue, in the style of 'A new nice picture book as a sequel to the famous High German children's work 'Der Struwwelpeter'' by Heinrich Hoffmann, where Piet expresses his feelings after falling from the window.","""He who does not want to learn must feel!""  His mother said every time,  But still the boy did it again.  Once the window was pushed open,  There came naughty Piet again,  Climbed back and forth before the window,  And - oh dear! - there he fell down,  And there he broke, on the stones,  Both his arms and his legs.  Terrible was the screaming in the street!  ""Children, it was the reward for the evil!""","""Hein, he,"" he cried, ""where am I?"" He looked around, but there was no one to be found. He fell down, and with every turn,
+He hit the window again and again. ""Bang!"" 
+The sound echoed through the street, 
+And the first time that day. 
+
+Suddenly Piet jumped up, 
+And shouted: ""I can still walk."" 
+But it was too late for him. 
+He fell down, and there he broke, 
+On the stones, into a hundred pieces. 
+Ha! ha! 
+The crowd cheered and laughed, 
+But Piet himself did not smile. 
+He walked away from the place, 
+Where his mother had broken, 
+His arms and legs. 
+Ha, ha! 
+The joke had become funny, 
+And he laughed along with the others.",0.0,0.36942675159235666,0.4479166666666666,0.4,0.3,0.4,0.2,0.1,0.8,0.2,0.1,0.2,0.4
+peen001nege01,peen001,false,"Create a descriptive passage, in the style of '99 beesten en een boer' by Hippoliet van Peene, capturing Jan's feelings of embarrassment after the widow's remarks.","jan,  with embarrassment.  How, brother.... would she know something about the rest.... ha! look!... according to what my meetje has told me... and what they have written in the town hall.... hey! hey! hey! you would think that.... yes.... yes.... it seems to be decided.... is it not true, meetje.... you find that I.... should marry you.... ho! meetje! you would become my wife... ho! ho! that is funny! my whole body starts to tingle when I think about it....
+pieter.  The effect cannot miss.... All the Rams are like that; and I myself, about that you see me.... if I had a beautiful wife....","jan,  with embarrassment.  How, brother.... would she know something about the rest.... ha! look!... according to what my meetje has told me... and what they have written in the town hall.... hey! hey! hey! you would think that.... yes.... yes.... it seems to be decided.... is it not true, meetje.... you find that I.... should marry you.... ho! meetje! you would become my wife... ho! ho! that is funny! my whole body starts to tingle when I think about it....
+pieter.  The effect cannot miss.... All the Rams are like that; and I myself, about that you see me.... if I had a beautiful wife....",1.0,1.0,1.0,1.0,0.8,0.9,1.0,0.9,0.9,0.0,0.2,0.3,0.4
+dool003petr01,dool003,false,"""Compose a reflective passage, in the style of 'Petronella Moens. Holland's blind poetess. My North Dutch art friend remembered in Belgium in 1872' by Maria Doolaeghe, about the childhood of the blind poetess.""","""Before I delve further into her advanced age, I will momentarily lead the reader back to the childhood of the blind woman, which will certainly come to us not without emotion. To this end, I consult the Memorial Speech of the poet J. De Decker-Zimmerman at the passing of Miss P. Moens, Amsterdam, 1843. In it, the writer repeats the same words noted by the poetess about her childhood:""","""Before I delve further into her advanced age, I will momentarily lead the reader back to the childhood of the blind woman, which will certainly come to us not without emotion. To this end, I consult the Memorial Speech of the poet J. De Decker-Zimmerman at the passing of Miss P. Moens, Amsterdam, 1843. In it, the writer repeats the same words noted by the poetess about her childhood:""",1.0,1.0,1.0,1.0,1.0,0.9,0.8,1.0,1.0,0.0,0.1,0.2,0.3
+berg047nach02,lenn006,true,"Compose a dialogue, in the style of 'De nachtegaal en het lijstertje' by Jacob van Lennep, between Mietje and her mother as they discuss the bird's nest.","‘Oh mama, look at the little birds!’ cried Mietje, her eyes sparkling with excitement. ‘They chirp so sweetly! Can we keep them?’
+
+Her mother shook her head gently, ‘No, my dear. They belong to the wild. We must let them stay with their mother.’
+
+Mietje pouted, ‘But they look so lonely without her!’
+
+‘They may seem so, but their mother will return soon. It’s best for them to be free,’ her mother explained, kneeling beside her. ‘Nature has its own way of caring for them.’
+
+Mietje sighed, ‘I understand, mama. But I wish I could hold them just for a moment!’
+
+‘And you will, my love, but only when they are ready,’ her mother reassured her, wrapping an arm around Mietje as they watched the nest together.","""Can you imagine that I am keeping two birds?"" asked Mietje, her eyes sparkling with excitement. ""Two! Oh, mama, it will be like having two little homes in one,"" said her mother, and she purchased a cage for the nest and soon had a beautiful bird perched on each end. The first morning she woke up to the sound of chirping and singing and immediately saw the two little birds sitting on their perch, while she was busy giving them water and greens. ""Their sweet song fills my heart with joy,"" she thought, and of course, she took pictures of them for her album.",0.0,0.26577299776847246,0.32758620689655166,0.2,0.7,0.0,0.3,0.2,0.4,0.1,0.1,0.1,0.0
+hoff049duim01,hoff049,false,"Draft a monologue, in the style of 'The Thumb Sucker' by Heinrich Hoffmann, where Karel expresses his feelings after getting hurt.","There Karel now screams 'oh!' and 'woe!' There he lies on the couch He moans and whines and he cries: 'Oh woe, my leg, what pain, what regret!'","There he lies on the couch, he moans and whimpers and he cries: 'Oh woe, my leg, what pain, what regret!' The room is silent, only his moaning echoes, while the shadow of pain crosses his face, and the consequences of his cruel deeds now haunt him.",0.0,0.46551724137931033,0.5866666666666668,0.8,0.8,1.0,0.7,0.9,0.7,0.3,0.1,0.1,0.2
+sche039kerm01,sche039,true,"Create a descriptive passage, in the style of 'De kermis-artisten of de viervoetige kunstenmakers voor het kleine publiek' by Jan Schenkman, capturing the atmosphere of the fairground.","Come, little friends! step inside! Behold this theater!
+All that you will see here is nice and beautiful!  
+The artists are artists, quick as water;  
+And all the costumes of the finest quality.  
+So take a seat! The spectacle will soon begin;  
+There you see Caro already and Miss Bibi,  
+Both of whom love splendor and state,  
+And are also gifted with strength and genius.  
+One sees no blemish in their elegant clothing.  
+They will probably go for a walk.  
+Bibi has a servant with a coat and a cap;  
+Caro has one with a monkey suit on.","The painting framed, likely resting on the frame behind a landscape scene with a glombie and a possible representation of himself as a portraitist in the realm of theassis. The painting in the museum at the luncheon party, in thewerpstone relief on the flap, in the dimensions in the oil on canvas mounted on the board. The painting signed in the gaze room, within the borders bound by the technique of the dry paper front. The artist attributed to him a both the object and a fragment of a scene representing the scenery from the festival. The composition shown in the frame as a detail in a further painting titled 'unsettled plant.""",0.0,0.2213114754098361,0.19047619047619047,0.3,0.2,0.3,0.1,0.2,0.3,0.0,0.2,0.2,0.2
+dool003sint01,dool003,false,"Draft a monologue, in the style of 'Sinte Godelieve, Vlaemsche legende uit de XIde eeuw' by Maria Doolaeghe, where the protagonist expresses his sorrow and regret after losing his beloved.","""O! where he leaves the poorest of the land Who does not long for peace in his sorrow! He stares at the heavens: 'there she lives The Christian heroine, O dear one,' he says, 'I atone for my guilt, And cowardly murderers' madness!""","""O! where he leaves the poorest of the land Who does not long for peace in his sorrow! He stares at the heavens: 'there she lives The Christian heroine, O dear one,' he says, 'I atone for my guilt, And cowardly murderers' madness!""",1.0,1.0,1.0,0.9,0.8,1.0,1.0,0.8,1.0,0.3,0.2,0.1,0.2
+sche039leve02,sche039,true,"Compose a scene, in the style of 'Het leven van Jan Klaassen, verteld aan de Nederlandsche jeugd' by Jan Schenkman, where Jan Klaassen cleverly escapes from the innkeeper.","'Well!' said Jan, 'I will immediately
+Pay you my bill;
+But be so kind, to take a bag of money,
+That I have already counted for you,
+Out of my chest.'
+
+Ha! thought the man: that seems just right!
+He quickly opened the lid,
+But before he could think or know,
+Jan suddenly threw him into the chest,
+And set off running.
+
+Jan had previously coated it inside
+With birdlime,
+So that the heavily fooled man,
+As one can well understand,
+Could hardly speak from anger.","The painting likely belongs to the workshop or rendering of aPortrait of the author in the landscape frontogether with a glombie on the paper, within the borders boundless the artist in black on the dry ground. The image is likely based on a representation of the painter in front of a stillerial view of the composition in chiaristic details and on the panel.
+werp. Fragment of a Portrait/Rencontre on the paper, in thewerpckett and in the ornate frame within the rectangular area on the rip. The painting seems to be a depiction of the author sitting in bed. The artist signed in the lower margin on the paper. Anonymous, signed in a drippage on the paper with a possible representation of the author as a portraitist. The habitat is based on the palette on the stone.",0.0,0.11564625850340135,0.12556053811659193,0.4,0.1,0.2,0.0,0.2,0.0,0.0,0.1,0.1,0.2
+_kle007klei02,_kle007,true,"Create a descriptive passage, in the style of 'De kleine mama Pauline en hare pop Marie' by Anoniem Kleine mama Pauline en hare pop Marie, De, capturing Pauline's feelings when she receives her doll Marie.","How surprised Pauline was when she saw a beautiful doll standing there, dressed in a light blue silk dress, with real hair and flowers in it, and a lace handkerchief in her hand. Immediately she guessed that no one else but her brother Ernest had provided her with this surprise, and therefore she ran to him to thank him for his lovely gift. I promise you, dear Ernest! she said to him, that I will give my child a good upbringing, and that my friends will be impressed by how well she behaves and how lovely she looks.","How surprised Pauline was when she saw the beautiful doll for the first time. She had never seen anything like it before and she immediately guessed that no one else but her mother could have created such a unique piece of art. She took her doll in her arms and gave her a friendly kiss. 'This is our little Marie,' she said, 'a gift from my son.'",0.0,0.3153645669566983,0.4363636363636364,0.6,0.9,0.4,0.3,0.4,0.6,0.0,0.2,0.1,0.0
+fran023kind01,lois006,true,"Compose a dialogue, in the style of 'Het kindermaögske, klúchtspeul in ein akt (onder ps. ene boer en twie lui)' by A. Loisel, between Antje and Spiegels as they discuss his proposal.","SPIEGELS: Antje, wat denk je van mijn voorstel? Het is een goede kans voor ons beiden.
+ANTJE: Maar Spiegels, ik weet niet of het wel zo verstandig is. Wat als het niet werkt?
+SPIEGELS: We moeten het gewoon proberen! Wat heb je te verliezen? 
+ANTJE: Ik ben bang dat het ons meer problemen zal geven dan we nu hebben.
+SPIEGELS: Denk aan de voordelen! We kunnen samen iets opbouwen. 
+ANTJE: Misschien heb je gelijk, maar ik wil niet dat we in de problemen komen. 
+SPIEGELS: Vertrouw me, Antje. Samen kunnen we dit aan!","""Antje, wat denk je van mijn voorstel?"" begon Spiegels, zijn stem vol emotie. ""Ik kan het niet anders dan lachen. Wat heb ik nu weer gedaan? Ik ben zo slecht!"" antwoordde ze, zichtbaar in de war. ""Ik verstand veel sleps gebeurten! Maar zeg, spiegels, wat is er met je hoofd dat je nu weer doorgaat te lachen?"" vroeg ze, haar handen vouwend. ""Ik weet dat ik niet altijd maar moet lachen, maar wat als ik een goede boer want?"" zei Spiegels, zichtbaar in de war. ""Ik zal beter mijn best doen!"" antwoordde ze, haar stem vol emotie. ""We moeten samen iets opbouwen, anders zal het niet goed!"" zei Spiegels, zijn gezichtsvend. ""Ja, ja, that is waar, Antje, we moeten dat soepste thingen!"" zei ze, haar handen vouwend. ""Laten we dat gedaan?"" vroeg ze, de spanning in de lucht. ""Ik zal het eerste keer mijn leven verliezen!"" zei Spiegels, zijn stem vol verwachting. ""Ik beloof het, Antje, het zal gooit!"" zei ze, haar ogen glinsterend.",0.0,0.2894736842105263,0.45136186770428016,0.2,0.5,0.2,0.4,0.4,0.0,0.0,0.0,0.2,0.1
+peen001keiz02,peen001,false,"Draft a monologue, in the style of 'Keizer Karel en de Berchemsche boer' by Hippoliet van Peene, where Pieter expresses his thoughts on the emperor's unexpected visit.","pieter,
+astonished. 
+How! ...
+frans, 
+to the side. 
+Oh! oh! oh! I will die from it, that is certain.
+lysje. 
+But be quiet, for heaven's sake!
+de keizer. 
+Then answer?
+pieter. 
+Sire emperor! if I must tell you the truth, yes.
+de keizer. 
+Were they all three remained in your hut?
+de keizer. 
+No, sire emperor, one sent the other two away and remained alone.","pieter, 
+astonished. 
+How!...
+frans, 
+to the side. 
+Oh! oh! oh! I will die from it, that is certain.
+lysje. 
+But be quiet, for heaven's sake!
+de keizer. 
+Then answer?
+pieter. 
+Sire emperor! if I must tell you the truth, yes.
+de keizer. 
+Were they all three remained in your hut?
+de keizer. 
+No, sire emperor, one sent the other two away and remained alone.",1.0,1.0,1.0,1.0,0.9,0.9,0.9,0.9,1.0,0.4,0.2,0.2,0.2
+goej001olif01,goej001,false,"Write a scene, in the style of 'The elephants and the little mice' by Reinoudina de Goeje, showing the father's reaction after the train encounter.","""But, but, what happened? Brave and with his head held high, Mr. Elephant stood there waiting for the tram, while the little one, following his father's example, had also taken a stance to participate in the fight. But in less than a second, the locomotive tossed the brave elephant upside down and continued on its way as if there had been no obstacle. The elephant was greatly ashamed of this and, limping, in pain and anger, soon turned back towards the forest with the little one.""","""But, but, what happened? Brave and with his head held high, Mr. Elephant stood there waiting for the tram, while the little one, following his father's example, had also taken a stance to participate in the fight. But in less than a second, the locomotive tossed the brave elephant upside down and continued on its way as if there had been no obstacle. The elephant was greatly ashamed of this and, limping, in pain and anger, soon turned back towards the forest with the little one.""",1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.3,0.2,0.1,0.1
+pier003duit01,pier003,false,"Compose a descriptive passage, in the style of 'Duitsche indrukken' by Allard Pierson, capturing the essence of the German spirit.","The German spirit is a spirit that loves scientific expeditions, sometimes even the most adventurous expeditions. It has an insatiable need to find new worlds in the realm of thought, to discover unknown celestial regions. Uncharted paths attract it the most. To perceive the world and life from a different perspective each time, that is its passion and its wealth. Germany is not the land of a single violent revolution, which ultimately drags along an equally violent reaction and gives birth to a time in which the signs of exhaustion and despair are visible everywhere; no, it is the land of reform, of that Protestantism that always protests against what has been achieved because it is imperfect in comparison to that perfection which one wishes to attain; of which one realizes that it alone is capable of satisfying the thirst for the ideal, and for that reason alone is worthy of the love of our soul.","The best representatives of the German spirit are vividly imbued with the conviction that everything we find in the realm of truth should only be a new spur to search again; that they should not be called the benefactors of humanity who want to build tabernacles for her and themselves, but rather those who can spiritually confess that they do not have where they will lay their weary head, and yet, with royal courage in their hearts, continue on their journey towards the great yet unknown truth, even if they are scorned or mocked as wandering knights, as knights of the sad figure. These representatives of the German, of the Germanic spirit, which indeed also lives in us Dutch, realize that the hallmark of the thinker, of the practitioner of science, consists in being able to live with and among unresolved questions, even if the unresolved nature of those questions is often a source of great pain for the heart.",0.0,0.3371428571428572,0.31645569620253167,0.3,0.2,0.4,0.3,0.2,0.6,0.3,0.3,0.0,0.1

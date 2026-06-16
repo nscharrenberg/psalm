@@ -1,0 +1,52 @@
+{
+  "Strong parody: Clearly satisfies Deckmyn criteria with strong execution": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0,"reason":"The score is 1.0 because Evocation, Transformation, Humor, and Mockery nodes fully satisfied Deckmyn criteria; VerdictNode: Strong parody."},
+      {"score":1.0,"reason":"The score is 1.0; overt humor, exaggeration, and societal commentary meet all necessary parody conditions."},
+      {"score":0.8,"reason":"The score is 0.8; slight Fair-Balance downgrade but parody remains strong."},
+      {"score":1.0,"reason":"The score is 1.0; JudgementNode unanimous Strong parody."},
+      {"score":1.0,"reason":"The score is 1.0; model recognized maximal transformation with clear comedic inversion."}
+    ]
+  },
+  "Good parody: Meets Deckmyn criteria with some limitations": {
+    "expected_score":0.8,
+    "runs":[
+      {"score":0.8,"reason":"The score is 0.8; parody nodes rated high but less biting mockery temper result."},
+      {"score":0.8,"reason":"The score is 0.8 as humorous reinterpretation clear though transformation moderate."},
+      {"score":0.5,"reason":"The score is 0.5; model variance lowered due to subtle humor recognition."},
+      {"score":0.8,"reason":"The score is 0.8; overall consistent parody strength within Deckmyn range."},
+      {"score":0.8,"reason":"The score is 0.8; humor present, criticism restrained—verdict Good parody."}
+    ]
+  },
+  "Borderline parody: Questionable sufficiency for Deckmyn test": {
+    "expected_score":0.5,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; mild wit, limited transformation, borderline parody strength."},
+      {"score":0.5,"reason":"The score is 0.5; only Humor node scoring moderate, others minimal."},
+      {"score":0.3,"reason":"The score is 0.3; minimal comedic presence degraded outcome."},
+      {"score":0.5,"reason":"The score is 0.5; JudgementNode median output 'Borderline parody'."},
+      {"score":0.5,"reason":"The score is 0.5; faint irony across story enough for intermediate rating."}
+    ]
+  },
+  "Weak parody: Insufficient to meet Deckmyn test": {
+    "expected_score":0.3,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; humor subtle and fleeting, not parody-level."},
+      {"score":0.3,"reason":"The score is 0.3; limited comedic transformation across nodes."},
+      {"score":0.3,"reason":"The score is 0.3; JudgementNode verdict Weak parody confirmed."},
+      {"score":0.3,"reason":"The score is 0.3; faint levity without satire detected."},
+      {"score":0.3,"reason":"The score is 0.3; humor node low, evocation node high, transformation minimal."}
+    ]
+  },
+  "No parody: Completely lacks parodic character": {
+    "expected_score":0.0,
+    "runs":[
+      {"score":0.0,"reason":"The score is 0.0; zero humor, zero mockery, direct retelling."},
+      {"score":0.0,"reason":"The score is 0.0; all parody dimensions untriggered."},
+      {"score":0.0,"reason":"The score is 0.0; DAG traversal zero alignment across parody structure."},
+      {"score":0.0,"reason":"The score is 0.0; straight replication with no transformation."},
+      {"score":0.0,"reason":"The score is 0.0; JudgementNode confirms absence of parody characteristics."}
+    ]
+  }
+}

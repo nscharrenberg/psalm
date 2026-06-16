@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical plot structures across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because Event, Architecture, Conflict, Turning, Temporal, and Function nodes all returned full causal alignment; Level 7 verdict: Identical."},
+      {"score": 1.0, "reason": "The score is 1.0; perfect replication of structural beats confirmed by DAG traversal."},
+      {"score": 0.8, "reason": "The score is 0.8 due to minimal phrasing shift recognized as minor structural rewording."},
+      {"score": 1.0, "reason": "The score is 1.0 because sequence, causality, and turning points mirror source precisely."},
+      {"score": 1.0, "reason": "The score is 1.0; all subnode verdicts identical to baseline, full overlap."}
+    ]
+  },
+  "Very similar plot structures with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.8, "reason": "The score is 0.8; structural mapping consistent with source minus condensed midpoint event."},
+      {"score": 0.8, "reason": "The score is 0.8; same arc and pacing with simplified temporal transitions; verdict Very similar."},
+      {"score": 0.5, "reason": "The score is 0.5 due to model variance emphasizing omitted crisis‑repair link; mid verdict."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG traversal produced stable near‑identical sequence verdict."},
+      {"score": 0.8, "reason": "The score is 0.8 because architecture, conflict, and turning points aligned with minor compression."}
+    ]
+  },
+  "Moderately similar plot structures with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5; major causal beats replaced yet recognizable revelation-moment preserved."},
+      {"score": 0.5, "reason": "The score is 0.5 since half of structural layers retained while mentor conflict removed."},
+      {"score": 0.3, "reason": "The score is 0.3; compressed plot sequence lowered story architecture overlap."},
+      {"score": 0.5, "reason": "The score is 0.5; DAG traversal validated 3/6 node alignment."},
+      {"score": 0.5, "reason": "The score is 0.5; conflict and transformation parallels sustain partial match."}
+    ]
+  },
+  "Somewhat different plot structures with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3; overlapping transformation motif but differing setup, midpoint, and causality yield limited similarity."},
+      {"score": 0.3, "reason": "The score is 0.3; event essentials diverged, but structural metaphor (repair→renewal) faintly echoes."},
+      {"score": 0.3, "reason": "The score is 0.3 because Sequence node partial overlap insufficient for Moderate verdict."},
+      {"score": 0.3, "reason": "The score is 0.3; final transformation through music not mechanical repair undermines core architecture match."},
+      {"score": 0.3, "reason": "The score is 0.3 as evaluation recognized minimal correlation of conflict/resolution arcs."}
+    ]
+  },
+  "Clearly different or opposite plot structures": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; all structure nodes scored zero—no causal or thematic equivalence."},
+      {"score": 0.0, "reason": "The score is 0.0; entirely distinct framework lacking mentor-conflict architecture."},
+      {"score": 0.0, "reason": "The score is 0.0 as event causality, pacing, and architecture nodes found no overlap."},
+      {"score": 0.0, "reason": "The score is 0.0; narrative trajectory contradicts original objective arc."},
+      {"score": 0.0, "reason": "The score is 0.0 because JudgementNode verdict fixed at 'Clearly different' with zero-weight match."}
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "Strong quotation: Clearly satisfies Art. 5(3)(d) criteria with strong execution": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score":1.0,"reason":"The score is 1.0 because quotation presence, purpose, proportionality, attribution, and prior disclosure fully satisfied Art. 5(3)(d)."},
+      {"score":1.0,"reason":"The score is 1.0; explicit mark, attribution, and fair balance nodes all maximal."},
+      {"score":0.8,"reason":"The score is 0.8; proportionality slightly underweighted but full citation present."},
+      {"score":1.0,"reason":"The score is 1.0; JudgementNode verdict Strong quotation."},
+      {"score":1.0,"reason":"The score is 1.0; cross-node aggregation equals complete compliance."}
+    ]
+  },
+  "Good quotation: Meets Art. 5(3)(d) criteria with some limitations": {
+    "expected_score":0.8,
+    "runs":[
+      {"score":0.8,"reason":"The score is 0.8; quotation accurate, source clear, partial phrase reproduced."},
+      {"score":0.8,"reason":"The score is 0.8; attribution node strong, fair practice moderate."},
+      {"score":0.5,"reason":"The score is 0.5; stochastic variance demoted Disclosure weighting."},
+      {"score":0.8,"reason":"The score is 0.8; all essential quotation features satisfied with minor omission."},
+      {"score":0.8,"reason":"The score is 0.8; JudgementNode confirmed Good quotation."}
+    ]
+  },
+  "Borderline quotation: Questionable sufficiency for Art. 5(3)(d)": {
+    "expected_score":0.5,
+    "runs":[
+      {"score":0.5,"reason":"The score is 0.5; quotation present but unmarked; attribution absent; mid verdict."},
+      {"score":0.5,"reason":"The score is 0.5; phrase recognizable yet orphaned from explicit citation."},
+      {"score":0.3,"reason":"The score is 0.3; weaker identification reduced overall aggregate."},
+      {"score":0.5,"reason":"The score is 0.5; JudgementNode placed between Good and Weak quotation."},
+      {"score":0.5,"reason":"The score is 0.5; limited explicitness balanced by clear recognizable source."}
+    ]
+  },
+  "Weak quotation: Insufficient to meet Art. 5(3)(d) criteria": {
+    "expected_score":0.3,
+    "runs":[
+      {"score":0.3,"reason":"The score is 0.3; altered wording undermined direct quotation status."},
+      {"score":0.3,"reason":"The score is 0.3; evaluator noted phrase distortion and missing attribution."},
+      {"score":0.3,"reason":"The score is 0.3; JudgementNode verdict Weak quotation."},
+      {"score":0.3,"reason":"The score is 0.3; quotation presence faint across nodes."},
+      {"score":0.3,"reason":"The score is 0.3; partial adoption without marks scored low."}
+    ]
+  },
+  "No quotation: Completely lacks quotation character": {
+    "expected_score":0.0,
+    "runs":[
+      {"score":0.0,"reason":"The score is 0.0; no quotation detected in any node; verdict None."},
+      {"score":0.0,"reason":"The score is 0.0; DAG traversal zero across all quotation features."},
+      {"score":0.0,"reason":"The score is 0.0; JudgementNode confirm pure narrative no reuse."},
+      {"score":0.0,"reason":"The score is 0.0; evaluator identified absence of reproduced phrase."},
+      {"score":0.0,"reason":"The score is 0.0; total lack of quotation markers confirmed."}
+    ]
+  }
+}

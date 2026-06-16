@@ -1,0 +1,9 @@
+split,Model,AvgRank,MetricWins
+Forget,Baseline (Dutch),3.8076923076923075,13
+Forget,Baseline (English),2.8846153846153846,13
+Forget,Finetuned (Dutch),1.6923076923076923,13
+Forget,Finetuned (English),1.6153846153846154,13
+Retain,Baseline (Dutch),3.6538461538461537,13
+Retain,Baseline (English),2.8076923076923075,13
+Retain,Finetuned (Dutch),1.7692307692307692,13
+Retain,Finetuned (English),1.7692307692307692,13

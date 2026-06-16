@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical narrative voice across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because all node levels (POV, Distance, Narrator, Temporal, Focalization, Reader) align exactly; JudgementNode verdict: Identical narrative voice."},
+      {"score": 1.0, "reason": "The score is 1.0 as perspective, tense, and focalization are identical; no deviations detected."},
+      {"score": 0.8, "reason": "The score is 0.8 because minor lexical phrasing signals slight tonal difference though point of view remains the same."},
+      {"score": 1.0, "reason": "The score is 1.0 due to complete overlap in narrative person and distance metrics."},
+      {"score": 1.0, "reason": "The score is 1.0 as every dimension matched baseline narration precisely."}
+    ]
+  },
+  "Very similar narrative voice with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.8, "reason": "The score is 0.8; first-person plural created minimal focalization extension while retaining core narrative tone."},
+      {"score": 0.8, "reason": "The score is 0.8; only Reader Engagement and Focalization nodes varied slightly, JudgementNode verdict: Very similar."},
+      {"score": 0.5, "reason": "The score is 0.5 as systemic model variance downgraded due to unrecognized collective voice pattern."},
+      {"score": 0.8, "reason": "The score is 0.8; identical temporal perspective preserved with minor pluralization impact."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG traversal Level 7 produced consistent Very similar verdict with negligible distance change."}
+    ]
+  },
+  "Moderately similar narrative voice with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5 because POV shifted to third-person limited, altering narrative distance and focalization significantly."},
+      {"score": 0.5, "reason": "The score is 0.5 as temporal stance and distance re-weighted; verdict node: Moderately similar."},
+      {"score": 0.3, "reason": "The score is 0.3 due to greater detachment sensed at Narrator Presence node; outcome borderline differential."},
+      {"score": 0.5, "reason": "The score is 0.5; equalized weight between retained reflective tone and loss of intimacy."},
+      {"score": 0.5, "reason": "The score is 0.5; DAG node aggregation produced midpoint similarity value."}
+    ]
+  },
+  "Somewhat different narrative voice with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3; the narrative voice is formally detached with little interiority, matching 'Somewhat different' node condition."},
+      {"score": 0.3, "reason": "The score is 0.3 since focalization and narrator nodes show strong divergence while tense alignment persists minimally."},
+      {"score": 0.3, "reason": "The score is 0.3; DAG traversal confirmed distant third-person voice with limited overlap."},
+      {"score": 0.3, "reason": "The score is 0.3 as narrative stance became uninvolved and observational only."},
+      {"score": 0.3, "reason": "The score is 0.3; JudgementNode and Distance nodes agree on low similarity verdict."}
+    ]
+  },
+  "Clearly different or opposite narrative voices": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; omniscient present tense eliminated personal memory tone; full dissimilarity registered."},
+      {"score": 0.0, "reason": "The score is 0.0 as model detected polar opposite narrative framework—tense and person inverted."},
+      {"score": 0.0, "reason": "The score is 0.0 because all six stage nodes returned 0 alignment; JudgementNode concluded opposite."},
+      {"score": 0.0, "reason": "The score is 0.0; absence of narrator intimacy and new temporal setting negate all shared voice criteria."},
+      {"score": 0.0, "reason": "The score is 0.0; final verdict confirmed total difference in narrative perspective and person."}
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "Identical or near-identical worldbuilding across all dimensions": {
+    "expected_score": 1.0,
+    "runs": [
+      {"score": 1.0, "reason": "The score is 1.0 because all Geography, Rules, Culture, History, Material, and Logic nodes matched verbatim details; full overlap."},
+      {"score": 1.0, "reason": "The score is 1.0; identical mechanical geography and cultural framework confirmed."},
+      {"score": 0.8, "reason": "The score is 0.8 due to minor wording variation but no factual deviation; JudgementNode classified Very similar."},
+      {"score": 1.0, "reason": "The score is 1.0 because detailed DAG traversal produced perfect node‑to‑node match."},
+      {"score": 1.0, "reason": "The score is 1.0; sub‑analyses aligned completely across all categories."}
+    ]
+  },
+  "Very similar worldbuilding with only minor differences": {
+    "expected_score": 0.8,
+    "runs": [
+      {"score": 0.8, "reason": "The score is 0.8 since spatial design and cultural laws preserved with slight lexical condensation."},
+      {"score": 0.8, "reason": "The score is 0.8; DAG traversal Level 7 verdict: Very similar worldbuilding."},
+      {"score": 0.5, "reason": "The score is 0.5 as temporal law node weighted lower due to phrasing simplification."},
+      {"score": 0.8, "reason": "The score is 0.8; consistent architecture of city confirmed matching causality."},
+      {"score": 0.8, "reason": "The score is 0.8 because model attributed minor paraphrasing as negligible differences."}
+    ]
+  },
+  "Moderately similar worldbuilding with some notable differences": {
+    "expected_score": 0.5,
+    "runs": [
+      {"score": 0.5, "reason": "The score is 0.5; structural similarities in mechanistic logic contrast with new desert environment."},
+      {"score": 0.5, "reason": "The score is 0.5 since half the environmental and systemic categories overlap; verdict: Moderate."},
+      {"score": 0.3, "reason": "The score is 0.3 due to heavier node weight on geography divergence."},
+      {"score": 0.5, "reason": "The score is 0.5; differing ecology balanced by similar institutional function."},
+      {"score": 0.5, "reason": "The score is 0.5 because DAG nodes averaged divergent setting but aligned logic/module patterns."}
+    ]
+  },
+  "Somewhat different worldbuilding with limited similarities": {
+    "expected_score": 0.3,
+    "runs": [
+      {"score": 0.3, "reason": "The score is 0.3; only conceptual discipline theme links remain; geography, culture, and material details replaced."},
+      {"score": 0.3, "reason": "The score is 0.3; underlying synchronization motif retained faintly, all other nodes diverged."},
+      {"score": 0.3, "reason": "The score is 0.3; sub‑analyses confirm limited functional overlap in rhythm patterns only."},
+      {"score": 0.3, "reason": "The score is 0.3; weighted sum dominated by zeroes in geographic and cultural nodes."},
+      {"score": 0.3, "reason": "The score is 0.3; DAG verdict: Somewhat different."}
+    ]
+  },
+  "Clearly different or opposite worldbuilding": {
+    "expected_score": 0.0,
+    "runs": [
+      {"score": 0.0, "reason": "The score is 0.0; aerial nomad world shares no dimension with clockwork city."},
+      {"score": 0.0, "reason": "The score is 0.0 because every node reported opposite system and environment."},
+      {"score": 0.0, "reason": "The score is 0.0; exclusive new paradigm unrelated to mechanical temporality yields zero alignment."},
+      {"score": 0.0, "reason": "The score is 0.0 since none of the six category nodes registered key‑phrase overlap."},
+      {"score": 0.0, "reason": "The score is 0.0; JudgementNode confirms 'Clearly different' at final traversal."}
+    ]
+  }
+}
