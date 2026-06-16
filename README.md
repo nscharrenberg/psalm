@@ -34,6 +34,9 @@ make install
 
 This will also generate your `uv.lock` file
 
+WARNING: May not work with Windows due to dependency limitations and issues.
+WARNING: You may need to adjust the CUDA version dependency for torch in the `pyproject.toml` to the versions you are running.
+
 ### 3. Run the pre-commit hooks
 
 Initially, the CI/CD pipeline might be failing due to formatting issues. To resolve those run:
