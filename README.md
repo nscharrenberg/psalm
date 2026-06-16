@@ -8,7 +8,7 @@
 
 
 
-- **Git repository**: <https://codeberg.org/nscharrenberg/PSALM/>
+- **Original Git repository**: <https://codeberg.org/nscharrenberg/PSALM/>
 
 ## Getting started with your project
 
