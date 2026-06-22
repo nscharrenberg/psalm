@@ -230,8 +230,68 @@ The framework is designed to be **highly extensible** to accommodate a wide rang
     * From **case input** (e.g., source/target texts + jurisdiction) to **verdict output** with minimal human intervention.
     * **Self-configuration** of debate structures, voting mechanisms, and agent setups based on case complexity or domain.
 
-# Appendix
+## Technical Details
+### Technical Stack
+- **Language**: Python 3.14+
+- **Package Manager**: uv 0.11.23+
+- **Dependencies**:
+  - Langgraph 1.2.6
+  - Langchain 1.3.10
+  - Pydantic 2.13.4
+  - Pytest 9.1.1
+  - Asyncio 4.0.0
+  - Ruff 0.15.18
+  - Ty 0.0.51
 
+### Agent Configuration
+| Agent | Time Limit | Max Rounds | Credentials | Notes |
+| --- | --- | --- | --- | --- |
+| Prosecutor | 3 min/round | 5 | base_url, apikey, organizationId, model_name | 1 agent. |
+| Defense | 3 min/round | 5 | base_url, apikey, organizationId, model_name | 1 agent. |
+| Judge | None | N/A | base_url, apikey, organizationId, model_name | 1 agent. |
+| Jury (Adjudicators) | 2 min/round | 5 | List of [base_url, apikey, organizationId, model_name] | Multiple agents (1 per credential). |
+
+### Core Parameters
+| Parameter | Default Value | Description |
+| --- | --- | --- |
+| dimensions | ["character", "world-building", "plot"] | Evaluation dimensions. |
+| voting_strategy | ["simple_majority", "trust_weighted", "judge_tiebreaker"] | Ordered fallback. |
+| log_format | "json" | File-based logging. |
+| retry_attempts | 3 | LLM retry attempts. |
+| retry_backoff | 2.0 | Exponential backoff factor. |
+
+### SDK Design
+- **Interface**: Single class + builder pattern
+- **Input/Output**: Structured (Pydantic models internally, dicts for flexibility)
+- **Validation**: Strict (Pydantic + type hints)
+- **Custom Agents**: Open SDK (subclass `BaseAgent`).
+- **Callbacks**: Optional (default: `None`)
+- Caching: No default caching.
+
+### Edge Cases and Fallbacks
+| Scenario | Handling |
+| --- | --- |
+| Empty texts | ValueError("Texts cannot be empty") |
+| Identical texts | Default to "Guilty" (no agents run). |
+| LLM timeout/retry failure | Fallback to "Undecided" + logged error. |
+| All agents fail | Fallback to "Undecided" + error rationale. |
+
+### Logging and Explainability
+- **Rationale**: Each agent provides a rationale for arguments/votes.
+- **Log**: Grouped by rounds (arguments, counter-arguments) during argumentation phase (Argumentation Log), and grouped by rounds during deliberation phase (Debate Log).
+- **Output**: Full traceability (argumentation log + debate log).
+
+### Testing and Validation
+- **Test Cases**: Synthetic (JSON format).
+- **Metrics**: Accuracy, consistency, explainability, robustness.
+- **Mock LLMs**: For unit/integration tests.
+
+### Deployment and Distribution
+- **Versioning**: Semantic versioning (major.minor.patch).
+- **Distribution**: Pypi + Github
+- **Dependencies**: Pinned in `pyproject.toml`.
+
+# Appendix
 ## Glossary
 
 | **Abbreviation** | **Term**                                         |
