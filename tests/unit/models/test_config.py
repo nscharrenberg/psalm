@@ -1,5 +1,5 @@
 import pytest
-from pydantic import ValidationError
+from psalm.exceptions import PSALMConfigError
 from psalm.models.config import AgentConfig, DebateConfig
 
 
@@ -29,8 +29,10 @@ def test_agent_config_full():
 
 
 def test_agent_config_invalid_temperature():
-    with pytest.raises(ValidationError, match="temperature"):
+    with pytest.raises(PSALMConfigError) as exc_info:
         AgentConfig(base_url="https://api.openai.com/v1", api_key="sk-test", model="gpt-4o", temperature=3.0)
+    assert exc_info.value.code == "PSALM-C007"
+    assert "temperature" in str(exc_info.value)
 
 
 def test_debate_config_defaults():
@@ -42,15 +44,19 @@ def test_debate_config_defaults():
 
 
 def test_debate_config_invalid_dimension():
-    with pytest.raises(ValidationError, match="Unknown dimension"):
+    with pytest.raises(PSALMConfigError) as exc_info:
         DebateConfig(dimensions=["invalid_dim"])
+    assert exc_info.value.code == "PSALM-C003"
+    assert "invalid_dim" in str(exc_info.value)
 
 
 def test_debate_config_invalid_voting_order():
-    with pytest.raises(ValidationError, match="judge_tiebreaker must be last"):
+    with pytest.raises(PSALMConfigError) as exc_info:
         DebateConfig(voting_strategies=["judge_tiebreaker", "simple_majority"])
+    assert exc_info.value.code == "PSALM-C005"
 
 
 def test_debate_config_unknown_voting_strategy():
-    with pytest.raises(ValidationError, match="Unknown strategy"):
+    with pytest.raises(PSALMConfigError) as exc_info:
         DebateConfig(voting_strategies=["simple_majority", "ranked_choice"])
+    assert exc_info.value.code == "PSALM-C004"
