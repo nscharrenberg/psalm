@@ -43,6 +43,8 @@ This document outlines the design of a **courtroom-inspired multi-agent system (
 
 ### High-Level Architecture
 
+Architecture diagram can be found in [docs/diagrams.md](https://github.com/nscharrenberg/psalm/blob/v2/docs/diagrams.md#high-level-architecture)
+
 The MAS consists of the following core components:
 
 1. **Agent Roles**: Judge, Prosecutor, Defense Attorney, Adjudicators (Jury).
