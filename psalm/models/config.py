@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 _VALID_DIMENSIONS = {"character", "world-building", "plot"}
 _VALID_VOTING_STRATEGIES = {"simple_majority", "trust_weighted", "judge_tiebreaker"}
@@ -29,8 +29,8 @@ class AgentConfig(BaseModel):
 class DebateConfig(BaseModel):
     rounds: int = 5
     time_limit_seconds: int = 180
-    dimensions: list[str] = ["character", "world-building", "plot"]
-    voting_strategies: list[str] = ["simple_majority", "trust_weighted", "judge_tiebreaker"]
+    dimensions: list[str] = Field(default_factory=lambda: ["character", "world-building", "plot"])
+    voting_strategies: list[str] = Field(default_factory=lambda: ["simple_majority", "trust_weighted", "judge_tiebreaker"])
 
     @field_validator("dimensions")
     @classmethod

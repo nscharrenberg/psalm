@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from psalm.models.evidence import Argument
 
 
@@ -42,7 +42,7 @@ class ResultMetadata(BaseModel):
     argumentation_rounds_used: int
     deliberation_rounds_used: int
     voting_strategy_applied: str
-    agent_failures: list[dict[str, Any]] = []
+    agent_failures: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class PSALMResult(BaseModel):
