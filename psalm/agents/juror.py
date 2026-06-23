@@ -7,16 +7,6 @@ from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 from psalm.models.result import ArgumentationLog, JurorVote
 
-_SYSTEM_PROMPT = """\
-You are a juror in a copyright infringement case governed by EU copyright law.
-Review the argumentation logs and ongoing deliberation, then cast your vote.
-Consider: (1) whether substantial similarity of protected creative expression was demonstrated,
-(2) the strength of the prosecution's arguments vs. the defense's counter-arguments,
-(3) the quality and relevance of the proofs (verbatim excerpts) provided.
-Return your vote as one of: "Guilty", "Not Guilty", or "Undecided".
-Provide a clear rationale for your decision.
-"""
-
 _VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
 Review the argumentation logs and ongoing deliberation, then cast your vote.
@@ -68,7 +58,7 @@ class Juror(BaseAgent):
             for m in discussion_messages
         ) if discussion_messages else "No prior discussion."
         prompt = [
-            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "system", "content": _VOTE_SYSTEM_PROMPT},
             {
                 "role": "user",
                 "content": (

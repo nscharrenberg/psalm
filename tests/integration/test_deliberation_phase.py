@@ -90,7 +90,7 @@ async def test_jury_votes_in_parallel(mock_jurors, voting_strategies, mock_judge
     call_times = []
 
     async def record_time(*args, **kwargs):
-        call_times.append(asyncio.get_event_loop().time())
+        call_times.append(asyncio.get_running_loop().time())
         await asyncio.sleep(0.05)
         return JurorVote(juror_id="j", vote="Guilty", rationale="r")
 
