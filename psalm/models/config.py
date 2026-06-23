@@ -72,3 +72,9 @@ class DebateConfig(BaseModel):
                 suggestion="Move judge_tiebreaker to the last position.",
             )
         return v
+
+
+class CaseInput(BaseModel):
+    source_text: str
+    target_text: str
+    dimensions: list[str] = Field(default_factory=lambda: ["character", "world-building", "plot"])

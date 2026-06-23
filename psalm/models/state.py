@@ -1,11 +1,13 @@
 from __future__ import annotations
 from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from psalm.models.evidence import Argument
 from psalm.models.result import ArgumentationLog
 
 
 class ArgumentationState(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     source_text: str
     target_text: str
     dimensions: list[str]
@@ -16,6 +18,10 @@ class ArgumentationState(BaseModel):
     cross_examination_triggered: bool = False
     stability_detected: bool = False
     message_queue: list[dict[str, Any]] = Field(default_factory=list)
+    argumentation_log: dict[str, Any] | None = None
+    pending_prosecution_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    validated_prosecution_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    pending_defense_arguments: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class DeliberationState(BaseModel):
