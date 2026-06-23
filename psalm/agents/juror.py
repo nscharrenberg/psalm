@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from pydantic import BaseModel
+
 from psalm.agents.base import BaseAgent
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 from psalm.models.result import ArgumentationLog, JurorVote
-
 
 _SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
@@ -125,7 +126,8 @@ class Juror(BaseAgent):
                     f"Argumentation summary:\n{rounds_text}\n\n"
                     f"Previous voting rounds:\n{prior_votes_text}\n\n"
                     f"Current discussion:\n{discussion_text}\n\n"
-                    f"You are juror {self._juror_id} in deliberation round {round}. Share your view."
+                    f"You are juror {self._juror_id} in deliberation round {round}. "
+                    f"Share your view."
                 ),
             },
         ]

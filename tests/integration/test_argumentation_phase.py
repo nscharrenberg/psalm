@@ -1,6 +1,8 @@
 # tests/integration/test_argumentation_phase.py
 from unittest.mock import AsyncMock
+
 import pytest
+
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor

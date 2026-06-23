@@ -1,5 +1,7 @@
 from unittest.mock import AsyncMock
+
 import pytest
+
 from psalm.exceptions import PSALMConfigError
 from psalm.models.result import JurorVote
 from psalm.voting.judge_tiebreaker import JudgeTiebreakerVoting
@@ -22,7 +24,9 @@ async def test_tiebreaker_calls_judge(strategy, mock_judge, minimal_argumentatio
         JurorVote(juror_id="j0", vote="Guilty", rationale="r1"),
         JurorVote(juror_id="j1", vote="Not Guilty", rationale="r2"),
     ]
-    result = await strategy.apply(votes, judge=mock_judge, argumentation_log=minimal_argumentation_log)
+    result = await strategy.apply(
+        votes, judge=mock_judge, argumentation_log=minimal_argumentation_log
+    )
     assert result.verdict == "Guilty"
     assert result.is_tie is False
     mock_judge.tiebreak.assert_called_once()
@@ -31,7 +35,9 @@ async def test_tiebreaker_calls_judge(strategy, mock_judge, minimal_argumentatio
 async def test_tiebreaker_never_returns_tie(strategy, mock_judge, minimal_argumentation_log):
     votes = [JurorVote(juror_id="j0", vote="Undecided", rationale="r1")]
     mock_judge.tiebreak = AsyncMock(return_value="Undecided")
-    result = await strategy.apply(votes, judge=mock_judge, argumentation_log=minimal_argumentation_log)
+    result = await strategy.apply(
+        votes, judge=mock_judge, argumentation_log=minimal_argumentation_log
+    )
     assert result.is_tie is False
 
 

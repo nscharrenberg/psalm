@@ -1,4 +1,5 @@
 import pytest
+
 from psalm.exceptions import PSALMConfigError
 from psalm.models.config import AgentConfig, DebateConfig
 
@@ -30,7 +31,12 @@ def test_agent_config_full():
 
 def test_agent_config_invalid_temperature():
     with pytest.raises(PSALMConfigError) as exc_info:
-        AgentConfig(base_url="https://api.openai.com/v1", api_key="sk-test", model="gpt-4o", temperature=3.0)
+        AgentConfig(
+            base_url="https://api.openai.com/v1",
+            api_key="sk-test",
+            model="gpt-4o",
+            temperature=3.0,
+        )
     assert exc_info.value.code == "PSALM-C007"
     assert "temperature" in str(exc_info.value)
 

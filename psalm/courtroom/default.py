@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import time
+
 from psalm.courtroom.base import CourtroomSetup
 from psalm.models.config import CaseInput
 from psalm.models.result import PSALMResult, ResultMetadata
@@ -44,7 +46,8 @@ class DefaultCourtroom(CourtroomSetup):
         delib_rounds = len(debate_log.rounds)
         return (
             f"Verdict: {verdict}. "
-            f"Based on {arg_count} prosecution argument(s) and {counter_count} defense counter-argument(s) "
-            f"across {len(arg_log.rounds)} argumentation round(s), followed by {delib_rounds} deliberation round(s). "
-            f"Final voting strategy applied: {debate_log.final_voting_strategy_applied}."
+            f"Based on {arg_count} prosecution argument(s) and {counter_count} defense "
+            f"counter-argument(s) across {len(arg_log.rounds)} argumentation round(s), followed "
+            f"by {delib_rounds} deliberation round(s). Final voting strategy applied: "
+            f"{debate_log.final_voting_strategy_applied}."
         )

@@ -1,4 +1,5 @@
 import pytest
+
 from psalm.models.result import JurorVote
 from psalm.voting.simple_majority import SimpleMajorityVoting
 

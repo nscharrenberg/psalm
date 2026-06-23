@@ -1,7 +1,9 @@
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
+
 from psalm.agents.judge import Judge
-from psalm.models.result import ArgumentationLog, JurorVote, RoundArguments, ValidationResult
+from psalm.models.result import JurorVote, ValidationResult
 
 
 @pytest.fixture

@@ -1,12 +1,14 @@
 # tests/integration/test_deliberation_phase.py
 import asyncio
 from unittest.mock import AsyncMock
+
 import pytest
+
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
+from psalm.models.config import DebateConfig
 from psalm.models.result import JurorVote
 from psalm.phases.deliberation import DeliberationPhase
-from psalm.models.config import DebateConfig
 from psalm.voting.judge_tiebreaker import JudgeTiebreakerVoting
 from psalm.voting.simple_majority import SimpleMajorityVoting
 from psalm.voting.trust_weighted import TrustWeightedVoting

@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from pydantic import BaseModel, Field, field_validator
+
 from psalm.exceptions import PSALMConfigError
 
 _VALID_DIMENSIONS = {"character", "world-building", "plot"}
@@ -62,7 +64,9 @@ class DebateConfig(BaseModel):
                     code="PSALM-C004",
                     message=f"Unknown voting strategy: '{strategy}'.",
                     context={"strategy": strategy, "valid": sorted(_VALID_VOTING_STRATEGIES)},
-                    suggestion='Use one of: "simple_majority", "trust_weighted", "judge_tiebreaker".',
+                    suggestion=(
+                        'Use one of: "simple_majority", "trust_weighted", "judge_tiebreaker".'
+                    ),
                 )
         if v and v[-1] != "judge_tiebreaker":
             raise PSALMConfigError(

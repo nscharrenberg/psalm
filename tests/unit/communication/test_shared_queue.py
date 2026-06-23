@@ -1,5 +1,5 @@
 import asyncio
-import pytest
+
 from psalm.communication.shared_queue import SharedMessageQueue
 
 

@@ -1,5 +1,6 @@
 # tests/conftest.py
 import pytest
+
 from psalm.models.config import AgentConfig, DebateConfig
 from psalm.models.evidence import Argument, Proof
 from psalm.models.result import (
@@ -61,7 +62,9 @@ def sample_counter_argument(sample_proof: Proof) -> Argument:
 
 
 @pytest.fixture
-def minimal_argumentation_log(sample_argument: Argument, sample_counter_argument: Argument) -> ArgumentationLog:
+def minimal_argumentation_log(
+    sample_argument: Argument, sample_counter_argument: Argument
+) -> ArgumentationLog:
     return ArgumentationLog(
         rounds=[
             RoundArguments(
@@ -79,8 +82,12 @@ def minimal_debate_log() -> DebateLog:
         rounds=[
             RoundDeliberation(
                 round=1,
-                discussion_messages=[{"juror_id": "juror-0", "message": "Evidence supports infringement."}],
-                votes=[JurorVote(juror_id="juror-0", vote="Guilty", rationale="Strong evidence.")],
+                discussion_messages=[
+                    {"juror_id": "juror-0", "message": "Evidence supports infringement."}
+                ],
+                votes=[
+                    JurorVote(juror_id="juror-0", vote="Guilty", rationale="Strong evidence.")
+                ],
                 aggregated_result="Guilty",
             )
         ],

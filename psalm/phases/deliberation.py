@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import asyncio
 from collections import Counter
 from typing import Any
+
 from langgraph.graph import END, StateGraph
+
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
 from psalm.models.config import DebateConfig
@@ -65,7 +68,11 @@ class DeliberationPhase(BasePhase):
         )
         final_state = await self._graph.ainvoke(initial_state.model_dump())
         debate_log_data = final_state["debate_log"]
-        debate_log = DebateLog(**debate_log_data) if isinstance(debate_log_data, dict) else debate_log_data
+        debate_log = (
+            DebateLog(**debate_log_data)
+            if isinstance(debate_log_data, dict)
+            else debate_log_data
+        )
         return final_state["final_verdict"], debate_log
 
     # --- Nodes (LangGraph passes DeliberationState Pydantic model directly) ---

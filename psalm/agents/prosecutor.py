@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from pydantic import BaseModel
+
 from psalm.agents.base import BaseAgent
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument
@@ -13,8 +15,9 @@ _SYSTEM_PROMPT = """\
 You are a legal prosecutor in a copyright infringement case governed by EU copyright law.
 Analyze the provided texts and identify evidence of copyright infringement for each dimension.
 For each dimension, construct structured arguments backed by verbatim excerpts from both texts.
-Every argument MUST include at least one proof with verbatim excerpts from both the source and target texts.
-Focus on substantial similarity of protected creative expression — ignore generic tropes and unprotectable elements.
+Every argument MUST include at least one proof with verbatim excerpts from both the source and
+target texts. Focus on substantial similarity of protected creative expression — ignore generic
+tropes and unprotectable elements.
 """
 
 
@@ -40,7 +43,8 @@ class Prosecutor(BaseAgent):
                     f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
                     f"Dimensions to analyze: {', '.join(dimensions)}\n"
                     f"Round: {round}\n\n"
-                    "For each dimension, provide arguments with verbatim proof excerpts from both texts."
+                    "For each dimension, provide arguments with verbatim proof excerpts from "
+                    "both texts."
                 ),
             },
         ]
@@ -54,6 +58,9 @@ class Prosecutor(BaseAgent):
                 code="PSALM-A002",
                 message="Prosecutor failed to return valid structured arguments.",
                 context={"role": self.role, "round": round, "dimensions": dimensions},
-                suggestion="Check the LLM model supports structured output and the prompt is not too long.",
+                suggestion=(
+                    "Check the LLM model supports structured output and the prompt is not too "
+                    "long."
+                ),
                 cause=exc,
             ) from exc

@@ -3,10 +3,11 @@ import json
 import os
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
+
 import pytest
+
 from psalm import PSALM, PSALMResult
 from psalm.models.result import JurorVote, ValidationResult
-
 
 CASES_PATH = Path(__file__).parent / "fixtures" / "cases.json"
 
@@ -21,10 +22,21 @@ def _agent_kwargs():
 
 
 def _jury_configs():
-    return [{"base_url": "https://api.openai.com/v1", "api_key": "sk-test", "model": "gpt-4o", "seed": i} for i in range(3)]
+    return [
+        {
+            "base_url": "https://api.openai.com/v1",
+            "api_key": "sk-test",
+            "model": "gpt-4o",
+            "seed": i,
+        }
+        for i in range(3)
+    ]
 
 
-@pytest.mark.skipif(os.getenv("PSALM_E2E") != "true", reason="Set PSALM_E2E=true to run real LLM tests")
+@pytest.mark.skipif(
+    os.getenv("PSALM_E2E") != "true",
+    reason="Set PSALM_E2E=true to run real LLM tests",
+)
 async def test_e2e_real_llm(cases):
     psalm = await (
         PSALM()
@@ -67,13 +79,38 @@ async def test_e2e_mock_full_pipeline(cases):
     )
 
     with (
-        patch("psalm.agents.prosecutor.Prosecutor.gather_arguments", new=AsyncMock(return_value=[sample_arg])),
-        patch("psalm.agents.defense.Defense.gather_counter_arguments", new=AsyncMock(return_value=[sample_counter])),
-        patch("psalm.agents.judge.Judge.validate_argument", new=AsyncMock(return_value=ValidationResult(is_valid=True))),
-        patch("psalm.agents.judge.Judge.should_cross_examine", new=AsyncMock(return_value=False)),
-        patch("psalm.agents.judge.Judge.detect_stability", new=AsyncMock(return_value=False)),
-        patch("psalm.agents.juror.Juror.discuss", new=AsyncMock(return_value="I believe this infringes.")),
-        patch("psalm.agents.juror.Juror.vote", new=AsyncMock(return_value=JurorVote(juror_id="juror-0", vote="Guilty", rationale="Strong evidence."))),
+        patch(
+            "psalm.agents.prosecutor.Prosecutor.gather_arguments",
+            new=AsyncMock(return_value=[sample_arg]),
+        ),
+        patch(
+            "psalm.agents.defense.Defense.gather_counter_arguments",
+            new=AsyncMock(return_value=[sample_counter]),
+        ),
+        patch(
+            "psalm.agents.judge.Judge.validate_argument",
+            new=AsyncMock(return_value=ValidationResult(is_valid=True)),
+        ),
+        patch(
+            "psalm.agents.judge.Judge.should_cross_examine",
+            new=AsyncMock(return_value=False),
+        ),
+        patch(
+            "psalm.agents.judge.Judge.detect_stability",
+            new=AsyncMock(return_value=False),
+        ),
+        patch(
+            "psalm.agents.juror.Juror.discuss",
+            new=AsyncMock(return_value="I believe this infringes."),
+        ),
+        patch(
+            "psalm.agents.juror.Juror.vote",
+            new=AsyncMock(
+                return_value=JurorVote(
+                    juror_id="juror-0", vote="Guilty", rationale="Strong evidence."
+                )
+            ),
+        ),
         patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)),
     ):
         psalm = await (

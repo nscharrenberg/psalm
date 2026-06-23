@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from collections import defaultdict
 from typing import Any
+
 from psalm.models.result import JurorVote
 from psalm.voting.base import VoteResult, VotingStrategy
 
@@ -10,7 +12,9 @@ def _weight(rationale: str) -> float:
 
 
 class TrustWeightedVoting(VotingStrategy):
-    async def apply(self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None) -> VoteResult:
+    async def apply(
+        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None
+    ) -> VoteResult:
         weights: dict[str, float] = defaultdict(float)
         for v in votes:
             weights[v.vote] += _weight(v.rationale)

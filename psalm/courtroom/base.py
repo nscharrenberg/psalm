@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from psalm.models.config import CaseInput
 from psalm.models.result import PSALMResult
 

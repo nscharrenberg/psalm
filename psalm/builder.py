@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import asyncio
 from typing import Any
+
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
@@ -14,7 +16,6 @@ from psalm.phases.deliberation import DeliberationPhase
 from psalm.voting.judge_tiebreaker import JudgeTiebreakerVoting
 from psalm.voting.simple_majority import SimpleMajorityVoting
 from psalm.voting.trust_weighted import TrustWeightedVoting
-
 
 _STRATEGY_MAP = {
     "simple_majority": SimpleMajorityVoting,
@@ -32,11 +33,15 @@ class PSALM:
         self._debate_config = DebateConfig()
 
     def with_prosecutor(self, base_url: str, api_key: str, model: str, **kwargs: Any) -> PSALM:
-        self._prosecutor_config = AgentConfig(base_url=base_url, api_key=api_key, model=model, **kwargs)
+        self._prosecutor_config = AgentConfig(
+            base_url=base_url, api_key=api_key, model=model, **kwargs
+        )
         return self
 
     def with_defense(self, base_url: str, api_key: str, model: str, **kwargs: Any) -> PSALM:
-        self._defense_config = AgentConfig(base_url=base_url, api_key=api_key, model=model, **kwargs)
+        self._defense_config = AgentConfig(
+            base_url=base_url, api_key=api_key, model=model, **kwargs
+        )
         return self
 
     def with_judge(self, base_url: str, api_key: str, model: str, **kwargs: Any) -> PSALM:
@@ -61,7 +66,9 @@ class PSALM:
         return self
 
     def with_voting(self, strategies: list[str]) -> PSALM:
-        self._debate_config = self._debate_config.model_copy(update={"voting_strategies": strategies})
+        self._debate_config = self._debate_config.model_copy(
+            update={"voting_strategies": strategies}
+        )
         return self
 
     async def build(self) -> _BuiltPSALM:
@@ -75,14 +82,18 @@ class PSALM:
                 code="PSALM-C001",
                 message="Missing required agent: prosecutor.",
                 context={"missing": "prosecutor"},
-                suggestion="Call .with_prosecutor(base_url=..., api_key=..., model=...) on the builder.",
+                suggestion=(
+                    "Call .with_prosecutor(base_url=..., api_key=..., model=...) on the builder."
+                ),
             )
         if self._defense_config is None:
             raise PSALMConfigError(
                 code="PSALM-C001",
                 message="Missing required agent: defense.",
                 context={"missing": "defense"},
-                suggestion="Call .with_defense(base_url=..., api_key=..., model=...) on the builder.",
+                suggestion=(
+                    "Call .with_defense(base_url=..., api_key=..., model=...) on the builder."
+                ),
             )
         if self._judge_config is None:
             raise PSALMConfigError(
@@ -183,7 +194,10 @@ class _BuiltPSALM:
         from psalm.models.result import ArgumentationLog, DebateLog, ResultMetadata
         return PSALMResult(
             verdict="Guilty",
-            rationale="Source and target texts are identical — infringement confirmed without agent evaluation.",
+            rationale=(
+                "Source and target texts are identical — infringement confirmed without agent "
+                "evaluation."
+            ),
             argumentation_log=ArgumentationLog(rounds=[]),
             debate_log=DebateLog(rounds=[], final_voting_strategy_applied="none"),
             metadata=ResultMetadata(

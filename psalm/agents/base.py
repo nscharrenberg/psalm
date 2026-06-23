@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import asyncio
 from abc import ABC, abstractmethod
 from typing import Any
+
 from langchain_openai import ChatOpenAI
+
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 
@@ -40,7 +43,11 @@ class BaseAgent(ABC):
                     raise PSALMAgentError(
                         code="PSALM-A003",
                         message=f"LLM retry limit reached after {_RETRY_ATTEMPTS} attempts.",
-                        context={"role": self.role, "model": self._config.model, "attempts": _RETRY_ATTEMPTS},
+                        context={
+                            "role": self.role,
+                            "model": self._config.model,
+                            "attempts": _RETRY_ATTEMPTS,
+                        },
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc
@@ -55,8 +62,14 @@ class BaseAgent(ABC):
                 if attempt == _RETRY_ATTEMPTS - 1:
                     raise PSALMAgentError(
                         code="PSALM-A003",
-                        message=f"Structured LLM retry limit reached after {_RETRY_ATTEMPTS} attempts.",
-                        context={"role": self.role, "model": self._config.model, "attempts": _RETRY_ATTEMPTS},
+                        message=(
+                            f"Structured LLM retry limit reached after {_RETRY_ATTEMPTS} attempts."
+                        ),
+                        context={
+                            "role": self.role,
+                            "model": self._config.model,
+                            "attempts": _RETRY_ATTEMPTS,
+                        },
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc

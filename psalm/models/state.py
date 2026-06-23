@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
+
 from psalm.models.evidence import Argument
 from psalm.models.result import ArgumentationLog
 

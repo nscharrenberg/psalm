@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 from typing import Any
+
 from langgraph.graph import END, StateGraph
+
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor
@@ -12,7 +15,13 @@ from psalm.phases.base import BasePhase
 
 
 class ArgumentationPhase(BasePhase):
-    def __init__(self, prosecutor: Prosecutor, defense: Defense, judge: Judge, config: DebateConfig) -> None:
+    def __init__(
+        self,
+        prosecutor: Prosecutor,
+        defense: Defense,
+        judge: Judge,
+        config: DebateConfig,
+    ) -> None:
         self._prosecutor = prosecutor
         self._defense = defense
         self._judge = judge
@@ -124,7 +133,13 @@ class ArgumentationPhase(BasePhase):
         for r in range(1, state.current_round + 1):
             round_args = [a for a in state.arguments if a.round == r]
             round_counters = [a for a in state.counter_arguments if a.round == r]
-            rounds.append(RoundArguments(round=r, arguments=round_args, counter_arguments=round_counters))
+            rounds.append(
+                RoundArguments(
+                    round=r,
+                    arguments=round_args,
+                    counter_arguments=round_counters,
+                )
+            )
         log = ArgumentationLog(rounds=rounds)
         return {"argumentation_log": log.model_dump()}
 

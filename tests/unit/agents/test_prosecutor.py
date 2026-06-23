@@ -1,7 +1,8 @@
-from unittest.mock import AsyncMock, MagicMock, patch, PropertyMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
+
 from psalm.agents.prosecutor import Prosecutor
-from psalm.models.evidence import Argument, Proof
 
 
 @pytest.fixture

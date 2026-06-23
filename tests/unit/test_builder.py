@@ -1,6 +1,8 @@
 # tests/unit/test_builder.py
 from unittest.mock import AsyncMock, patch
+
 import pytest
+
 from psalm.builder import PSALM
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 
@@ -10,7 +12,15 @@ def _agent_kwargs():
 
 
 def _jury_configs(n=3):
-    return [{"base_url": "https://api.openai.com/v1", "api_key": "sk-test", "model": "gpt-4o", "seed": i} for i in range(n)]
+    return [
+        {
+            "base_url": "https://api.openai.com/v1",
+            "api_key": "sk-test",
+            "model": "gpt-4o",
+            "seed": i,
+        }
+        for i in range(n)
+    ]
 
 
 async def _build_psalm():
@@ -34,7 +44,12 @@ async def test_build_returns_courtroom():
 
 
 async def test_build_raises_without_prosecutor():
-    builder = PSALM().with_defense(**_agent_kwargs()).with_judge(**_agent_kwargs()).with_jury(_jury_configs())
+    builder = (
+        PSALM()
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+    )
     with pytest.raises(PSALMConfigError) as exc_info:
         with patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)):
             await builder.build()

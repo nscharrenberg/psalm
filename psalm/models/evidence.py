@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from pydantic import BaseModel, field_validator
+
 from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
 
 _VALID_AGENT_ROLES = {"prosecutor", "defense"}

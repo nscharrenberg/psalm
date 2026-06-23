@@ -1,5 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
+
 from psalm.agents.juror import Juror
 from psalm.models.result import JurorVote
 
@@ -63,7 +65,9 @@ async def test_discuss_returns_string(juror, minimal_argumentation_log):
 async def test_vote_returns_juror_vote(juror, minimal_argumentation_log):
     from psalm.models.result import JurorVote
     mock_chain = AsyncMock()
-    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(vote="Guilty", rationale="Strong similarity."))
+    mock_chain.ainvoke = AsyncMock(
+        return_value=MagicMock(vote="Guilty", rationale="Strong similarity.")
+    )
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(juror._llm), "with_structured_output", mock_with_structured):
         result = await juror.vote(

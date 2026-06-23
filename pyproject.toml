@@ -3,6 +3,15 @@ name = "psalm-eu"
 version = "2.0.0"
 description = "Courtroom-inspired multi-agent system for EU copyright infringement evaluation"
 requires-python = ">=3.14"
+license = { text = "MIT" }
+authors = [{ name = "Noah Scharrenberg" }]
+keywords = ["copyright", "multi-agent", "llm", "legal", "eu"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "langgraph>=1.2.6",
     "langchain>=1.3.10",

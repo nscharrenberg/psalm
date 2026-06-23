@@ -1,6 +1,8 @@
 import json
+
 import pytest
-from psalm.models.evidence import Proof, Argument
+
+from psalm.models.evidence import Argument, Proof
 from psalm.models.result import (
     ArgumentationLog,
     DebateLog,
@@ -24,7 +26,13 @@ def proof():
 
 @pytest.fixture
 def argument(proof):
-    return Argument(claim="Shared traits.", dimension="character", proofs=[proof], agent_role="prosecutor", round=1)
+    return Argument(
+        claim="Shared traits.",
+        dimension="character",
+        proofs=[proof],
+        agent_role="prosecutor",
+        round=1,
+    )
 
 
 @pytest.fixture

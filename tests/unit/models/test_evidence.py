@@ -1,5 +1,6 @@
 # tests/unit/models/test_evidence.py
 import pytest
+
 from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
 from psalm.models.evidence import Argument, Proof
 

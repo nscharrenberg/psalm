@@ -1,5 +1,5 @@
-from psalm.models.state import ArgumentationState, DeliberationState
 from psalm.models.result import ArgumentationLog
+from psalm.models.state import ArgumentationState, DeliberationState
 
 
 def test_argumentation_state_defaults():

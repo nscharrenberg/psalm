@@ -1,5 +1,6 @@
 # tests/unit/models/test_exceptions.py
 import pytest
+
 from psalm.exceptions import (
     PSALMAgentError,
     PSALMConfigError,

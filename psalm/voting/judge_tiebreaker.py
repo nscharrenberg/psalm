@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import Any
+
 from psalm.exceptions import PSALMConfigError
 from psalm.models.result import ArgumentationLog, JurorVote
 from psalm.voting.base import VoteResult, VotingStrategy

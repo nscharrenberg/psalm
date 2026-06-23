@@ -1,12 +1,16 @@
 from __future__ import annotations
+
 from collections import Counter
 from typing import Any
+
 from psalm.models.result import JurorVote
 from psalm.voting.base import VoteResult, VotingStrategy
 
 
 class SimpleMajorityVoting(VotingStrategy):
-    async def apply(self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None) -> VoteResult:
+    async def apply(
+        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None
+    ) -> VoteResult:
         counts = Counter(v.vote for v in votes)
         if not counts:
             return VoteResult(is_tie=True)

@@ -1,7 +1,9 @@
 from unittest.mock import AsyncMock, MagicMock
+
 import pytest
+
 from psalm.models.config import DebateConfig
-from psalm.models.result import ArgumentationLog, JurorVote
+from psalm.models.result import JurorVote
 from psalm.models.state import DeliberationState
 from psalm.phases.deliberation import DeliberationPhase
 

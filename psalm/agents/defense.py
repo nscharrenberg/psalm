@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from pydantic import BaseModel
+
 from psalm.agents.base import BaseAgent
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument
@@ -11,9 +13,9 @@ class _ArgumentList(BaseModel):
 
 _SYSTEM_PROMPT = """\
 You are a defense attorney in a copyright infringement case governed by EU copyright law.
-Challenge the prosecutor's arguments by providing counter-evidence showing the target text does not infringe.
-Focus on: (1) alternative interpretations, (2) lack of substantial similarity in protected elements,
-(3) elements that are generic, unprotectable, or independently created.
+Challenge the prosecutor's arguments by providing counter-evidence showing the target text does
+not infringe. Focus on: (1) alternative interpretations, (2) lack of substantial similarity in
+protected elements, (3) elements that are generic, unprotectable, or independently created.
 Every counter-argument MUST include at least one proof with verbatim excerpts from both texts.
 """
 
