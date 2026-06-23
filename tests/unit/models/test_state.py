@@ -28,3 +28,24 @@ def test_deliberation_state_defaults():
     assert state.consensus_reached is False
     assert state.final_verdict is None
     assert state.voting_strategy_applied is None
+
+
+def test_deliberation_state_new_fields_default():
+    arg_log = ArgumentationLog(rounds=[])
+    state = DeliberationState(
+        argumentation_log=arg_log,
+        max_rounds=3,
+    )
+    assert state.current_round_votes == []
+    assert state.debate_log is None
+
+
+def test_deliberation_state_accepts_debate_log():
+    arg_log = ArgumentationLog(rounds=[])
+    state = DeliberationState(
+        argumentation_log=arg_log,
+        max_rounds=3,
+        debate_log={"rounds": [], "final_voting_strategy_applied": "unanimous"},
+    )
+    assert state.debate_log is not None
+    assert state.debate_log["final_voting_strategy_applied"] == "unanimous"

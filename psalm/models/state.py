@@ -33,3 +33,7 @@ class DeliberationState(BaseModel):
     consensus_reached: bool = False
     final_verdict: str | None = None
     voting_strategy_applied: str | None = None
+    current_round_votes: list[dict[str, Any]] = Field(default_factory=list)
+    debate_log: dict[str, Any] | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
