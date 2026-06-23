@@ -1,7 +1,7 @@
 # tests/unit/models/test_evidence.py
 import pytest
-from pydantic import ValidationError
-from psalm.models.evidence import Proof, Argument
+from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
+from psalm.models.evidence import Argument, Proof
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def test_argument_requires_at_least_one_proof(proof):
 
 
 def test_argument_rejects_empty_proofs():
-    with pytest.raises(ValidationError, match="at least one proof"):
+    with pytest.raises(PSALMRuntimeError) as exc_info:
         Argument(
             claim="Characters share traits.",
             dimension="character",
@@ -38,10 +38,12 @@ def test_argument_rejects_empty_proofs():
             agent_role="prosecutor",
             round=1,
         )
+    assert exc_info.value.code == "PSALM-R003"
+    assert "proof" in str(exc_info.value)
 
 
 def test_argument_rejects_invalid_agent_role(proof):
-    with pytest.raises(ValidationError, match="agent_role"):
+    with pytest.raises(PSALMConfigError) as exc_info:
         Argument(
             claim="Some claim.",
             dimension="character",
@@ -49,6 +51,8 @@ def test_argument_rejects_invalid_agent_role(proof):
             agent_role="witness",
             round=1,
         )
+    assert exc_info.value.code == "PSALM-C001"
+    assert "agent_role" in str(exc_info.value)
 
 
 def test_argument_accepts_multiple_proofs(proof):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel, field_validator
+from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
 
 _VALID_AGENT_ROLES = {"prosecutor", "defense"}
 
@@ -21,12 +22,22 @@ class Argument(BaseModel):
     @classmethod
     def validate_proofs(cls, v: list[Proof]) -> list[Proof]:
         if not v:
-            raise ValueError("An argument must have at least one proof")
+            raise PSALMRuntimeError(
+                code="PSALM-R003",
+                message="Argument must have at least one proof.",
+                context={},
+                suggestion="Ensure the agent provides source/target excerpts with each claim.",
+            )
         return v
 
     @field_validator("agent_role")
     @classmethod
     def validate_agent_role(cls, v: str) -> str:
         if v not in _VALID_AGENT_ROLES:
-            raise ValueError(f"agent_role must be one of {_VALID_AGENT_ROLES}, got '{v}'")
+            raise PSALMConfigError(
+                code="PSALM-C001",
+                message=f"Invalid agent_role: '{v}'.",
+                context={"agent_role": v, "valid": sorted(_VALID_AGENT_ROLES)},
+                suggestion='agent_role must be "prosecutor" or "defense".',
+            )
         return v
