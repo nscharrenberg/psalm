@@ -1,0 +1,20 @@
+[
+  {
+    "id": "clear_infringement",
+    "source": "Elara had silver hair that shimmered like moonlight and eyes the colour of a summer sky. She carried a staff carved from the ancient oak of the Forbidden Grove.",
+    "target": "Alara possessed shimmering silver locks and sky-blue eyes. In her hand she bore a staff hewn from the oak of the Ancient Grove.",
+    "expected_verdict": "Guilty"
+  },
+  {
+    "id": "clear_non_infringement",
+    "source": "The dragon spread its wings over the mountain valley, its scales gleaming in the dawn light.",
+    "target": "Maria walked through the city park, her umbrella shielding her from the afternoon rain.",
+    "expected_verdict": "Not Guilty"
+  },
+  {
+    "id": "borderline",
+    "source": "A young orphan discovers they have magical powers and is sent to a school where they learn to control them.",
+    "target": "A parentless teenager finds they can move objects with their mind and joins an academy for gifted students.",
+    "expected_verdict": "Undecided"
+  }
+]
