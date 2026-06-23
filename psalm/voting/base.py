@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel
 
 from psalm.models.result import JurorVote
-
-if TYPE_CHECKING:
-    pass
 
 
 class VoteResult(BaseModel):

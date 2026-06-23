@@ -37,6 +37,7 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+per-file-ignores = {"tests/**" = ["E501"]}
 
 [tool.hatch.build.targets.wheel]
 packages = ["psalm"]
