@@ -103,7 +103,7 @@ async def test_empty_round_stops_loop(mock_prosecutor, mock_defense, mock_judge,
     mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
     config = DebateConfig(argumentation_rounds=5)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
-    log = await phase.run(case_input)
+    _ = await phase.run(case_input)
     # Must stop after first empty round, not run all 5 rounds
     assert mock_prosecutor.gather_arguments.call_count == 1
 

@@ -10,7 +10,8 @@ from psalm.models.result import ArgumentationLog, JurorVote
 _VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
 Evaluate the arguments and counter-arguments presented by the prosecution and defense attorneys.
-You are a lay evaluator — the attorneys handle legal doctrine; your job is to weigh argument quality.
+You are a lay evaluator — the attorneys handle legal doctrine; 
+your job is to weigh argument quality.
 
 The prosecution carries the burden of proof. Ask:
 - Did the prosecution present concrete, specific textual similarities?
