@@ -101,7 +101,6 @@ class ArgumentationPhase(BasePhase):
             dimensions=state.dimensions,
             prosecutor_arguments=prosecution_args,
             round=state.current_round + 1,
-            prosecution_empty=not prosecution_args,
         )
         return {"pending_defense_arguments": [a.model_dump() for a in counter_arguments]}
 

@@ -128,22 +128,14 @@ async def test_empty_rounds_excluded_from_log(mock_prosecutor, mock_defense, moc
         assert round_rec.arguments != [] or round_rec.counter_arguments != []
 
 
-async def test_defense_gets_affirmative_instruction_when_prosecution_empty(
+async def test_defense_is_always_called_regardless_of_prosecution(
     mock_prosecutor, mock_defense, mock_judge, case_input
 ):
-    # When prosecution produces 0 valid arguments, defense must be prompted to make
-    # affirmative arguments rather than receive an empty "counter nothing" instruction.
+    # Defense must be called in every round — even when prosecution produces no valid arguments —
+    # so it can make affirmative arguments about the texts' independence.
     mock_prosecutor.gather_arguments = AsyncMock(return_value=[])
-    captured_kwargs: list = []
-
-    async def capture_defense(*args, **kwargs):
-        captured_kwargs.append(kwargs)
-        return []
-
-    mock_defense.gather_counter_arguments = AsyncMock(side_effect=capture_defense)
+    mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
     config = DebateConfig(argumentation_rounds=1)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     await phase.run(case_input)
-    assert captured_kwargs, "defense was never called"
-    # When prosecution is empty, phase must tell defense via prosecution_empty=True
-    assert captured_kwargs[0].get("prosecution_empty") is True
+    assert mock_defense.gather_counter_arguments.called, "defense was never called"

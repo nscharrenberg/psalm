@@ -22,13 +22,15 @@ PRIORITIZE these argument types (strongest first):
 3. Highly specific plot details that could not be independently invented — same names, same
    events, same distinctive sequence of choices.
 
-If none of the above exist, you may present weaker arguments based on structural similarities,
+If none of the above exist, present weaker arguments based on structural similarities,
 shared character archetypes, genre conventions, or abstract themes — be aware the defense will
 challenge those as legally unprotectable ideas under EU law. Make the argument anyway: the
 debate must proceed and the defense will rebut.
 
-Every argument MUST include verbatim excerpts from BOTH texts. If you are rebutting defense
-counter-arguments from prior rounds, directly address their challenge in your claim.
+Every argument must include relevant passages from both texts. Quote as closely as possible to
+the original; close approximations are acceptable. You MUST produce at least one argument —
+if strong evidence is absent, make the best case available so the debate can proceed.
+If you are rebutting defense arguments from prior rounds, directly address their challenge.
 """
 
 
@@ -66,7 +68,7 @@ class Prosecutor(BaseAgent):
                     f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
                     f"Dimensions to analyze: {', '.join(dimensions)}\n"
                     f"Round: {round}{rebuttal_section}\n\n"
-                    "Provide arguments with verbatim proof excerpts from both texts."
+                    "Provide arguments with relevant passages from both texts."
                 ),
             },
         ]

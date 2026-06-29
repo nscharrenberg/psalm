@@ -25,11 +25,13 @@ def test_judge_validation_prompt_includes_idea_expression_criterion():
 
 def test_judge_has_separate_defense_validation_prompt():
     # Defense arguments challenge prosecution claims — they argue differences, not similarity.
-    # A separate validation prompt must exist and must NOT require the defense to demonstrate
-    # expression-level similarity.
+    # A separate validation prompt must exist, must require some kind of textual evidence
+    # (passages/excerpts/proof), and must NOT require demonstrating similarity.
     from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
     prompt = _DEFENSE_VALIDATION_PROMPT.lower()
-    assert "excerpt" in prompt or "verbatim" in prompt
+    # Must ask for some form of evidence from the texts
+    assert "passage" in prompt or "excerpt" in prompt or "proof" in prompt
+    # Must not require demonstrating similarity (that's the prosecution's burden)
     assert "demonstrate similarity" not in prompt and "protected creative expression" not in prompt
 
 

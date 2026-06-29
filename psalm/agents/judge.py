@@ -29,25 +29,27 @@ _PROSECUTION_VALIDATION_PROMPT = """\
 You are a judge validating a prosecution argument in a copyright case governed by EU copyright law.
 Reject the argument (is_valid=false) if ANY of the following criteria fails:
 
-(1) The argument includes at least one proof with actual verbatim excerpts from both texts.
-(2) The excerpts are genuinely from the provided texts, not paraphrased or invented.
+(1) The argument includes at least one proof with relevant passages from both texts.
+(2) The passages are derived from the provided texts — close approximations and paraphrases are
+    acceptable; reject only if the passage appears completely fabricated (not based on anything
+    in the actual texts).
 (3) The reasoning is relevant to the claimed dimension.
-(4) The excerpts actually support the argument's claim — the claimed similarity is present in
-    the excerpts. Reject only if the prosecution describes a similarity that the excerpts do
-    not contain at all (factually false claim). If the excerpts show SOME connection to the
-    claim — even if legally weak — the argument passes: the defense will challenge it.
+(4) The passages show some connection to the argument's claim — even a weak connection passes;
+    the defense will challenge it. Reject only if the described similarity is entirely absent
+    from the passages (factually false claim).
 
 Note: Do NOT reject arguments solely because they argue idea-level or thematic similarity.
-Those are legally weak and the defense will rebut them. Reject only if the excerpts are
-unrelated to or contradict the stated claim.
+Those are legally weak and the defense will rebut them.
 """
 
 _DEFENSE_VALIDATION_PROMPT = """\
 You are a judge validating a defense argument in a copyright case governed by EU copyright law.
 Reject the argument (is_valid=false) if ANY of the following criteria fails:
 
-(1) The argument includes at least one proof with actual verbatim excerpts from both texts.
-(2) The excerpts are genuinely from the provided texts, not paraphrased or invented.
+(1) The argument includes at least one proof with relevant passages from both texts.
+(2) The passages are derived from the provided texts — close approximations and paraphrases are
+    acceptable; reject only if a passage appears completely fabricated (not based on anything
+    in the actual texts).
 (3) The reasoning is relevant either to a prosecution argument being challenged, or to
     establishing why the texts differ or are independently created.
 

@@ -40,7 +40,8 @@ AFFIRMATIVE ARGUMENTS — you may also proactively argue why the texts are disti
 
 For each prosecution argument, decide: does it rest on an unprotectable idea (challenge as
 legally insufficient) or on specific expression (challenge on the merits)?
-Every argument MUST include verbatim excerpts from both texts.
+Every argument must include relevant passages from both texts. Quote as closely as possible
+to the original; close approximations are acceptable. You MUST produce at least one argument.
 """
 
 
@@ -56,23 +57,28 @@ class Defense(BaseAgent):
         dimensions: list[str],
         prosecutor_arguments: list[Argument],
         round: int,
-        prosecution_empty: bool = False,
     ) -> list[Argument]:
         structured_llm = self._llm.with_structured_output(_ArgumentList)
         args_text = "\n".join(
             f"- [{a.dimension}] {a.claim} (proofs: {len(a.proofs)})"
             for a in prosecutor_arguments
         )
-        if prosecution_empty:
+        if prosecutor_arguments:
             instruction = (
-                "The prosecution has not yet raised any specific arguments. You must make "
-                "proactive affirmative arguments about why the target text does NOT infringe "
-                "the source text's copyright. Highlight key differences in wording, expression, "
-                "and creative choices between the two texts. The prosecution will respond to "
-                "your arguments in the next round, creating the debate."
+                "Counter each prosecution argument by identifying weaknesses (unprotectable "
+                "ideas, lack of expression-level similarity, independent creation). "
+                "Additionally, make at least one affirmative argument about why the texts are "
+                "independently created — cite specific passages where the expression and "
+                "creative choices diverge. You MUST produce at least one argument."
             )
         else:
-            instruction = "Provide counter-arguments with verbatim proof excerpts from both texts."
+            instruction = (
+                "The prosecution has not yet raised any arguments. Make affirmative arguments "
+                "about why the target text does NOT infringe the source — highlight specific "
+                "passages where the wording, imagery, and creative choices are independently "
+                "created. The prosecution will counter your arguments in the next round. "
+                "You MUST produce at least one argument."
+            )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
