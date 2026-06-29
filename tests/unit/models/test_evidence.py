@@ -1,7 +1,7 @@
 # tests/unit/models/test_evidence.py
 import pytest
 
-from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
+from psalm.exceptions import PSALMRuntimeError
 from psalm.models.evidence import Argument, Proof
 
 
@@ -43,17 +43,18 @@ def test_argument_rejects_empty_proofs():
     assert "proof" in str(exc_info.value)
 
 
-def test_argument_rejects_invalid_agent_role(proof):
-    with pytest.raises(PSALMConfigError) as exc_info:
-        Argument(
-            claim="Some claim.",
-            dimension="character",
-            proofs=[proof],
-            agent_role="witness",
-            round=1,
-        )
-    assert exc_info.value.code == "PSALM-C001"
-    assert "agent_role" in str(exc_info.value)
+def test_argument_accepts_any_agent_role_from_llm(proof):
+    # agent_role is stamped by code after the LLM call, so any LLM-returned
+    # string must be accepted at model parse time — a validator here would
+    # fire before the stamping code can run.
+    arg = Argument(
+        claim="Some claim.",
+        dimension="character",
+        proofs=[proof],
+        agent_role="defense attorney",
+        round=1,
+    )
+    assert arg.agent_role == "defense attorney"
 
 
 def test_argument_accepts_multiple_proofs(proof):

@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-from psalm.exceptions import PSALMConfigError, PSALMRuntimeError
-
-_VALID_AGENT_ROLES = {"prosecutor", "defense"}
+from psalm.exceptions import PSALMRuntimeError
 
 
 class Proof(BaseModel):
@@ -32,14 +30,3 @@ class Argument(BaseModel):
             )
         return v
 
-    @field_validator("agent_role")
-    @classmethod
-    def validate_agent_role(cls, v: str) -> str:
-        if v not in _VALID_AGENT_ROLES:
-            raise PSALMConfigError(
-                code="PSALM-C001",
-                message=f"Invalid agent_role: '{v}'.",
-                context={"agent_role": v, "valid": sorted(_VALID_AGENT_ROLES)},
-                suggestion='agent_role must be "prosecutor" or "defense".',
-            )
-        return v
