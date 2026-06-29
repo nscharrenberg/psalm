@@ -44,7 +44,7 @@ def voting_strategies(mock_judge):
 
 @pytest.fixture
 def deliberation_phase(mock_jurors, voting_strategies, mock_judge):
-    config = DebateConfig(rounds=3)
+    config = DebateConfig(deliberation_rounds=3)
     return DeliberationPhase(
         jury=mock_jurors,
         voting_strategies=voting_strategies,
@@ -80,7 +80,7 @@ async def test_non_unanimous_triggers_more_rounds(mock_jurors, voting_strategies
     for j in mock_jurors:
         j.vote = split_then_agree
 
-    config = DebateConfig(rounds=3)
+    config = DebateConfig(deliberation_rounds=3)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
     verdict, log = await phase.run(minimal_argumentation_log)
     assert len(log.rounds) > 1
@@ -97,7 +97,7 @@ async def test_jury_votes_in_parallel(mock_jurors, voting_strategies, mock_judge
     for j in mock_jurors:
         j.vote = record_time
 
-    config = DebateConfig(rounds=1)
+    config = DebateConfig(deliberation_rounds=1)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
     await phase.run(minimal_argumentation_log)
 
@@ -117,7 +117,7 @@ async def test_exhausted_rounds_applies_voting_strategy(mock_jurors, voting_stra
         j.vote = await always_split(i)
 
     mock_judge.tiebreak = AsyncMock(return_value="Undecided")
-    config = DebateConfig(rounds=2)
+    config = DebateConfig(deliberation_rounds=2)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
     verdict, log = await phase.run(minimal_argumentation_log)
     assert verdict in {"Guilty", "Not Guilty", "Undecided"}

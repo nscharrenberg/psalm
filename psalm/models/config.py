@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from psalm.exceptions import PSALMConfigError
 
@@ -35,6 +35,8 @@ class AgentConfig(BaseModel):
 
 
 class DebateConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     argumentation_rounds: int = 3
     deliberation_rounds: int = 2
     time_limit_seconds: int = 180

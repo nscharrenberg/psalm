@@ -45,7 +45,7 @@ def mock_judge(agent_config):
 
 @pytest.fixture
 def argumentation_phase(mock_prosecutor, mock_defense, mock_judge):
-    config = DebateConfig(rounds=2)
+    config = DebateConfig(argumentation_rounds=2)
     return ArgumentationPhase(
         prosecutor=mock_prosecutor,
         defense=mock_defense,
@@ -77,7 +77,7 @@ async def test_argumentation_phase_validates_arguments(argumentation_phase, case
 
 async def test_invalid_arguments_excluded(mock_prosecutor, mock_defense, mock_judge, case_input, sample_argument):
     mock_judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=False, rejection_reason="No excerpts."))
-    config = DebateConfig(rounds=1)
+    config = DebateConfig(argumentation_rounds=1)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     log = await phase.run(case_input)
     # All arguments rejected by judge — rounds exist but args lists empty
@@ -87,7 +87,7 @@ async def test_invalid_arguments_excluded(mock_prosecutor, mock_defense, mock_ju
 
 async def test_stability_terminates_early(mock_prosecutor, mock_defense, mock_judge, case_input, sample_argument):
     mock_judge.detect_stability = AsyncMock(return_value=True)
-    config = DebateConfig(rounds=5)
+    config = DebateConfig(argumentation_rounds=5)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     log = await phase.run(case_input)
     # Should terminate after 1 round due to stability
