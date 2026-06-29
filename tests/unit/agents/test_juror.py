@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from psalm.agents.juror import Juror
+from psalm.agents.juror import Juror, _format_argumentation_log, _format_prior_rounds
 from psalm.models.result import JurorVote
 
 
@@ -63,7 +63,6 @@ async def test_discuss_returns_string(juror, minimal_argumentation_log):
 
 
 async def test_vote_returns_juror_vote(juror, minimal_argumentation_log):
-    from psalm.models.result import JurorVote
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(
         return_value=MagicMock(vote="Guilty", rationale="Strong similarity.")
@@ -79,3 +78,120 @@ async def test_vote_returns_juror_vote(juror, minimal_argumentation_log):
     assert isinstance(result, JurorVote)
     assert result.juror_id == "juror-0"
     assert result.vote == "Guilty"
+
+
+# --- Tests for context serialization helpers ---
+
+def test_format_argumentation_log_includes_claims(minimal_argumentation_log):
+    text = _format_argumentation_log(minimal_argumentation_log)
+    assert "Both characters share unique physical traits." in text
+    assert "The wizard had bright blue eyes." in text          # source_excerpt
+    assert "The sorcerer possessed striking azure irises." in text  # target_excerpt
+    assert "Eye color is a generic trait not protected by copyright." in text  # counter-arg claim
+
+
+def test_format_argumentation_log_includes_round_header(minimal_argumentation_log):
+    text = _format_argumentation_log(minimal_argumentation_log)
+    assert "Round 1" in text
+    assert "PROSECUTION" in text
+    assert "DEFENSE" in text
+
+
+def test_format_prior_rounds_includes_rationale_and_attribution():
+    previous_rounds = [
+        {
+            "round": 1,
+            "discussion_messages": [
+                {"juror_id": "juror-0", "message": "The prosecution arguments are compelling."},
+            ],
+            "votes": [
+                {"juror_id": "juror-0", "vote": "Guilty", "rationale": "Strong similarity found."},
+                {"juror_id": "juror-1", "vote": "Not Guilty", "rationale": "Elements are generic."},
+            ],
+        }
+    ]
+    text = _format_prior_rounds(previous_rounds, "juror-0")
+    assert "Strong similarity found." in text
+    assert "Elements are generic." in text
+    assert "(YOUR PRIOR VOTE)" in text
+    assert "The prosecution arguments are compelling." in text
+
+
+def test_format_prior_rounds_empty_returns_message():
+    text = _format_prior_rounds([], "juror-0")
+    assert "No prior" in text
+
+
+def test_format_prior_rounds_marks_own_discussion():
+    previous_rounds = [
+        {
+            "round": 1,
+            "discussion_messages": [
+                {"juror_id": "juror-0", "message": "I lean guilty."},
+                {"juror_id": "juror-1", "message": "I lean not guilty."},
+            ],
+            "votes": [],
+        }
+    ]
+    text = _format_prior_rounds(previous_rounds, "juror-0")
+    assert "(YOU)" in text
+
+
+# --- Tests that verify prompts contain actual argument content ---
+
+async def test_discuss_prompt_contains_argument_content(juror, minimal_argumentation_log):
+    captured: list = []
+
+    async def mock_ainvoke(messages, **kwargs):
+        captured.append(messages)
+        return MagicMock(message="My view based on the evidence.")
+
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(side_effect=mock_ainvoke)
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(juror._llm), "with_structured_output", mock_with_structured):
+        await juror.discuss(
+            argumentation_log=minimal_argumentation_log,
+            previous_rounds=[],
+            current_discussion=[],
+            round=1,
+        )
+
+    assert captured, "LLM was not called"
+    prompt_text = str(captured[0])
+    assert "Both characters share unique physical traits." in prompt_text
+    assert "The wizard had bright blue eyes." in prompt_text
+
+
+async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation_log):
+    captured: list = []
+
+    async def mock_ainvoke(messages, **kwargs):
+        captured.append(messages)
+        return MagicMock(vote="Guilty", rationale="Strong.")
+
+    previous_rounds = [
+        {
+            "round": 1,
+            "discussion_messages": [],
+            "votes": [
+                {"juror_id": "juror-0", "vote": "Guilty", "rationale": "Strong similarity found."},
+            ],
+        }
+    ]
+
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(side_effect=mock_ainvoke)
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(juror._llm), "with_structured_output", mock_with_structured):
+        await juror.vote(
+            argumentation_log=minimal_argumentation_log,
+            previous_rounds=previous_rounds,
+            discussion_messages=[],
+            round=2,
+        )
+
+    assert captured, "LLM was not called"
+    prompt_text = str(captured[0])
+    assert "Strong similarity found." in prompt_text
+    assert "(YOUR PRIOR VOTE)" in prompt_text

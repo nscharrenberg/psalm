@@ -9,24 +9,75 @@ from psalm.models.result import ArgumentationLog, JurorVote
 
 _VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
-Review the argumentation logs and ongoing deliberation, then cast your vote.
-Consider: (1) whether substantial similarity of protected creative expression was demonstrated,
-(2) the strength of the prosecution's arguments vs. the defense's counter-arguments,
-(3) the quality and relevance of the proofs (verbatim excerpts) provided.
-Return your vote as one of: "Guilty", "Not Guilty", or "Undecided".
-Provide a clear rationale for your decision.
+Review the argumentation from the prosecution and defense, and the ongoing deliberation.
+Base your vote ONLY on the specific arguments, claims, and verbatim proof excerpts in the log below.
+Do NOT introduce legal concepts (fair use, market impact, transformative use, etc.) unless they were \
+explicitly raised by prosecution or defense.
+If you have voted in a prior deliberation round, maintain your position unless a fellow juror made a \
+specific, compelling argument grounded in the evidence that changes your view — and explain exactly \
+what persuaded you.
+Vote options: "Guilty" (substantial similarity of protected expression was proven), \
+"Not Guilty" (not proven), or "Undecided" (genuinely uncertain after weighing both sides).
 """
 
 _DISCUSS_SYSTEM_PROMPT = """\
-You are a juror in a copyright infringement case discussing your views with fellow jurors.
-Review the evidence and prior discussion, then share your perspective in 1-2 sentences.
-Focus on the most compelling aspect of the case from your perspective.
-Be concise — you are contributing to a group deliberation, not delivering a speech.
+You are a juror in a copyright infringement case deliberating with fellow jurors.
+Base every statement ONLY on specific claims and verbatim proof excerpts from the argumentation log below.
+Do NOT introduce legal concepts not raised by prosecution or defense.
+If you voted in a prior round, state your position and either argue for it using specific evidence, \
+or identify what specific proof would change your mind.
+If you are in the majority, present your strongest argument to persuade the minority.
+If you are in the minority (or Undecided), explain what specific evidence or argument would be needed \
+to change your vote.
+Be concise — 1-3 sentences. This is group deliberation, not a speech.
 """
 
 
 class _DiscussionMessage(BaseModel):
     message: str
+
+
+def _format_argumentation_log(argumentation_log: ArgumentationLog) -> str:
+    parts: list[str] = []
+    for r in argumentation_log.rounds:
+        parts.append(f"=== Argumentation Round {r.round} ===")
+        parts.append("PROSECUTION ARGUMENTS:")
+        for i, arg in enumerate(r.arguments, 1):
+            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                parts.append(f'     Source: "{p.source_excerpt}"')
+                parts.append(f'     Target: "{p.target_excerpt}"')
+                parts.append(f"     Relevance: {p.relevance}")
+        parts.append("DEFENSE COUNTER-ARGUMENTS:")
+        for i, arg in enumerate(r.counter_arguments, 1):
+            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                parts.append(f'     Source: "{p.source_excerpt}"')
+                parts.append(f'     Target: "{p.target_excerpt}"')
+                parts.append(f"     Relevance: {p.relevance}")
+    return "\n".join(parts)
+
+
+def _format_prior_rounds(previous_rounds: list[dict], my_juror_id: str) -> str:
+    if not previous_rounds:
+        return "No prior deliberation rounds."
+    parts: list[str] = []
+    for rec in previous_rounds:
+        round_num = rec.get("round")
+        parts.append(f"--- Deliberation Round {round_num} ---")
+        discussion = rec.get("discussion_messages", [])
+        if discussion:
+            parts.append("Discussion:")
+            for msg in discussion:
+                jid = msg.get("juror_id", "?")
+                marker = " (YOU)" if jid == my_juror_id else ""
+                parts.append(f"  {jid}{marker}: {msg.get('message', '')}")
+        parts.append("Votes cast:")
+        for v in rec.get("votes", []):
+            jid = v.get("juror_id", "?")
+            marker = " (YOUR PRIOR VOTE)" if jid == my_juror_id else ""
+            parts.append(f"  {jid}{marker}: {v.get('vote', '?')} — {v.get('rationale', '')}")
+    return "\n".join(parts)
 
 
 class Juror(BaseAgent):
@@ -48,11 +99,7 @@ class Juror(BaseAgent):
         discussion_messages: list[dict[str, str]],
     ) -> JurorVote:
         structured_llm = self._llm.with_structured_output(JurorVote)
-        rounds_text = "\n".join(
-            f"Round {r.round}: {len(r.arguments)} prosecution arguments, "
-            f"{len(r.counter_arguments)} defense counter-arguments"
-            for r in argumentation_log.rounds
-        )
+        log_text = _format_argumentation_log(argumentation_log)
         discussion_text = "\n".join(
             f"{m.get('role', 'juror')}: {m.get('content', '')}"
             for m in discussion_messages
@@ -62,7 +109,7 @@ class Juror(BaseAgent):
             {
                 "role": "user",
                 "content": (
-                    f"Argumentation summary:\n{rounds_text}\n\n"
+                    f"ARGUMENTATION LOG:\n{log_text}\n\n"
                     f"Deliberation so far:\n{discussion_text}\n\n"
                     f"You are juror {self._juror_id}. Cast your vote."
                 ),
@@ -70,7 +117,6 @@ class Juror(BaseAgent):
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            # Always stamp the vote with this juror's ID
             return JurorVote(
                 juror_id=self._juror_id,
                 vote=result.vote,
@@ -95,29 +141,22 @@ class Juror(BaseAgent):
         round: int,
     ) -> str:
         structured_llm = self._llm.with_structured_output(_DiscussionMessage)
-        rounds_text = "\n".join(
-            f"Round {r.round}: {len(r.arguments)} prosecution arguments, "
-            f"{len(r.counter_arguments)} defense counter-arguments"
-            for r in argumentation_log.rounds
-        )
-        prior_votes_text = "\n".join(
-            f"Round {rec.get('round')}: {[v.get('vote') for v in rec.get('votes', [])]}"
-            for rec in previous_rounds
-        ) if previous_rounds else "No prior rounds."
+        log_text = _format_argumentation_log(argumentation_log)
+        prior_text = _format_prior_rounds(previous_rounds, self._juror_id)
         discussion_text = "\n".join(
             f"{m.get('juror_id', 'juror')}: {m.get('message', '')}"
             for m in current_discussion
-        ) if current_discussion else "No discussion yet."
+        ) if current_discussion else "No discussion yet in this round."
         prompt = [
             {"role": "system", "content": _DISCUSS_SYSTEM_PROMPT},
             {
                 "role": "user",
                 "content": (
-                    f"Argumentation summary:\n{rounds_text}\n\n"
-                    f"Previous voting rounds:\n{prior_votes_text}\n\n"
-                    f"Current discussion:\n{discussion_text}\n\n"
-                    f"You are juror {self._juror_id} in deliberation round {round}. "
-                    f"Share your view."
+                    f"ARGUMENTATION LOG:\n{log_text}\n\n"
+                    f"PRIOR DELIBERATION ROUNDS:\n{prior_text}\n\n"
+                    f"CURRENT ROUND {round} DISCUSSION SO FAR:\n{discussion_text}\n\n"
+                    f"You are juror {self._juror_id}. Share your view in 1-3 sentences, "
+                    f"referencing specific arguments or proofs from the log above."
                 ),
             },
         ]
@@ -143,15 +182,8 @@ class Juror(BaseAgent):
         round: int,
     ) -> JurorVote:
         structured_llm = self._llm.with_structured_output(JurorVote)
-        rounds_text = "\n".join(
-            f"Round {r.round}: {len(r.arguments)} prosecution arguments, "
-            f"{len(r.counter_arguments)} defense counter-arguments"
-            for r in argumentation_log.rounds
-        )
-        prior_votes_text = "\n".join(
-            f"Round {rec.get('round')}: {[v.get('vote') for v in rec.get('votes', [])]}"
-            for rec in previous_rounds
-        ) if previous_rounds else "No prior rounds."
+        log_text = _format_argumentation_log(argumentation_log)
+        prior_text = _format_prior_rounds(previous_rounds, self._juror_id)
         discussion_text = "\n".join(
             f"{m.get('juror_id', 'juror')}: {m.get('message', '')}"
             for m in discussion_messages
@@ -161,10 +193,13 @@ class Juror(BaseAgent):
             {
                 "role": "user",
                 "content": (
-                    f"Argumentation summary:\n{rounds_text}\n\n"
-                    f"Previous voting rounds:\n{prior_votes_text}\n\n"
-                    f"Deliberation discussion:\n{discussion_text}\n\n"
-                    f"You are juror {self._juror_id} in voting round {round}. Cast your vote."
+                    f"ARGUMENTATION LOG:\n{log_text}\n\n"
+                    f"PRIOR DELIBERATION ROUNDS (including your previous votes and rationales):\n"
+                    f"{prior_text}\n\n"
+                    f"CURRENT ROUND {round} DISCUSSION:\n{discussion_text}\n\n"
+                    f"You are juror {self._juror_id}. Cast your vote, grounding your rationale "
+                    f"in the specific arguments and proofs above. If you are changing your prior "
+                    f"vote, explain exactly what persuaded you."
                 ),
             },
         ]
