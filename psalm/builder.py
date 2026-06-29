@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
+from pydantic import SecretStr
+
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
@@ -114,10 +116,10 @@ class PSALM:
         from langchain_openai import ChatOpenAI
         llm = ChatOpenAI(
             base_url=config.base_url,
-            api_key=config.api_key,
+            api_key=SecretStr(config.api_key) if config.api_key else None,
             organization=config.org_id,
             model=config.model,
-            max_tokens=1,
+            max_completion_tokens=1,
         )
         try:
             await llm.ainvoke([{"role": "user", "content": "ping"}])
@@ -131,6 +133,9 @@ class PSALM:
             ) from exc
 
     async def _ping_all_llms(self) -> None:
+        assert self._prosecutor_config is not None
+        assert self._defense_config is not None
+        assert self._judge_config is not None
         configs = [
             (self._prosecutor_config, "prosecutor"),
             (self._defense_config, "defense"),
@@ -139,6 +144,9 @@ class PSALM:
         await asyncio.gather(*[self._ping_llm(cfg, role) for cfg, role in configs])
 
     def _assemble(self) -> _BuiltPSALM:
+        assert self._prosecutor_config is not None
+        assert self._defense_config is not None
+        assert self._judge_config is not None
         prosecutor = Prosecutor(config=self._prosecutor_config)
         defense = Defense(config=self._defense_config)
         judge = Judge(config=self._judge_config)

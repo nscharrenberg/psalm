@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from langchain_openai import ChatOpenAI
+from pydantic import SecretStr
 
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
@@ -18,11 +19,11 @@ class BaseAgent(ABC):
         self._config = config
         self._llm = ChatOpenAI(
             base_url=config.base_url,
-            api_key=config.api_key,
+            api_key=SecretStr(config.api_key) if config.api_key else None,
             organization=config.org_id,
             model=config.model,
             temperature=config.temperature,
-            max_tokens=config.max_tokens,
+            max_completion_tokens=config.max_tokens,
             top_p=config.top_p,
             frequency_penalty=config.frequency_penalty,
             presence_penalty=config.presence_penalty,
