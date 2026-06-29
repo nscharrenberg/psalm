@@ -66,7 +66,7 @@ class DeliberationPhase:
     ) -> tuple[Literal["Guilty", "Not Guilty", "Undecided"], DebateLog]:
         initial_state = DeliberationState(
             argumentation_log=argumentation_log,
-            max_rounds=self._config.rounds,
+            max_rounds=self._config.deliberation_rounds,
         )
         final_state = await self._graph.ainvoke(initial_state.model_dump())
         debate_log_data = final_state["debate_log"]

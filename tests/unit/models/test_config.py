@@ -43,7 +43,8 @@ def test_agent_config_invalid_temperature():
 
 def test_debate_config_defaults():
     config = DebateConfig()
-    assert config.rounds == 5
+    assert config.argumentation_rounds == 3
+    assert config.deliberation_rounds == 2
     assert config.time_limit_seconds == 180
     assert "character" in config.dimensions
     assert config.voting_strategies[-1] == "judge_tiebreaker"

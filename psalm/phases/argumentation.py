@@ -63,7 +63,7 @@ class ArgumentationPhase(BasePhase):
             source_text=case_input.source_text,
             target_text=case_input.target_text,
             dimensions=case_input.dimensions,
-            max_rounds=self._config.rounds,
+            max_rounds=self._config.argumentation_rounds,
         )
         final_state = await self._graph.ainvoke(initial_state.model_dump())
         log_data = final_state["argumentation_log"]

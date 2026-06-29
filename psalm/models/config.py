@@ -35,7 +35,8 @@ class AgentConfig(BaseModel):
 
 
 class DebateConfig(BaseModel):
-    rounds: int = 5
+    argumentation_rounds: int = 3
+    deliberation_rounds: int = 2
     time_limit_seconds: int = 180
     dimensions: list[str] = Field(default_factory=lambda: ["character", "world-building", "plot"])
     voting_strategies: list[str] = Field(

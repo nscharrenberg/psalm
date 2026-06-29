@@ -61,9 +61,18 @@ class PSALM:
         self._debate_config = self._debate_config.model_copy(update={"dimensions": dimensions})
         return self
 
-    def with_debate(self, rounds: int = 5, time_limit_seconds: int = 180) -> PSALM:
+    def with_debate(
+        self,
+        argumentation_rounds: int = 3,
+        deliberation_rounds: int = 2,
+        time_limit_seconds: int = 180,
+    ) -> PSALM:
         self._debate_config = self._debate_config.model_copy(
-            update={"rounds": rounds, "time_limit_seconds": time_limit_seconds}
+            update={
+                "argumentation_rounds": argumentation_rounds,
+                "deliberation_rounds": deliberation_rounds,
+                "time_limit_seconds": time_limit_seconds,
+            }
         )
         return self
 
