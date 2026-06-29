@@ -51,6 +51,27 @@ async def test_gather_counter_arguments(defense, sample_argument, sample_counter
     assert result[0].agent_role == "defense"
 
 
+async def test_affirmative_instruction_when_prosecution_empty(defense):
+    # When prosecution has no arguments yet, the defense must be prompted with a different
+    # instruction — not "counter nothing" (which returns empty) but "make affirmative claims."
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(defense._llm), "with_structured_output", mock_with_structured):
+        await defense.gather_counter_arguments(
+            "src", "tgt", ["character"], prosecutor_arguments=[], round=1, prosecution_empty=True
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "affirmative" in user_content.lower() or "proactive" in user_content.lower()
+
+
 async def test_counter_argument_includes_prosecutor_args_in_prompt(defense, sample_argument):
     captured_prompt = []
 

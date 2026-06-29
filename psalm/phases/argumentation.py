@@ -101,6 +101,7 @@ class ArgumentationPhase(BasePhase):
             dimensions=state.dimensions,
             prosecutor_arguments=prosecution_args,
             round=state.current_round + 1,
+            prosecution_empty=not prosecution_args,
         )
         return {"pending_defense_arguments": [a.model_dump() for a in counter_arguments]}
 
@@ -130,20 +131,29 @@ class ArgumentationPhase(BasePhase):
         prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
         prev_round_args = [a for a in state.arguments if a.round == state.current_round]
         stability = await self._judge.detect_stability(prosecution_args, prev_round_args)
-        return {"current_round": state.current_round + 1, "stability_detected": stability}
+        # Stop immediately if the current round produced nothing from either side —
+        # continuing with identical inputs only burns LLM calls on stochastic retries.
+        current_round_num = state.current_round + 1
+        current_defense_args = [a for a in state.counter_arguments if a.round == current_round_num]
+        current_round_empty = len(prosecution_args) == 0 and len(current_defense_args) == 0
+        return {
+            "current_round": state.current_round + 1,
+            "stability_detected": stability or current_round_empty,
+        }
 
     async def _finalize_arguments(self, state: ArgumentationState) -> dict[str, Any]:
         rounds = []
         for r in range(1, state.current_round + 1):
             round_args = [a for a in state.arguments if a.round == r]
             round_counters = [a for a in state.counter_arguments if a.round == r]
-            rounds.append(
-                RoundArguments(
-                    round=r,
-                    arguments=round_args,
-                    counter_arguments=round_counters,
+            if round_args or round_counters:  # omit rounds that produced nothing
+                rounds.append(
+                    RoundArguments(
+                        round=r,
+                        arguments=round_args,
+                        counter_arguments=round_counters,
+                    )
                 )
-            )
         log = ArgumentationLog(rounds=rounds)
         return {"argumentation_log": log.model_dump()}
 

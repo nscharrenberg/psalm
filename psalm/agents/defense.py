@@ -56,12 +56,23 @@ class Defense(BaseAgent):
         dimensions: list[str],
         prosecutor_arguments: list[Argument],
         round: int,
+        prosecution_empty: bool = False,
     ) -> list[Argument]:
         structured_llm = self._llm.with_structured_output(_ArgumentList)
         args_text = "\n".join(
             f"- [{a.dimension}] {a.claim} (proofs: {len(a.proofs)})"
             for a in prosecutor_arguments
         )
+        if prosecution_empty:
+            instruction = (
+                "The prosecution has not yet raised any specific arguments. You must make "
+                "proactive affirmative arguments about why the target text does NOT infringe "
+                "the source text's copyright. Highlight key differences in wording, expression, "
+                "and creative choices between the two texts. The prosecution will respond to "
+                "your arguments in the next round, creating the debate."
+            )
+        else:
+            instruction = "Provide counter-arguments with verbatim proof excerpts from both texts."
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
@@ -71,7 +82,7 @@ class Defense(BaseAgent):
                     f"TARGET TEXT:\n{target_text}\n\n"
                     f"Prosecutor's arguments:\n{args_text}\n\n"
                     f"Dimensions: {', '.join(dimensions)}\nRound: {round}\n\n"
-                    "Provide counter-arguments with verbatim proof excerpts from both texts."
+                    f"{instruction}"
                 ),
             },
         ]
