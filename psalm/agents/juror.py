@@ -7,23 +7,38 @@ from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 from psalm.models.result import ArgumentationLog, JurorVote
 
-_VOTE_SYSTEM_PROMPT = """\
+_EU_COPYRIGHT_STANDARD = """\
+EU COPYRIGHT LAW — IDEA-EXPRESSION DICHOTOMY (apply this as your evaluative framework):
+- NOT protected — ideas, themes, concepts, genre tropes, character archetypes, common plot devices:
+    e.g. "both protagonists are liars", "both experience betrayal", "both set in a dark city",
+    "both have physical markings", "both cope with trauma" — these are UNPROTECTED ideas.
+- PROTECTED — the author's specific creative expression: particular word choices, distinctive
+    imagery, original metaphors, unique narrative structure, specific dialogue phrasing.
+Apply the independence test: could a different author writing in the same genre independently
+arrive at these elements without copying? If yes, the element is NOT protected.
+The prosecution must prove copying of PROTECTED EXPRESSION — thematic or conceptual similarity
+alone is NOT sufficient for a Guilty verdict.
+"""
+
+_VOTE_SYSTEM_PROMPT = f"""\
 You are a juror in a copyright infringement case governed by EU copyright law.
 Review the argumentation from the prosecution and defense, and the ongoing deliberation.
 Base your vote ONLY on the specific arguments, claims, and verbatim proof excerpts in the log below.
-Do NOT introduce legal concepts (fair use, market impact, transformative use, etc.) unless they were \
-explicitly raised by prosecution or defense.
+
+{_EU_COPYRIGHT_STANDARD}
 If you have voted in a prior deliberation round, maintain your position unless a fellow juror made a \
 specific, compelling argument grounded in the evidence that changes your view — and explain exactly \
 what persuaded you.
-Vote options: "Guilty" (substantial similarity of protected expression was proven), \
-"Not Guilty" (not proven), or "Undecided" (genuinely uncertain after weighing both sides).
+Vote options: "Guilty" (substantial similarity of PROTECTED EXPRESSION was proven), \
+"Not Guilty" (not proven — ideas/themes/tropes alone are insufficient), or \
+"Undecided" (genuinely uncertain after weighing both sides).
 """
 
-_DISCUSS_SYSTEM_PROMPT = """\
+_DISCUSS_SYSTEM_PROMPT = f"""\
 You are a juror in a copyright infringement case deliberating with fellow jurors.
 Base every statement ONLY on specific claims and verbatim proof excerpts from the argumentation log below.
-Do NOT introduce legal concepts not raised by prosecution or defense.
+
+{_EU_COPYRIGHT_STANDARD}
 If you voted in a prior round, state your position and either argue for it using specific evidence, \
 or identify what specific proof would change your mind.
 If you are in the majority, present your strongest argument to persuade the minority.
