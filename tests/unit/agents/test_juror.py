@@ -163,18 +163,20 @@ async def test_discuss_prompt_contains_argument_content(juror, minimal_argumenta
     assert "The wizard had bright blue eyes." in prompt_text
 
 
-def test_vote_prompt_contains_eu_copyright_guidance(juror, minimal_argumentation_log):
-    # Jurors must know the idea-expression dichotomy; without it they treat thematic
-    # similarity as infringement — which is legally wrong under EU copyright law.
+def test_vote_prompt_frames_juror_as_argument_evaluator():
+    # Jurors are lay evaluators — legal doctrine belongs to the attorneys.
+    # The juror prompt should focus on burden of proof and argument quality, not legal doctrine.
     from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
-    assert "idea" in _VOTE_SYSTEM_PROMPT.lower() or "expression" in _VOTE_SYSTEM_PROMPT.lower()
-    assert "genre" in _VOTE_SYSTEM_PROMPT.lower() or "trope" in _VOTE_SYSTEM_PROMPT.lower() or "archetype" in _VOTE_SYSTEM_PROMPT.lower()
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "burden" in prompt
+    assert "prosecution" in prompt
 
 
-def test_discuss_prompt_contains_eu_copyright_guidance():
+def test_discuss_prompt_frames_juror_as_argument_evaluator():
     from psalm.agents.juror import _DISCUSS_SYSTEM_PROMPT
-    assert "idea" in _DISCUSS_SYSTEM_PROMPT.lower() or "expression" in _DISCUSS_SYSTEM_PROMPT.lower()
-    assert "genre" in _DISCUSS_SYSTEM_PROMPT.lower() or "trope" in _DISCUSS_SYSTEM_PROMPT.lower() or "archetype" in _DISCUSS_SYSTEM_PROMPT.lower()
+    prompt = _DISCUSS_SYSTEM_PROMPT.lower()
+    assert "burden" in prompt
+    assert "prosecution" in prompt
 
 
 async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation_log):

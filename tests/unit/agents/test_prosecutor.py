@@ -28,6 +28,14 @@ async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_
     assert result[0].dimension == "character"
 
 
+def test_prosecutor_prompt_prohibits_unprotectable_arguments():
+    # Prosecutor must not argue ideas, themes, or genre tropes — only protected expression.
+    from psalm.agents.prosecutor import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    assert "do not" in prompt or "not argue" in prompt or "unprotectable" in prompt
+    assert "archetype" in prompt or "theme" in prompt or "genre" in prompt
+
+
 async def test_gather_arguments_role():
     from psalm.models.config import AgentConfig
     config = AgentConfig(base_url="https://api.openai.com/v1", api_key="sk-test", model="gpt-4o")

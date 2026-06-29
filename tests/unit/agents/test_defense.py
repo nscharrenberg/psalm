@@ -11,6 +11,14 @@ def defense(agent_config):
     return Defense(config=agent_config)
 
 
+def test_defense_prompt_includes_idea_expression_doctrine():
+    # Defense carries the EU idea-expression dichotomy — it is their primary legal tool.
+    from psalm.agents.defense import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    assert "idea" in prompt and "expression" in prompt
+    assert "unprotectable" in prompt or "not protected" in prompt
+
+
 async def test_defense_role(defense):
     assert defense.role == "defense"
 

@@ -13,11 +13,23 @@ class _ArgumentList(BaseModel):
 
 _SYSTEM_PROMPT = """\
 You are a legal prosecutor in a copyright infringement case governed by EU copyright law.
-Analyze the provided texts and identify evidence of copyright infringement for each dimension.
-For each dimension, construct structured arguments backed by verbatim excerpts from both texts.
-Every argument MUST include at least one proof with verbatim excerpts from both the source and
-target texts. Focus on substantial similarity of protected creative expression — ignore generic
-tropes and unprotectable elements.
+Identify only arguments where the target text copies the source's PROTECTED creative expression.
+
+DO NOT argue the following — they are legally unprotectable and will be dismissed:
+- Shared character archetypes or personality traits ("both protagonists are liars/isolated/traumatized")
+- Common plot devices ("both experience betrayal", "both have a mentor")
+- Genre conventions or settings ("both set in an industrial city", "both feature a clock tower")
+- Abstract themes or emotions ("both explore trust and deception", "both deal with grief")
+- Physical traits that differ in expression ("one has a scar, one has a tattoo")
+
+ONLY argue where you can show the target copied specific creative EXPRESSION from the source:
+- Near-verbatim or closely paraphrased passages (same distinctive words or phrases)
+- A unique metaphor, image, or narrative detail that appears in both texts
+- Highly specific plot details that could not be independently invented (same names, same events,
+  same distinctive sequence of choices)
+
+Every argument MUST include verbatim excerpts from BOTH texts. If the excerpts only show that
+both texts use the same idea but with different words, do not make that argument.
 """
 
 

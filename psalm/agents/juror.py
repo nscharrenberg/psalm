@@ -7,43 +7,39 @@ from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 from psalm.models.result import ArgumentationLog, JurorVote
 
-_EU_COPYRIGHT_STANDARD = """\
-EU COPYRIGHT LAW — IDEA-EXPRESSION DICHOTOMY (apply this as your evaluative framework):
-- NOT protected — ideas, themes, concepts, genre tropes, character archetypes, common plot devices:
-    e.g. "both protagonists are liars", "both experience betrayal", "both set in a dark city",
-    "both have physical markings", "both cope with trauma" — these are UNPROTECTED ideas.
-- PROTECTED — the author's specific creative expression: particular word choices, distinctive
-    imagery, original metaphors, unique narrative structure, specific dialogue phrasing.
-Apply the independence test: could a different author writing in the same genre independently
-arrive at these elements without copying? If yes, the element is NOT protected.
-The prosecution must prove copying of PROTECTED EXPRESSION — thematic or conceptual similarity
-alone is NOT sufficient for a Guilty verdict.
-"""
-
-_VOTE_SYSTEM_PROMPT = f"""\
+_VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
-Review the argumentation from the prosecution and defense, and the ongoing deliberation.
-Base your vote ONLY on the specific arguments, claims, and verbatim proof excerpts in the log below.
+Evaluate the arguments and counter-arguments presented by the prosecution and defense attorneys.
+You are a lay evaluator — the attorneys handle legal doctrine; your job is to weigh argument quality.
 
-{_EU_COPYRIGHT_STANDARD}
-If you have voted in a prior deliberation round, maintain your position unless a fellow juror made a \
-specific, compelling argument grounded in the evidence that changes your view — and explain exactly \
-what persuaded you.
-Vote options: "Guilty" (substantial similarity of PROTECTED EXPRESSION was proven), \
-"Not Guilty" (not proven — ideas/themes/tropes alone are insufficient), or \
-"Undecided" (genuinely uncertain after weighing both sides).
+The prosecution carries the burden of proof. Ask:
+- Did the prosecution present concrete, specific textual similarities?
+- Did the defense successfully challenge those arguments (showing they are generic, coincidental,
+  or legally insufficient)?
+- Which side made stronger, more evidence-grounded arguments?
+
+If the defense has effectively rebutted the prosecution's claims, lean toward Not Guilty.
+If the prosecution has demonstrated clear, specific similarities the defense could not credibly
+refute, lean toward Guilty.
+
+If you have voted in a prior deliberation round, maintain your position unless a fellow juror made
+a specific, compelling argument that changes your view — and explain exactly what persuaded you.
+Vote options: "Guilty", "Not Guilty", or "Undecided".
 """
 
-_DISCUSS_SYSTEM_PROMPT = f"""\
+_DISCUSS_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case deliberating with fellow jurors.
-Base every statement ONLY on specific claims and verbatim proof excerpts from the argumentation log below.
+Evaluate the quality of the arguments presented by the prosecution and defense.
 
-{_EU_COPYRIGHT_STANDARD}
-If you voted in a prior round, state your position and either argue for it using specific evidence, \
-or identify what specific proof would change your mind.
+The prosecution carries the burden of proof. Consider:
+- Did the prosecution present specific, concrete textual similarities?
+- Did the defense successfully challenge or rebut those arguments?
+- Which side's reasoning was stronger and more grounded in the actual text?
+
+If you voted in a prior round, state your position and either argue for it using specific evidence
+from the log, or explain what argument would change your mind.
 If you are in the majority, present your strongest argument to persuade the minority.
-If you are in the minority (or Undecided), explain what specific evidence or argument would be needed \
-to change your vote.
+If you are in the minority (or Undecided), explain what specific evidence would change your vote.
 Be concise — 1-3 sentences. This is group deliberation, not a speech.
 """
 
