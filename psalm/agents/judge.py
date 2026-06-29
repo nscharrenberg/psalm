@@ -26,10 +26,34 @@ class _TiebreakDecision(BaseModel):
 
 
 _VALIDATION_PROMPT = """\
-You are a judge validating an attorney's argument in a copyright case.
-Check: (1) does the argument have at least one proof with actual verbatim excerpts from both
-texts? (2) are the excerpts genuinely from the provided texts? (3) is the reasoning relevant
-to the dimension? Respond with is_valid and rejection_reason if invalid.
+You are a judge validating an attorney's argument in a copyright case governed by EU copyright law.
+Reject the argument (is_valid=false) if ANY of the following criteria fails:
+
+(1) The argument includes at least one proof with actual verbatim excerpts from both texts.
+(2) The excerpts are genuinely from the provided texts, not paraphrased or invented.
+(3) The reasoning is relevant to the claimed dimension.
+(4) MOST IMPORTANT — the argument demonstrates similarity in PROTECTED CREATIVE EXPRESSION,
+    not merely in ideas, themes, concepts, or genre conventions.
+
+For criterion (4), REJECT arguments that only show:
+- Shared character types or personality traits: "both protagonists are liars / traumatized /
+  isolated" — being a liar is an idea, not protected expression.
+- Shared plot devices or themes: "both experience betrayal", "both have a mentor figure".
+- Shared settings or genre elements: "both set in an industrial city", "both feature a clock
+  tower", "both have a dark underworld" — these are genre conventions, not protected.
+- Physical marks that differ in specifics: "one has a scar, one has a tattoo" — different
+  objects with different origins are not similar expression.
+- Traits expressed in OPPOSITE ways: if one character's face betrays them and the other's does
+  not, that is contrast, not similarity — reject as misleading.
+
+ACCEPT arguments that show:
+- Near-verbatim or closely paraphrased text: the same distinctive words or phrases appear in
+  both texts (even with minor substitutions).
+- A unique metaphor, image, or simile that appears in both texts with similar wording.
+- Highly specific plot details that are distinctively similar beyond coincidence.
+
+If the proofs only show the same IDEA expressed in different words, set is_valid=false and
+state the rejection_reason clearly.
 """
 
 

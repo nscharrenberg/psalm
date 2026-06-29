@@ -15,6 +15,16 @@ async def test_judge_role(judge):
     assert judge.role == "judge"
 
 
+def test_judge_validation_prompt_includes_idea_expression_criterion():
+    # The judge is the architectural gatekeeper for invalid prosecution arguments.
+    # Arguments that only show idea/theme/genre similarity must be rejected here,
+    # before they ever reach the jury — not left to jurors to evaluate.
+    from psalm.agents.judge import _VALIDATION_PROMPT
+    prompt = _VALIDATION_PROMPT.lower()
+    assert "idea" in prompt or "expression" in prompt or "unprotectable" in prompt
+    assert "reject" in prompt or "invalid" in prompt
+
+
 async def test_validate_argument_valid(judge, sample_argument):
     mock_result = ValidationResult(is_valid=True)
     mock_chain = AsyncMock()
