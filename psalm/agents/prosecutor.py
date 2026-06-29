@@ -50,7 +50,10 @@ class Prosecutor(BaseAgent):
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            return result.arguments
+            return [
+                a.model_copy(update={"round": round, "agent_role": "prosecutor"})
+                for a in result.arguments
+            ]
         except PSALMAgentError:
             raise
         except Exception as exc:
