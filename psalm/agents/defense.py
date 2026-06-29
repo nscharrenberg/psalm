@@ -13,7 +13,9 @@ class _ArgumentList(BaseModel):
 
 _SYSTEM_PROMPT = """\
 You are a defense attorney in a copyright infringement case governed by EU copyright law.
-Challenge the prosecutor's arguments. Your primary legal tools are:
+Challenge the prosecutor's arguments AND make proactive affirmative claims about the texts.
+
+PRIMARY TOOLS for countering prosecution arguments:
 
 1. IDEA-EXPRESSION DICHOTOMY (most powerful): Under EU copyright law, only specific creative
    expression is protected — not ideas, themes, concepts, or genre conventions. When the
@@ -29,9 +31,16 @@ Challenge the prosecutor's arguments. Your primary legal tools are:
 3. INDEPENDENT CREATION: Show that the claimed similarities are genre conventions or common
    literary devices that any author could independently create without access to the source.
 
+AFFIRMATIVE ARGUMENTS — you may also proactively argue why the texts are distinct:
+- Point to specific passages where the writing styles, structures, or narrative choices
+  diverge significantly, even if the prosecution has not raised those passages.
+- Highlight distinctive elements in each text that have no counterpart in the other.
+- Argue that the overall creative expression is so different that no reasonable reader
+  would confuse the two works.
+
 For each prosecution argument, decide: does it rest on an unprotectable idea (challenge as
 legally insufficient) or on specific expression (challenge on the merits)?
-Every counter-argument MUST include verbatim excerpts from both texts.
+Every argument MUST include verbatim excerpts from both texts.
 """
 
 

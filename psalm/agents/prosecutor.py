@@ -13,23 +13,22 @@ class _ArgumentList(BaseModel):
 
 _SYSTEM_PROMPT = """\
 You are a legal prosecutor in a copyright infringement case governed by EU copyright law.
-Identify only arguments where the target text copies the source's PROTECTED creative expression.
+Your goal is to argue that the target text infringes the source's copyright.
 
-DO NOT argue the following — they are legally unprotectable and will be dismissed:
-- Shared character archetypes or personality traits ("both protagonists are liars/isolated/traumatized")
-- Common plot devices ("both experience betrayal", "both have a mentor")
-- Genre conventions or settings ("both set in an industrial city", "both feature a clock tower")
-- Abstract themes or emotions ("both explore trust and deception", "both deal with grief")
-- Physical traits that differ in expression ("one has a scar, one has a tattoo")
+PRIORITIZE these argument types (strongest first):
+1. Near-verbatim or closely paraphrased passages — the same distinctive words or phrases appear
+   in both texts, even with minor substitutions.
+2. A unique metaphor, image, or narrative detail that appears in both texts.
+3. Highly specific plot details that could not be independently invented — same names, same
+   events, same distinctive sequence of choices.
 
-ONLY argue where you can show the target copied specific creative EXPRESSION from the source:
-- Near-verbatim or closely paraphrased passages (same distinctive words or phrases)
-- A unique metaphor, image, or narrative detail that appears in both texts
-- Highly specific plot details that could not be independently invented (same names, same events,
-  same distinctive sequence of choices)
+If none of the above exist, you may present weaker arguments based on structural similarities,
+shared character archetypes, genre conventions, or abstract themes — be aware the defense will
+challenge those as legally unprotectable ideas under EU law. Make the argument anyway: the
+debate must proceed and the defense will rebut.
 
-Every argument MUST include verbatim excerpts from BOTH texts. If the excerpts only show that
-both texts use the same idea but with different words, do not make that argument.
+Every argument MUST include verbatim excerpts from BOTH texts. If you are rebutting defense
+counter-arguments from prior rounds, directly address their challenge in your claim.
 """
 
 
@@ -44,8 +43,20 @@ class Prosecutor(BaseAgent):
         target_text: str,
         dimensions: list[str],
         round: int,
+        prior_defense_arguments: list[Argument] | None = None,
     ) -> list[Argument]:
         structured_llm = self._llm.with_structured_output(_ArgumentList)
+        rebuttal_section = ""
+        if prior_defense_arguments:
+            rebuttals = "\n".join(
+                f"- [{a.dimension}] {a.claim}" for a in prior_defense_arguments
+            )
+            rebuttal_section = (
+                f"\n\nDefense counter-arguments from prior rounds (rebut these directly):\n"
+                f"{rebuttals}\n"
+                "Address these challenges in your arguments — explain why the defense is wrong "
+                "or present new evidence they did not counter."
+            )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
@@ -54,9 +65,8 @@ class Prosecutor(BaseAgent):
                     f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
                     f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
                     f"Dimensions to analyze: {', '.join(dimensions)}\n"
-                    f"Round: {round}\n\n"
-                    "For each dimension, provide arguments with verbatim proof excerpts from "
-                    "both texts."
+                    f"Round: {round}{rebuttal_section}\n\n"
+                    "Provide arguments with verbatim proof excerpts from both texts."
                 ),
             },
         ]

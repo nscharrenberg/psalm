@@ -11,6 +11,16 @@ def defense(agent_config):
     return Defense(config=agent_config)
 
 
+def test_defense_prompt_allows_affirmative_arguments():
+    # Defense should not only react to prosecution — it can also make affirmative claims
+    # that prosecution can rebut in subsequent rounds.
+    from psalm.agents.defense import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    # "independently" already appears in tool-description context, but the defense must be
+    # explicitly told it may make proactive/affirmative claims, not just counter-arguments.
+    assert "affirmative" in prompt or "proactive" in prompt or "you may also" in prompt
+
+
 def test_defense_prompt_includes_idea_expression_doctrine():
     # Defense carries the EU idea-expression dichotomy — it is their primary legal tool.
     from psalm.agents.defense import _SYSTEM_PROMPT

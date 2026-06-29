@@ -16,13 +16,38 @@ async def test_judge_role(judge):
 
 
 def test_judge_validation_prompt_includes_idea_expression_criterion():
-    # The judge is the architectural gatekeeper for invalid prosecution arguments.
-    # Arguments that only show idea/theme/genre similarity must be rejected here,
-    # before they ever reach the jury — not left to jurors to evaluate.
-    from psalm.agents.judge import _VALIDATION_PROMPT
-    prompt = _VALIDATION_PROMPT.lower()
+    # The prosecution validation prompt must check for expression-level vs idea-level similarity.
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
     assert "idea" in prompt or "expression" in prompt or "unprotectable" in prompt
     assert "reject" in prompt or "invalid" in prompt
+
+
+def test_judge_has_separate_defense_validation_prompt():
+    # Defense arguments challenge prosecution claims — they argue differences, not similarity.
+    # A separate validation prompt must exist and must NOT require the defense to demonstrate
+    # expression-level similarity.
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "excerpt" in prompt or "verbatim" in prompt
+    assert "demonstrate similarity" not in prompt and "protected creative expression" not in prompt
+
+
+async def test_validate_argument_accepts_role_parameter(judge, sample_argument):
+    # validate_argument must accept a role parameter so defense and prosecution
+    # arguments are evaluated under different standards.
+    mock_result = ValidationResult(is_valid=True)
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=mock_result)
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
+        result = await judge.validate_argument(
+            argument=sample_argument,
+            source_text="source",
+            target_text="target",
+            role="defense",
+        )
+    assert result.is_valid is True
 
 
 async def test_validate_argument_valid(judge, sample_argument):

@@ -28,12 +28,14 @@ async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_
     assert result[0].dimension == "character"
 
 
-def test_prosecutor_prompt_prohibits_unprotectable_arguments():
-    # Prosecutor must not argue ideas, themes, or genre tropes — only protected expression.
+def test_prosecutor_prompt_prioritizes_expression_over_idea_arguments():
+    # Prosecutor should prioritize expression-level arguments but is allowed to make weaker
+    # idea/genre/archetype arguments so the debate can proceed — defense will rebut them.
     from psalm.agents.prosecutor import _SYSTEM_PROMPT
     prompt = _SYSTEM_PROMPT.lower()
-    assert "do not" in prompt or "not argue" in prompt or "unprotectable" in prompt
+    assert "prioritize" in prompt or "strongest" in prompt
     assert "archetype" in prompt or "theme" in prompt or "genre" in prompt
+    assert "unprotectable" in prompt  # should still know the defense will challenge weak args
 
 
 async def test_gather_arguments_role():
@@ -41,6 +43,32 @@ async def test_gather_arguments_role():
     config = AgentConfig(base_url="https://api.openai.com/v1", api_key="sk-test", model="gpt-4o")
     prosecutor = Prosecutor(config=config)
     assert prosecutor.role == "prosecutor"
+
+
+async def test_prosecutor_includes_prior_defense_arguments_in_prompt(prosecutor, sample_argument, sample_counter_argument):
+    # In rounds 2+, the prosecutor must receive prior defense counter-arguments so it can rebut
+    # them — not just re-argue the same points ignoring what the defense said.
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
+        await prosecutor.gather_arguments(
+            source_text="src",
+            target_text="tgt",
+            dimensions=["character"],
+            round=2,
+            prior_defense_arguments=[sample_counter_argument],
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    # Prior defense counter-argument content must appear in the prompt
+    assert "Eye color is a generic trait" in user_content or "defense" in user_content.lower()
 
 
 async def test_gather_arguments_retries_on_failure(prosecutor, sample_argument):

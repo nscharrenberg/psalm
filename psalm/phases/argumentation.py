@@ -74,11 +74,13 @@ class ArgumentationPhase(BasePhase):
     # --- Nodes ---
 
     async def _prosecutor_gather(self, state: ArgumentationState) -> dict[str, Any]:
+        prior_defense = list(state.counter_arguments) or None
         arguments = await self._prosecutor.gather_arguments(
             source_text=state.source_text,
             target_text=state.target_text,
             dimensions=state.dimensions,
             round=state.current_round + 1,
+            prior_defense_arguments=prior_defense,
         )
         return {"pending_prosecution_arguments": [a.model_dump() for a in arguments]}
 
@@ -107,7 +109,9 @@ class ArgumentationPhase(BasePhase):
         prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
         valid = []
         for arg in pending:
-            result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
+            result = await self._judge.validate_argument(
+                arg, state.source_text, state.target_text, role="defense"
+            )
             if result.is_valid:
                 valid.append(arg)
         cross_exam = await self._judge.should_cross_examine(prosecution_args, valid)
