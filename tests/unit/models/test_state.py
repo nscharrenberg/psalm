@@ -23,6 +23,7 @@ def test_deliberation_state_defaults():
     state = DeliberationState(
         argumentation_log=arg_log,
         max_rounds=5,
+        current_dimension=CHARACTER,
     )
     assert state.current_round == 0
     assert state.discussion_messages == []
@@ -37,6 +38,7 @@ def test_deliberation_state_new_fields_default():
     state = DeliberationState(
         argumentation_log=arg_log,
         max_rounds=3,
+        current_dimension=CHARACTER,
     )
     assert state.current_round_votes == []
     assert state.debate_log is None
@@ -47,6 +49,7 @@ def test_deliberation_state_accepts_debate_log():
     state = DeliberationState(
         argumentation_log=arg_log,
         max_rounds=3,
+        current_dimension=CHARACTER,
         debate_log={"rounds": [], "final_voting_strategy_applied": "unanimous"},
     )
     assert state.debate_log is not None
@@ -93,3 +96,21 @@ def test_argumentation_state_old_fields_removed():
     assert not hasattr(state, "arguments")
     assert not hasattr(state, "counter_arguments")
     assert not hasattr(state, "cross_examination_triggered")
+
+
+def test_deliberation_state_has_current_dimension(minimal_argumentation_log):
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log,
+        max_rounds=2,
+        current_dimension=CHARACTER,
+    )
+    assert state.current_dimension.name == "character"
+
+
+def test_deliberation_state_weighted_score_defaults_to_zero(minimal_argumentation_log):
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log,
+        max_rounds=2,
+        current_dimension=CHARACTER,
+    )
+    assert state.weighted_score == 0.0

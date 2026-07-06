@@ -9,6 +9,7 @@ from langgraph.graph import END, StateGraph
 
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
+from psalm.dimensions.base import Dimension
 from psalm.models.config import DebateConfig
 from psalm.models.result import (
     ArgumentationLog,
@@ -62,11 +63,14 @@ class DeliberationPhase:
         return graph.compile()
 
     async def run(
-        self, argumentation_log: ArgumentationLog
+        self, argumentation_log: ArgumentationLog, current_dimension: Dimension | None = None
     ) -> tuple[Literal["Guilty", "Not Guilty", "Undecided"], DebateLog]:
+        if current_dimension is None:
+            current_dimension = self._config.dimensions[0]
         initial_state = DeliberationState(
             argumentation_log=argumentation_log,
             max_rounds=self._config.deliberation_rounds,
+            current_dimension=current_dimension,
         )
         final_state = await self._graph.ainvoke(initial_state.model_dump())
         debate_log_data = final_state["debate_log"]

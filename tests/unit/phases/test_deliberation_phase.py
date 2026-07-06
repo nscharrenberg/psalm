@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from psalm.dimensions import CHARACTER
 from psalm.models.config import DebateConfig
 from psalm.models.result import JurorVote
 from psalm.models.state import DeliberationState
@@ -45,6 +46,7 @@ async def test_distribute_context_clears_state(deliberation_phase, minimal_argum
     state = DeliberationState(
         argumentation_log=minimal_argumentation_log,
         max_rounds=2,
+        current_dimension=CHARACTER,
         discussion_messages=[{"juror_id": "juror-0", "message": "old message"}],
         current_round_votes=[{"juror_id": "juror-0", "vote": "Guilty", "rationale": "old"}],
     )
@@ -57,6 +59,7 @@ async def test_jury_discussion_returns_messages(deliberation_phase, minimal_argu
     state = DeliberationState(
         argumentation_log=minimal_argumentation_log,
         max_rounds=2,
+        current_dimension=CHARACTER,
     )
     result = await deliberation_phase._jury_discussion(state)
     messages = result["discussion_messages"]
@@ -69,6 +72,7 @@ async def test_jury_vote_returns_votes(deliberation_phase, minimal_argumentation
     state = DeliberationState(
         argumentation_log=minimal_argumentation_log,
         max_rounds=2,
+        current_dimension=CHARACTER,
     )
     result = await deliberation_phase._jury_vote(state)
     votes = result["current_round_votes"]
@@ -81,6 +85,7 @@ async def test_route_consensus_reached(deliberation_phase, minimal_argumentation
     state = DeliberationState(
         argumentation_log=minimal_argumentation_log,
         max_rounds=2,
+        current_dimension=CHARACTER,
         consensus_reached=True,
     )
     route = deliberation_phase._route_after_consensus(state)

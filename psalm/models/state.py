@@ -45,6 +45,7 @@ class ArgumentationState(BaseModel):
 class DeliberationState(BaseModel):
     argumentation_log: ArgumentationLog
     max_rounds: int
+    current_dimension: Dimension
     current_round: int = 0
     discussion_messages: list[dict[str, str]] = Field(default_factory=list)
     vote_history: list[dict[str, Any]] = Field(default_factory=list)
@@ -53,5 +54,6 @@ class DeliberationState(BaseModel):
     voting_strategy_applied: str | None = None
     current_round_votes: list[dict[str, Any]] = Field(default_factory=list)
     debate_log: dict[str, Any] | None = None
+    weighted_score: float = 0.0
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
