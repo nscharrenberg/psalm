@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.defense import Defense
+from psalm.dimensions import CHARACTER
 
 
 @pytest.fixture
@@ -50,7 +51,7 @@ async def test_gather_counter_arguments(defense, sample_argument, sample_counter
         result = await defense.gather_counter_arguments(
             source_text="The wizard had blue eyes.",
             target_text="The sorcerer had azure eyes.",
-            dimensions=["character"],
+            dimensions=[CHARACTER],
             prosecutor_arguments=[sample_argument],
             round=1,
         )
@@ -76,7 +77,7 @@ async def test_defense_instruction_always_includes_both_types(defense, sample_ar
         captured.clear()
         with patch.object(type(defense._llm), "with_structured_output", mock_with_structured):
             await defense.gather_counter_arguments(
-                "src", "tgt", ["character"],
+                "src", "tgt", [CHARACTER],
                 prosecutor_arguments=prosecutor_arguments,
                 round=1,
             )
@@ -104,7 +105,7 @@ async def test_counter_argument_includes_prosecutor_args_in_prompt(defense, samp
 
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(defense._llm), "with_structured_output", mock_with_structured):
-        await defense.gather_counter_arguments("src", "tgt", ["character"], [sample_argument], 1)
+        await defense.gather_counter_arguments("src", "tgt", [CHARACTER], [sample_argument], 1)
 
     user_content = next(m["content"] for m in captured_prompt if m["role"] == "user")
     assert "prosecutor" in user_content.lower() or "argument" in user_content.lower()

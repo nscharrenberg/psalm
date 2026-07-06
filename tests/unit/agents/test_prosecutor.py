@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.prosecutor import Prosecutor
+from psalm.dimensions import CHARACTER
 
 
 @pytest.fixture
@@ -19,7 +20,7 @@ async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_
         result = await prosecutor.gather_arguments(
             source_text="The wizard had blue eyes.",
             target_text="The sorcerer had azure eyes.",
-            dimensions=["character"],
+            dimensions=[CHARACTER],
             round=1,
         )
 
@@ -61,7 +62,7 @@ async def test_prosecutor_includes_prior_defense_arguments_in_prompt(prosecutor,
         await prosecutor.gather_arguments(
             source_text="src",
             target_text="tgt",
-            dimensions=["character"],
+            dimensions=[CHARACTER],
             round=2,
             prior_defense_arguments=[sample_counter_argument],
         )
@@ -86,7 +87,7 @@ async def test_gather_arguments_retries_on_failure(prosecutor, sample_argument):
 
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
-        result = await prosecutor.gather_arguments("src", "tgt", ["character"], 1)
+        result = await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
 
     assert call_count == 3
     assert len(result) == 1

@@ -3,6 +3,7 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from psalm.agents.base import BaseAgent
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument
 
@@ -43,7 +44,7 @@ class Prosecutor(BaseAgent):
         self,
         source_text: str,
         target_text: str,
-        dimensions: list[str],
+        dimensions: list[Dimension],
         round: int,
         prior_defense_arguments: list[Argument] | None = None,
     ) -> list[Argument]:
@@ -66,7 +67,7 @@ class Prosecutor(BaseAgent):
                 "content": (
                     f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
                     f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
-                    f"Dimensions to analyze: {', '.join(dimensions)}\n"
+                    f"Dimensions to analyze: {', '.join(d.name for d in dimensions)}\n"
                     f"Round: {round}{rebuttal_section}\n\n"
                     "Provide arguments with relevant passages from both texts."
                 ),
@@ -84,7 +85,7 @@ class Prosecutor(BaseAgent):
             raise PSALMAgentError(
                 code="PSALM-A002",
                 message="Prosecutor failed to return valid structured arguments.",
-                context={"role": self.role, "round": round, "dimensions": dimensions},
+                context={"role": self.role, "round": round, "dimensions": [d.name for d in dimensions]},
                 suggestion=(
                     "Check the LLM model supports structured output and the prompt is not too "
                     "long."

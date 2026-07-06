@@ -3,6 +3,7 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from psalm.agents.base import BaseAgent
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument
 
@@ -54,7 +55,7 @@ class Defense(BaseAgent):
         self,
         source_text: str,
         target_text: str,
-        dimensions: list[str],
+        dimensions: list[Dimension],
         prosecutor_arguments: list[Argument],
         round: int,
     ) -> list[Argument]:
@@ -87,7 +88,7 @@ class Defense(BaseAgent):
                     f"SOURCE TEXT:\n{source_text}\n\n"
                     f"TARGET TEXT:\n{target_text}\n\n"
                     f"Prosecutor's arguments:\n{args_text}\n\n"
-                    f"Dimensions: {', '.join(dimensions)}\nRound: {round}\n\n"
+                    f"Dimensions: {', '.join(d.name for d in dimensions)}\nRound: {round}\n\n"
                     f"{instruction}"
                 ),
             },
