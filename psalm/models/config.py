@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+from enum import Enum
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMConfigError
+
+
+class EvaluationStrategy(str, Enum):
+    SHARED_ARG_PER_DIM_DELIBERATION = "shared_arg_per_dim_deliberation"
+    FULLY_SEPARATE                  = "fully_separate"
+    SHARED_ALL                      = "shared_all"
 
 _VALID_VOTING_STRATEGIES = {"simple_majority", "trust_weighted", "judge_tiebreaker"}
 
@@ -47,6 +55,8 @@ class DebateConfig(BaseModel):
     voting_strategies: list[str] = Field(
         default_factory=lambda: ["simple_majority", "trust_weighted", "judge_tiebreaker"]
     )
+    evaluation_strategy: EvaluationStrategy = EvaluationStrategy.FULLY_SEPARATE
+    guilty_threshold: float = 0.5
 
     @field_validator("voting_strategies")
     @classmethod

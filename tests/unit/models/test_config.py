@@ -98,3 +98,28 @@ def test_case_input_default_dimensions_are_dimension_objects():
 def test_case_input_accepts_dimension_objects():
     ci = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
     assert ci.dimensions[0].name == "character"
+
+
+def test_debate_config_default_evaluation_strategy():
+    from psalm.models.config import DebateConfig, EvaluationStrategy
+    config = DebateConfig()
+    assert config.evaluation_strategy == EvaluationStrategy.FULLY_SEPARATE
+
+
+def test_debate_config_evaluation_strategy_values():
+    from psalm.models.config import EvaluationStrategy
+    assert EvaluationStrategy.FULLY_SEPARATE == "fully_separate"
+    assert EvaluationStrategy.SHARED_ARG_PER_DIM_DELIBERATION == "shared_arg_per_dim_deliberation"
+    assert EvaluationStrategy.SHARED_ALL == "shared_all"
+
+
+def test_debate_config_guilty_threshold_defaults():
+    from psalm.models.config import DebateConfig
+    config = DebateConfig()
+    assert config.guilty_threshold == 0.5
+
+
+def test_debate_config_accepts_custom_strategy():
+    from psalm.models.config import DebateConfig, EvaluationStrategy
+    config = DebateConfig(evaluation_strategy=EvaluationStrategy.SHARED_ALL)
+    assert config.evaluation_strategy == EvaluationStrategy.SHARED_ALL
