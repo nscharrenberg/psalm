@@ -10,6 +10,7 @@ from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
 from psalm.agents.prosecutor import Prosecutor
 from psalm.courtroom.default import DefaultCourtroom
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 from psalm.models.config import AgentConfig, CaseInput, DebateConfig
 from psalm.models.result import PSALMResult
@@ -57,7 +58,7 @@ class PSALM:
         ]
         return self
 
-    def with_dimensions(self, dimensions: list[str]) -> PSALM:
+    def with_dimensions(self, dimensions: list[Dimension]) -> PSALM:
         self._debate_config = self._debate_config.model_copy(update={"dimensions": dimensions})
         return self
 

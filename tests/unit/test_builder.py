@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from psalm.builder import PSALM
+from psalm.dimensions import CHARACTER
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 
 
@@ -30,7 +31,7 @@ async def _build_psalm():
         .with_defense(**_agent_kwargs())
         .with_judge(**_agent_kwargs())
         .with_jury(_jury_configs())
-        .with_dimensions(["character"])
+        .with_dimensions([CHARACTER])
         .with_debate(argumentation_rounds=2, deliberation_rounds=1, time_limit_seconds=60)
         .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
     )

@@ -14,3 +14,11 @@ def test_internal_modules_not_exported():
     assert not hasattr(psalm, "DeliberationPhase")
     assert not hasattr(psalm, "SimpleMajorityVoting")
     assert not hasattr(psalm, "Prosecutor")
+
+
+def test_dimension_types_exported():
+    from psalm import Dimension, Importance, SimilarityScore, SubDimension
+    assert Dimension is not None
+    assert Importance is not None
+    assert SimilarityScore is not None
+    assert SubDimension is not None
