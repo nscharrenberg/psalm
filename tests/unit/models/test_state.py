@@ -11,9 +11,10 @@ def test_argumentation_state_defaults():
         max_rounds=5,
     )
     assert state.current_round == 0
-    assert state.arguments == []
-    assert state.counter_arguments == []
-    assert state.cross_examination_triggered is False
+    assert state.prosecution_arguments == []
+    assert state.defense_counters == []
+    assert state.defense_arguments == []
+    assert state.prosecution_counters == []
     assert state.stability_detected is False
 
 
@@ -61,3 +62,34 @@ def test_argumentation_state_accepts_dimension_objects():
     )
     assert len(state.dimensions) == 1
     assert state.dimensions[0].name == "character"
+
+
+def test_argumentation_state_has_four_step_fields():
+    state = ArgumentationState(
+        source_text="src", target_text="tgt", dimensions=[CHARACTER], max_rounds=3
+    )
+    # Step 1
+    assert state.pending_prosecution_arguments == []
+    assert state.validated_prosecution_arguments == []
+    assert state.prosecution_arguments == []
+    # Step 2
+    assert state.pending_defense_counters == []
+    assert state.validated_defense_counters == []
+    assert state.defense_counters == []
+    # Step 3
+    assert state.pending_defense_arguments == []
+    assert state.validated_defense_arguments == []
+    assert state.defense_arguments == []
+    # Step 4
+    assert state.pending_prosecution_counters == []
+    assert state.validated_prosecution_counters == []
+    assert state.prosecution_counters == []
+
+
+def test_argumentation_state_old_fields_removed():
+    state = ArgumentationState(
+        source_text="src", target_text="tgt", dimensions=[CHARACTER], max_rounds=3
+    )
+    assert not hasattr(state, "arguments")
+    assert not hasattr(state, "counter_arguments")
+    assert not hasattr(state, "cross_examination_triggered")

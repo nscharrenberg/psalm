@@ -17,15 +17,29 @@ class ArgumentationState(BaseModel):
     dimensions: list[Dimension]
     max_rounds: int
     current_round: int = 0
-    arguments: list[Argument] = Field(default_factory=list)
-    counter_arguments: list[Argument] = Field(default_factory=list)
-    cross_examination_triggered: bool = False
     stability_detected: bool = False
     message_queue: list[dict[str, Any]] = Field(default_factory=list)
     argumentation_log: dict[str, Any] | None = None
+
+    # Step 1 — prosecution affirmative arguments
     pending_prosecution_arguments: list[dict[str, Any]] = Field(default_factory=list)
     validated_prosecution_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    prosecution_arguments: list[Argument] = Field(default_factory=list)
+
+    # Step 2 — defense counters to prosecution
+    pending_defense_counters: list[dict[str, Any]] = Field(default_factory=list)
+    validated_defense_counters: list[dict[str, Any]] = Field(default_factory=list)
+    defense_counters: list[Argument] = Field(default_factory=list)
+
+    # Step 3 — defense affirmative arguments
     pending_defense_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    validated_defense_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    defense_arguments: list[Argument] = Field(default_factory=list)
+
+    # Step 4 — prosecution counters to defense
+    pending_prosecution_counters: list[dict[str, Any]] = Field(default_factory=list)
+    validated_prosecution_counters: list[dict[str, Any]] = Field(default_factory=list)
+    prosecution_counters: list[Argument] = Field(default_factory=list)
 
 
 class DeliberationState(BaseModel):
