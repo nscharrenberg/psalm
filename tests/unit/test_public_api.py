@@ -22,3 +22,13 @@ def test_dimension_types_exported():
     assert Importance is not None
     assert SimilarityScore is not None
     assert SubDimension is not None
+
+
+def test_evaluation_strategy_exported():
+    from psalm import EvaluationStrategy
+    assert EvaluationStrategy.FULLY_SEPARATE == "fully_separate"
+
+
+def test_dimension_verdict_exported():
+    from psalm import DimensionVerdict
+    assert DimensionVerdict is not None
