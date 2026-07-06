@@ -287,3 +287,37 @@ def test_juror_vote_system_prompt_has_rubric():
     assert "generic" in prompt
     assert "possible" in prompt
     assert "clear" in prompt
+
+
+from psalm.dimensions import CHARACTER, PLOT
+
+
+async def test_juror_vote_all_dimensions_returns_list(agent_config, minimal_argumentation_log):
+    from psalm.agents.juror import Juror
+    from psalm.models.result import JurorVote
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    juror = Juror(config=agent_config, juror_id="juror-0")
+    mock_vote = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension_scores=[], dimension="character")
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=mock_vote)
+    with patch.object(type(juror._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        results = await juror.vote_all_dimensions(
+            argumentation_log=minimal_argumentation_log,
+            previous_rounds=[],
+            discussion_messages=[],
+            round=1,
+            dimensions=[CHARACTER, PLOT],
+        )
+    assert len(results) == 2
+    assert results[0].dimension == "character"
+    assert results[1].dimension == "plot"
+
+
+def test_juror_vote_has_optional_dimension_field():
+    from psalm.models.result import JurorVote
+    vote = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.")
+    assert vote.dimension is None
+
+    vote_with_dim = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension="character")
+    assert vote_with_dim.dimension == "character"

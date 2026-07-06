@@ -264,3 +264,24 @@ class Juror(BaseAgent):
                 suggestion="Check LLM supports structured output.",
                 cause=exc,
             ) from exc
+
+    async def vote_all_dimensions(
+        self,
+        argumentation_log: ArgumentationLog,
+        previous_rounds: list[dict],
+        discussion_messages: list[dict[str, str]],
+        round: int,
+        dimensions: list[Dimension],
+    ) -> list[JurorVote]:
+        """SHARED_ALL: produce one JurorVote per dimension in a single pass."""
+        results = []
+        for dim in dimensions:
+            vote = await self.vote(
+                argumentation_log=argumentation_log,
+                previous_rounds=previous_rounds,
+                discussion_messages=discussion_messages,
+                round=round,
+                dimension=dim,
+            )
+            results.append(vote.model_copy(update={"dimension": dim.name}))
+        return results

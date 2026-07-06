@@ -36,6 +36,7 @@ class JurorVote(BaseModel):
     vote: Literal["Guilty", "Not Guilty", "Undecided"]
     rationale: str
     dimension_scores: list[DimensionScore] = Field(default_factory=list)
+    dimension: str | None = None
 
 
 class RoundDeliberation(BaseModel):
