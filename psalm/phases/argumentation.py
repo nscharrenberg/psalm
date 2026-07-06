@@ -184,8 +184,15 @@ class ArgumentationPhase(BasePhase):
     async def _check_next_round(self, state: ArgumentationState) -> dict[str, Any]:
         round_num = state.current_round + 1
         pros_this_round = [a for a in state.prosecution_arguments if a.round == round_num]
+        def_counters_this_round = [a for a in state.defense_counters if a.round == round_num]
         def_this_round = [a for a in state.defense_arguments if a.round == round_num]
-        both_empty = len(pros_this_round) == 0 and len(def_this_round) == 0
+        pros_counters_this_round = [a for a in state.prosecution_counters if a.round == round_num]
+        both_empty = (
+            len(pros_this_round) == 0
+            and len(def_counters_this_round) == 0
+            and len(def_this_round) == 0
+            and len(pros_counters_this_round) == 0
+        )
         stability = await self._judge.detect_stability(
             [Argument(**a) for a in state.validated_prosecution_arguments],
             [a for a in state.prosecution_arguments if a.round == state.current_round],
