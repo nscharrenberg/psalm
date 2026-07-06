@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMConfigError
 
-_VALID_DIMENSIONS = {"character", "world-building", "plot"}
 _VALID_VOTING_STRATEGIES = {"simple_majority", "trust_weighted", "judge_tiebreaker"}
 
 
@@ -40,23 +41,12 @@ class DebateConfig(BaseModel):
     argumentation_rounds: int = 3
     deliberation_rounds: int = 2
     time_limit_seconds: int = 180
-    dimensions: list[str] = Field(default_factory=lambda: ["character", "world-building", "plot"])
+    dimensions: list[Dimension] = Field(
+        default_factory=lambda: [CHARACTER, PLOT, WORLD_BUILDING]
+    )
     voting_strategies: list[str] = Field(
         default_factory=lambda: ["simple_majority", "trust_weighted", "judge_tiebreaker"]
     )
-
-    @field_validator("dimensions")
-    @classmethod
-    def validate_dimensions(cls, v: list[str]) -> list[str]:
-        for dim in v:
-            if dim not in _VALID_DIMENSIONS:
-                raise PSALMConfigError(
-                    code="PSALM-C003",
-                    message=f"Unknown dimension: '{dim}'.",
-                    context={"dimension": dim, "valid": sorted(_VALID_DIMENSIONS)},
-                    suggestion='Use one of: "character", "world-building", "plot".',
-                )
-        return v
 
     @field_validator("voting_strategies")
     @classmethod
@@ -84,4 +74,6 @@ class DebateConfig(BaseModel):
 class CaseInput(BaseModel):
     source_text: str
     target_text: str
-    dimensions: list[str] = Field(default_factory=lambda: ["character", "world-building", "plot"])
+    dimensions: list[Dimension] = Field(
+        default_factory=lambda: [CHARACTER, PLOT, WORLD_BUILDING]
+    )

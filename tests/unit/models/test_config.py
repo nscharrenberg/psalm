@@ -1,7 +1,9 @@
 import pytest
 
+from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
+from psalm.dimensions.base import Dimension, SubDimension
 from psalm.exceptions import PSALMConfigError
-from psalm.models.config import AgentConfig, DebateConfig
+from psalm.models.config import AgentConfig, DebateConfig, CaseInput
 
 
 def test_agent_config_minimal():
@@ -46,15 +48,9 @@ def test_debate_config_defaults():
     assert config.argumentation_rounds == 3
     assert config.deliberation_rounds == 2
     assert config.time_limit_seconds == 180
-    assert "character" in config.dimensions
+    dim_names = {d.name for d in config.dimensions}
+    assert "character" in dim_names
     assert config.voting_strategies[-1] == "judge_tiebreaker"
-
-
-def test_debate_config_invalid_dimension():
-    with pytest.raises(PSALMConfigError) as exc_info:
-        DebateConfig(dimensions=["invalid_dim"])
-    assert exc_info.value.code == "PSALM-C003"
-    assert "invalid_dim" in str(exc_info.value)
 
 
 def test_debate_config_invalid_voting_order():
@@ -67,3 +63,38 @@ def test_debate_config_unknown_voting_strategy():
     with pytest.raises(PSALMConfigError) as exc_info:
         DebateConfig(voting_strategies=["simple_majority", "ranked_choice"])
     assert exc_info.value.code == "PSALM-C004"
+
+
+def test_debate_config_default_dimensions_are_dimension_objects():
+    config = DebateConfig()
+    assert len(config.dimensions) == 3
+    assert all(isinstance(d, Dimension) for d in config.dimensions)
+    names = {d.name for d in config.dimensions}
+    assert names == {"character", "world-building", "plot"}
+
+
+def test_debate_config_accepts_any_dimension_object():
+    custom = Dimension(
+        name="custom",
+        description="A custom dimension.",
+        sub_dimensions=[SubDimension(name="Sub1", description="sub1")],
+    )
+    config = DebateConfig(dimensions=[custom])
+    assert config.dimensions[0].name == "custom"
+
+
+def test_debate_config_accepts_scenes_a_faire():
+    from psalm.dimensions import SCENES_A_FAIRE
+    config = DebateConfig(dimensions=[CHARACTER, SCENES_A_FAIRE])
+    assert len(config.dimensions) == 2
+
+
+def test_case_input_default_dimensions_are_dimension_objects():
+    ci = CaseInput(source_text="src", target_text="tgt")
+    assert all(isinstance(d, Dimension) for d in ci.dimensions)
+    assert len(ci.dimensions) == 3
+
+
+def test_case_input_accepts_dimension_objects():
+    ci = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+    assert ci.dimensions[0].name == "character"
