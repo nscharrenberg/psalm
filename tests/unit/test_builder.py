@@ -7,6 +7,7 @@ from psalm.builder import PSALM
 from psalm.dimensions import CHARACTER
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 from psalm.models.config import EvaluationStrategy
+from psalm.models.result import DimensionVerdict, PSALMResult
 
 
 def _agent_kwargs():
@@ -118,3 +119,30 @@ async def test_with_evaluation_strategy_sets_strategy():
 async def test_default_evaluation_strategy_is_fully_separate():
     builder = PSALM()
     assert builder._debate_config.evaluation_strategy == EvaluationStrategy.FULLY_SEPARATE
+
+
+async def test_evaluate_returns_psalm_result_with_dimension_verdicts():
+    from unittest.mock import AsyncMock, MagicMock, patch
+    from psalm.models.result import DebateLog, ArgumentationLog, RoundArguments
+
+    courtroom = await _build_psalm()
+
+    arg_log = ArgumentationLog(rounds=[
+        RoundArguments(
+            round=1,
+            prosecution_arguments=[],
+            defense_counters=[],
+            defense_arguments=[],
+            prosecution_counters=[],
+        )
+    ])
+    debate_log = DebateLog(rounds=[], final_voting_strategy_applied="unanimous")
+
+    with patch.object(courtroom._courtroom._argumentation_phase, "run", AsyncMock(return_value=arg_log)):
+        with patch.object(courtroom._courtroom._deliberation_phases[0], "run",
+                          AsyncMock(return_value=("Not Guilty", debate_log, 0.1))):
+            result = await courtroom.aevaluate("source text here", "target text here")
+
+    assert isinstance(result, PSALMResult)
+    assert len(result.dimension_verdicts) >= 1
+    assert isinstance(result.dimension_verdicts[0], DimensionVerdict)

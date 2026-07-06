@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+import asyncio
 import time
+from typing import Literal
 
 from psalm.courtroom.base import CourtroomSetup
-from psalm.models.config import CaseInput
-from psalm.models.result import PSALMResult, ResultMetadata
+from psalm.dimensions.base import Dimension, Importance, _IMPORTANCE_MULTIPLIERS
+from psalm.models.config import CaseInput, DebateConfig, EvaluationStrategy
+from psalm.models.result import (
+    ArgumentationLog,
+    DebateLog,
+    DimensionVerdict,
+    PSALMResult,
+    ResultMetadata,
+)
 from psalm.phases.argumentation import ArgumentationPhase
 from psalm.phases.deliberation import DeliberationPhase
 
@@ -13,42 +22,143 @@ class DefaultCourtroom(CourtroomSetup):
     def __init__(
         self,
         argumentation_phase: ArgumentationPhase,
-        deliberation_phase: DeliberationPhase,
+        deliberation_phases: list[DeliberationPhase],
+        config: DebateConfig,
     ) -> None:
         self._argumentation_phase = argumentation_phase
-        self._deliberation_phase = deliberation_phase
+        self._deliberation_phases = deliberation_phases
+        self._config = config
 
     async def run(self, case_input: CaseInput) -> PSALMResult:
         start = time.monotonic()
+        strategy = self._config.evaluation_strategy
 
-        arg_log = await self._argumentation_phase.run(case_input)
-        dimension = case_input.dimensions[0]   # temporary: Plan 11 replaces this with per-dim orchestration
-        verdict, debate_log, weighted_score = await self._deliberation_phase.run(arg_log, dimension)
+        if strategy == EvaluationStrategy.FULLY_SEPARATE:
+            dimension_verdicts = await self._run_fully_separate(case_input)
+        elif strategy == EvaluationStrategy.SHARED_ARG_PER_DIM_DELIBERATION:
+            dimension_verdicts = await self._run_shared_arg(case_input)
+        else:  # SHARED_ALL
+            dimension_verdicts = await self._run_shared_all(case_input)
 
+        verdict = _aggregate_verdict(dimension_verdicts, self._config.guilty_threshold)
+        rationale = _synthesize_rationale(verdict, dimension_verdicts)
         duration = time.monotonic() - start
+
+        total_arg_rounds = sum(len(dv.argumentation_log.rounds) for dv in dimension_verdicts)
+        total_delib_rounds = sum(len(dv.debate_log.rounds) for dv in dimension_verdicts)
+        strategy_applied = dimension_verdicts[0].debate_log.final_voting_strategy_applied if dimension_verdicts else "none"
+
         metadata = ResultMetadata(
             duration_seconds=round(duration, 3),
-            argumentation_rounds_used=len(arg_log.rounds),
-            deliberation_rounds_used=len(debate_log.rounds),
-            voting_strategy_applied=debate_log.final_voting_strategy_applied,
+            argumentation_rounds_used=total_arg_rounds,
+            deliberation_rounds_used=total_delib_rounds,
+            voting_strategy_applied=strategy_applied,
         )
-        rationale = self._synthesize_rationale(verdict, arg_log, debate_log)
         return PSALMResult(
             verdict=verdict,
             rationale=rationale,
-            argumentation_log=arg_log,
-            debate_log=debate_log,
+            dimension_verdicts=dimension_verdicts,
             metadata=metadata,
         )
 
-    def _synthesize_rationale(self, verdict, arg_log, debate_log) -> str:
-        arg_count = sum(len(r.prosecution_arguments) + len(r.defense_arguments) for r in arg_log.rounds)
-        counter_count = sum(len(r.defense_counters) + len(r.prosecution_counters) for r in arg_log.rounds)
-        delib_rounds = len(debate_log.rounds)
-        return (
-            f"Verdict: {verdict}. "
-            f"Based on {arg_count} prosecution argument(s) and {counter_count} defense "
-            f"counter-argument(s) across {len(arg_log.rounds)} argumentation round(s), followed "
-            f"by {delib_rounds} deliberation round(s). Final voting strategy applied: "
-            f"{debate_log.final_voting_strategy_applied}."
+    async def _run_fully_separate(self, case_input: CaseInput) -> list[DimensionVerdict]:
+        tasks = [
+            self._run_single_dimension(dim, delib_phase, case_input)
+            for dim, delib_phase in zip(case_input.dimensions, self._deliberation_phases)
+        ]
+        return list(await asyncio.gather(*tasks))
+
+    async def _run_single_dimension(
+        self,
+        dimension: Dimension,
+        delib_phase: DeliberationPhase,
+        case_input: CaseInput,
+    ) -> DimensionVerdict:
+        scoped_input = case_input.model_copy(update={"dimensions": [dimension]})
+        arg_log = await self._argumentation_phase.run(scoped_input)
+        verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
+        return DimensionVerdict(
+            dimension=dimension.name,
+            importance=dimension.importance,
+            verdict=verdict,
+            weighted_score=weighted_score,
+            argumentation_log=arg_log,
+            debate_log=debate_log,
         )
+
+    async def _run_shared_arg(self, case_input: CaseInput) -> list[DimensionVerdict]:
+        arg_log = await self._argumentation_phase.run(case_input)
+        tasks = [
+            self._deliberate_single(dim, delib_phase, arg_log)
+            for dim, delib_phase in zip(case_input.dimensions, self._deliberation_phases)
+        ]
+        return list(await asyncio.gather(*tasks))
+
+    async def _deliberate_single(
+        self,
+        dimension: Dimension,
+        delib_phase: DeliberationPhase,
+        arg_log: ArgumentationLog,
+    ) -> DimensionVerdict:
+        verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
+        return DimensionVerdict(
+            dimension=dimension.name,
+            importance=dimension.importance,
+            verdict=verdict,
+            weighted_score=weighted_score,
+            argumentation_log=arg_log,
+            debate_log=debate_log,
+        )
+
+    async def _run_shared_all(self, case_input: CaseInput) -> list[DimensionVerdict]:
+        arg_log = await self._argumentation_phase.run(case_input)
+        # Single deliberation phase handles all dimensions; use first deliberation phase
+        delib_phase = self._deliberation_phases[0]
+        # Each dimension deliberates with the full shared arg log
+        tasks = [
+            self._deliberate_single(dim, delib_phase, arg_log)
+            for dim in case_input.dimensions
+        ]
+        return list(await asyncio.gather(*tasks))
+
+
+def _aggregate_verdict(
+    dimension_verdicts: list[DimensionVerdict],
+    guilty_threshold: float,
+) -> Literal["Guilty", "Not Guilty", "Undecided"]:
+    if not dimension_verdicts:
+        return "Undecided"
+
+    # Hard override: any CRITICAL dimension that is Guilty → overall Guilty
+    for dv in dimension_verdicts:
+        if dv.importance == Importance.CRITICAL and dv.verdict == "Guilty":
+            return "Guilty"
+
+    # Weighted score aggregation
+    total_weighted = 0.0
+    total_weight = 0.0
+    for dv in dimension_verdicts:
+        multiplier = _IMPORTANCE_MULTIPLIERS[dv.importance]
+        total_weighted += dv.weighted_score * multiplier
+        total_weight += multiplier
+
+    if total_weight == 0.0:
+        return "Undecided"
+
+    normalised = total_weighted / total_weight
+    if normalised >= guilty_threshold:
+        return "Guilty"
+    return "Not Guilty"
+
+
+def _synthesize_rationale(
+    verdict: str,
+    dimension_verdicts: list[DimensionVerdict],
+) -> str:
+    lines = [f"Verdict: {verdict}."]
+    for dv in dimension_verdicts:
+        lines.append(
+            f"  {dv.dimension} [{dv.importance.value}]: {dv.verdict} "
+            f"(weighted score: {dv.weighted_score:.2f})"
+        )
+    return " ".join(lines)

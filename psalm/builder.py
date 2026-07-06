@@ -171,8 +171,19 @@ class PSALM:
             _STRATEGY_MAP[name]() for name in self._debate_config.voting_strategies
         ]
         arg_phase = ArgumentationPhase(prosecutor, defense, judge, self._debate_config)
-        delib_phase = DeliberationPhase(jury, voting_strategies, judge, self._debate_config)
-        courtroom = DefaultCourtroom(arg_phase, delib_phase)
+        strategy = self._debate_config.evaluation_strategy
+        if strategy == EvaluationStrategy.SHARED_ALL:
+            # One shared deliberation phase for all dimensions
+            deliberation_phases = [
+                DeliberationPhase(jury, voting_strategies, judge, self._debate_config)
+            ]
+        else:
+            # One DeliberationPhase per dimension (FULLY_SEPARATE and SHARED_ARG)
+            deliberation_phases = [
+                DeliberationPhase(jury, voting_strategies, judge, self._debate_config)
+                for _ in self._debate_config.dimensions
+            ]
+        courtroom = DefaultCourtroom(arg_phase, deliberation_phases, self._debate_config)
         return _BuiltPSALM(courtroom=courtroom, debate_config=self._debate_config)
 
 
@@ -215,15 +226,31 @@ class _BuiltPSALM:
             )
 
     def _identical_texts_result(self, text: str) -> PSALMResult:
-        from psalm.models.result import ArgumentationLog, DebateLog, ResultMetadata
+        from psalm.dimensions.base import Importance
+        from psalm.models.result import (
+            ArgumentationLog,
+            DebateLog,
+            DimensionVerdict,
+            ResultMetadata,
+        )
+        dim_verdicts = [
+            DimensionVerdict(
+                dimension=dim.name,
+                importance=dim.importance,
+                verdict="Guilty",
+                weighted_score=1.0,
+                argumentation_log=ArgumentationLog(rounds=[]),
+                debate_log=DebateLog(rounds=[], final_voting_strategy_applied="none"),
+            )
+            for dim in self._debate_config.dimensions
+        ]
         return PSALMResult(
             verdict="Guilty",
             rationale=(
                 "Source and target texts are identical — infringement confirmed without agent "
                 "evaluation."
             ),
-            argumentation_log=ArgumentationLog(rounds=[]),
-            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="none"),
+            dimension_verdicts=dim_verdicts,
             metadata=ResultMetadata(
                 duration_seconds=0.0,
                 argumentation_rounds_used=0,
