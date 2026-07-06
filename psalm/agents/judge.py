@@ -10,11 +10,6 @@ from psalm.models.evidence import Argument
 from psalm.models.result import ArgumentationLog, JurorVote, ValidationResult
 
 
-class _CrossExamDecision(BaseModel):
-    should_cross_examine: bool
-    reasoning: str
-
-
 class _StabilityDecision(BaseModel):
     stability_detected: bool
     reasoning: str
@@ -106,30 +101,6 @@ class Judge(BaseAgent):
                 suggestion="Check LLM supports structured output.",
                 cause=exc,
             ) from exc
-
-    async def should_cross_examine(
-        self, arguments: list[Argument], counter_arguments: list[Argument]
-    ) -> bool:
-        structured_llm = self._llm.with_structured_output(_CrossExamDecision)
-        args_text = "\n".join(f"- [{a.dimension}] {a.claim}" for a in arguments)
-        counter_text = "\n".join(f"- [{a.dimension}] {a.claim}" for a in counter_arguments)
-        system_content = (
-            "You are a judge deciding if cross-examination is warranted. Cross-examine only "
-            "when there are genuine discrepancies or alternative interpretations worth exploring."
-        )
-        user_content = (
-            f"Arguments:\n{args_text}\n\nCounter-arguments:\n{counter_text}\n\n"
-            "Should cross-examination occur?"
-        )
-        prompt = [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content},
-        ]
-        try:
-            result = await self._call_structured(structured_llm, prompt)
-            return result.should_cross_examine
-        except Exception:
-            return False  # safe fallback — phase continues
 
     async def detect_stability(
         self, current_arguments: list[Argument], previous_arguments: list[Argument]

@@ -39,7 +39,6 @@ def mock_defense(agent_config, sample_counter_argument):
 def mock_judge(agent_config):
     judge = AsyncMock(spec=Judge)
     judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=True))
-    judge.should_cross_examine = AsyncMock(return_value=False)
     judge.detect_stability = AsyncMock(return_value=False)
     return judge
 

@@ -123,7 +123,6 @@ class ArgumentationPhase(BasePhase):
                 valid.append(arg.model_dump())
         existing = [a.model_dump() for a in state.defense_counters]
         return {
-            "validated_defense_counters": valid,
             "defense_counters": existing + valid,
         }
 
@@ -175,7 +174,6 @@ class ArgumentationPhase(BasePhase):
                 valid.append(arg.model_dump())
         existing = [a.model_dump() for a in state.prosecution_counters]
         return {
-            "validated_prosecution_counters": valid,
             "prosecution_counters": existing + valid,
         }
 

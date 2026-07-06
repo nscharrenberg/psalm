@@ -82,17 +82,6 @@ async def test_validate_argument_invalid(judge, sample_argument):
     assert "verbatim" in result.rejection_reason
 
 
-async def test_should_cross_examine_with_discrepancy(judge, sample_argument, sample_counter_argument):
-    mock_chain = AsyncMock()
-    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(should_cross_examine=True))
-
-    mock_with_structured = MagicMock(return_value=mock_chain)
-    with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
-        result = await judge.should_cross_examine([sample_argument], [sample_counter_argument])
-
-    assert result is True
-
-
 async def test_tiebreak_returns_valid_verdict(judge, minimal_argumentation_log):
     votes = [
         JurorVote(juror_id="j0", vote="Guilty", rationale="Strong evidence."),

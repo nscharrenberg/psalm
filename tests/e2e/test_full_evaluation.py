@@ -93,10 +93,6 @@ async def test_e2e_mock_full_pipeline(cases):
             new=AsyncMock(return_value=ValidationResult(is_valid=True)),
         ),
         patch(
-            "psalm.agents.judge.Judge.should_cross_examine",
-            new=AsyncMock(return_value=False),
-        ),
-        patch(
             "psalm.agents.judge.Judge.detect_stability",
             new=AsyncMock(return_value=False),
         ),

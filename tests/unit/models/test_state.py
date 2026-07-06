@@ -77,7 +77,6 @@ def test_argumentation_state_has_four_step_fields():
     assert state.prosecution_arguments == []
     # Step 2
     assert state.pending_defense_counters == []
-    assert state.validated_defense_counters == []
     assert state.defense_counters == []
     # Step 3
     assert state.pending_defense_arguments == []
@@ -85,7 +84,6 @@ def test_argumentation_state_has_four_step_fields():
     assert state.defense_arguments == []
     # Step 4
     assert state.pending_prosecution_counters == []
-    assert state.validated_prosecution_counters == []
     assert state.prosecution_counters == []
 
 

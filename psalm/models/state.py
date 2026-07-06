@@ -28,7 +28,6 @@ class ArgumentationState(BaseModel):
 
     # Step 2 — defense counters to prosecution
     pending_defense_counters: list[dict[str, Any]] = Field(default_factory=list)
-    validated_defense_counters: list[dict[str, Any]] = Field(default_factory=list)
     defense_counters: list[Argument] = Field(default_factory=list)
 
     # Step 3 — defense affirmative arguments
@@ -38,7 +37,6 @@ class ArgumentationState(BaseModel):
 
     # Step 4 — prosecution counters to defense
     pending_prosecution_counters: list[dict[str, Any]] = Field(default_factory=list)
-    validated_prosecution_counters: list[dict[str, Any]] = Field(default_factory=list)
     prosecution_counters: list[Argument] = Field(default_factory=list)
 
 
