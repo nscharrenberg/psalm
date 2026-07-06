@@ -3,7 +3,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.juror import Juror, _format_argumentation_log, _format_prior_rounds
-from psalm.models.result import JurorVote
+from psalm.dimensions import CHARACTER
+from psalm.dimensions.base import SimilarityScore
+from psalm.models.result import DimensionScore, JurorVote
 
 
 @pytest.fixture
@@ -65,7 +67,7 @@ async def test_discuss_returns_string(juror, minimal_argumentation_log):
 async def test_vote_returns_juror_vote(juror, minimal_argumentation_log):
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(
-        return_value=MagicMock(vote="Guilty", rationale="Strong similarity.")
+        return_value=MagicMock(vote="Guilty", rationale="Strong similarity.", dimension_scores=[])
     )
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(juror._llm), "with_structured_output", mock_with_structured):
@@ -74,6 +76,7 @@ async def test_vote_returns_juror_vote(juror, minimal_argumentation_log):
             previous_rounds=[],
             discussion_messages=[],
             round=1,
+            dimension=CHARACTER,
         )
     assert isinstance(result, JurorVote)
     assert result.juror_id == "juror-0"
@@ -184,7 +187,7 @@ async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation
 
     async def mock_ainvoke(messages, **kwargs):
         captured.append(messages)
-        return MagicMock(vote="Guilty", rationale="Strong.")
+        return MagicMock(vote="Guilty", rationale="Strong.", dimension_scores=[])
 
     previous_rounds = [
         {
@@ -205,9 +208,82 @@ async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation
             previous_rounds=previous_rounds,
             discussion_messages=[],
             round=2,
+            dimension=CHARACTER,
         )
 
     assert captured, "LLM was not called"
     prompt_text = str(captured[0])
     assert "Strong similarity found." in prompt_text
     assert "(YOUR PRIOR VOTE)" in prompt_text
+
+
+# --- Tests for dimension-aware vote() and rubric prompt ---
+
+async def test_juror_vote_accepts_dimension_parameter(agent_config, minimal_argumentation_log):
+    from psalm.agents.juror import Juror
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    juror = Juror(config=agent_config, juror_id="juror-0")
+    mock_vote = JurorVote(
+        juror_id="juror-0",
+        vote="Guilty",
+        rationale="Clear similarities.",
+        dimension_scores=[
+            DimensionScore(
+                sub_dimension="Identity & Properties",
+                score=SimilarityScore.CLEAR,
+                reasoning="Matching traits.",
+            )
+        ],
+    )
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=mock_vote)
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(juror._llm), "with_structured_output", mock_with_structured):
+        result = await juror.vote(
+            argumentation_log=minimal_argumentation_log,
+            previous_rounds=[],
+            discussion_messages=[],
+            round=1,
+            dimension=CHARACTER,
+        )
+    assert result.juror_id == "juror-0"
+    assert result.vote == "Guilty"
+
+
+async def test_juror_vote_prompt_includes_rubric_and_sub_dimensions(agent_config, minimal_argumentation_log):
+    from psalm.agents.juror import Juror
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    juror = Juror(config=agent_config, juror_id="juror-0")
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension_scores=[])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(juror._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await juror.vote(
+            argumentation_log=minimal_argumentation_log,
+            previous_rounds=[],
+            discussion_messages=[],
+            round=1,
+            dimension=CHARACTER,
+        )
+
+    full_text = " ".join(m.get("content", "") for m in captured)
+    assert "rubric" in full_text.lower() or "score" in full_text.lower()
+    assert "Identity & Properties" in full_text
+    assert "none" in full_text.lower() or "generic" in full_text.lower()
+
+
+def test_juror_vote_system_prompt_has_rubric():
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "rubric" in prompt or "score" in prompt
+    assert "none" in prompt
+    assert "generic" in prompt
+    assert "possible" in prompt
+    assert "clear" in prompt

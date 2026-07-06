@@ -3,15 +3,15 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from psalm.agents.base import BaseAgent
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
-from psalm.models.result import ArgumentationLog, JurorVote
+from psalm.models.result import ArgumentationLog, DimensionScore, JurorVote
 
 _VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
 Evaluate the arguments and counter-arguments presented by the prosecution and defense attorneys.
-You are a lay evaluator — the attorneys handle legal doctrine; 
-your job is to weigh argument quality.
+You are a lay evaluator — the attorneys handle legal doctrine; your job is to weigh argument quality.
 
 The prosecution carries the burden of proof. Ask:
 - Did the prosecution present concrete, specific textual similarities?
@@ -19,12 +19,19 @@ The prosecution carries the burden of proof. Ask:
   or legally insufficient)?
 - Which side made stronger, more evidence-grounded arguments?
 
-If the defense has effectively rebutted the prosecution's claims, lean toward Not Guilty.
-If the prosecution has demonstrated clear, specific similarities the defense could not credibly
-refute, lean toward Guilty.
+For each sub-dimension you evaluate, apply this RUBRIC:
 
-If you have voted in a prior deliberation round, maintain your position unless a fellow juror made
-a specific, compelling argument that changes your view — and explain exactly what persuaded you.
+| Score  | Label    | Meaning |
+|--------|----------|---------|
+| none   | No similarity | No meaningful similarity found |
+| generic | Generic only | Similarity exists but is generic / unprotectable (scenes à faire) |
+| possible | Possible infringement | Expression-level similarity, but independent creation is plausible |
+| clear  | Clear infringement | Clear expression-level similarity, defense could not credibly rebut |
+
+You MUST fill in a DimensionScore for every sub-dimension you are asked to evaluate.
+
+If you have voted in a prior deliberation round, maintain your position unless a fellow juror
+made a specific, compelling argument that changes your view — and explain exactly what persuaded you.
 Vote options: "Guilty", "Not Guilty", or "Undecided".
 """
 
@@ -104,6 +111,13 @@ def _format_prior_rounds(previous_rounds: list[dict], my_juror_id: str) -> str:
             marker = " (YOUR PRIOR VOTE)" if jid == my_juror_id else ""
             parts.append(f"  {jid}{marker}: {v.get('vote', '?')} — {v.get('rationale', '')}")
     return "\n".join(parts)
+
+
+def _format_sub_dimension_rubric(dimension: Dimension) -> str:
+    lines = [f"Dimension: {dimension.name} — {dimension.description}", "Sub-dimensions to score:"]
+    for sd in dimension.sub_dimensions:
+        lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+    return "\n".join(lines)
 
 
 class Juror(BaseAgent):
@@ -206,6 +220,7 @@ class Juror(BaseAgent):
         previous_rounds: list[dict],
         discussion_messages: list[dict[str, str]],
         round: int,
+        dimension: Dimension,
     ) -> JurorVote:
         structured_llm = self._llm.with_structured_output(JurorVote)
         log_text = _format_argumentation_log(argumentation_log)
@@ -213,7 +228,8 @@ class Juror(BaseAgent):
         discussion_text = "\n".join(
             f"{m.get('juror_id', 'juror')}: {m.get('message', '')}"
             for m in discussion_messages
-        ) if discussion_messages else "No discussion."
+        ) if discussion_messages else "No discussion yet."
+        sub_dim_block = _format_sub_dimension_rubric(dimension)
         prompt = [
             {"role": "system", "content": _VOTE_SYSTEM_PROMPT},
             {
@@ -223,9 +239,10 @@ class Juror(BaseAgent):
                     f"PRIOR DELIBERATION ROUNDS (including your previous votes and rationales):\n"
                     f"{prior_text}\n\n"
                     f"CURRENT ROUND {round} DISCUSSION:\n{discussion_text}\n\n"
-                    f"You are juror {self._juror_id}. Cast your vote, grounding your rationale "
-                    f"in the specific arguments and proofs above. If you are changing your prior "
-                    f"vote, explain exactly what persuaded you."
+                    f"DIMENSION TO EVALUATE:\n{sub_dim_block}\n\n"
+                    f"You are juror {self._juror_id}. Cast your vote and fill in a DimensionScore "
+                    f"for every sub-dimension listed above. Ground your rationale in the specific "
+                    f"arguments and proofs. If changing your prior vote, explain what persuaded you."
                 ),
             },
         ]
@@ -235,6 +252,7 @@ class Juror(BaseAgent):
                 juror_id=self._juror_id,
                 vote=result.vote,
                 rationale=result.rationale,
+                dimension_scores=result.dimension_scores,
             )
         except PSALMAgentError:
             raise
