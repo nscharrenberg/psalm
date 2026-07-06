@@ -6,6 +6,7 @@ import pytest
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor
+from psalm.dimensions import CHARACTER
 from psalm.models.config import CaseInput, DebateConfig
 from psalm.models.result import ValidationResult
 from psalm.phases.argumentation import ArgumentationPhase
@@ -16,7 +17,7 @@ def case_input():
     return CaseInput(
         source_text="The wizard had bright blue eyes and wore a silver cloak.",
         target_text="The sorcerer possessed azure irises and donned a grey mantle.",
-        dimensions=["character"],
+        dimensions=[CHARACTER],
     )
 
 

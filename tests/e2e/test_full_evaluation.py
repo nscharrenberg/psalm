@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from psalm import PSALM, PSALMResult
+from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
 from psalm.models.result import JurorVote, ValidationResult
 
 CASES_PATH = Path(__file__).parent / "fixtures" / "cases.json"
@@ -44,7 +45,7 @@ async def test_e2e_real_llm(cases):
         .with_defense(**_agent_kwargs())
         .with_judge(**_agent_kwargs())
         .with_jury(_jury_configs())
-        .with_dimensions(["character", "world-building", "plot"])
+        .with_dimensions([CHARACTER, PLOT, WORLD_BUILDING])
         .with_debate(argumentation_rounds=2, deliberation_rounds=2, time_limit_seconds=120)
         .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
         .build()
@@ -119,7 +120,7 @@ async def test_e2e_mock_full_pipeline(cases):
             .with_defense(**_agent_kwargs())
             .with_judge(**_agent_kwargs())
             .with_jury(_jury_configs())
-            .with_dimensions(["character"])
+            .with_dimensions([CHARACTER])
             .with_debate(argumentation_rounds=1, deliberation_rounds=1, time_limit_seconds=60)
             .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
             .build()
