@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from psalm.dimensions.base import Dimension
 from psalm.models.evidence import Argument
 from psalm.models.result import ArgumentationLog
 
@@ -13,7 +14,7 @@ class ArgumentationState(BaseModel):
 
     source_text: str
     target_text: str
-    dimensions: list[str]
+    dimensions: list[Dimension]
     max_rounds: int
     current_round: int = 0
     arguments: list[Argument] = Field(default_factory=list)

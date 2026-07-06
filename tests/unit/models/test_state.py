@@ -1,3 +1,4 @@
+from psalm.dimensions import CHARACTER
 from psalm.models.result import ArgumentationLog
 from psalm.models.state import ArgumentationState, DeliberationState
 
@@ -6,7 +7,7 @@ def test_argumentation_state_defaults():
     state = ArgumentationState(
         source_text="Source text here.",
         target_text="Target text here.",
-        dimensions=["character"],
+        dimensions=[CHARACTER],
         max_rounds=5,
     )
     assert state.current_round == 0
@@ -49,3 +50,14 @@ def test_deliberation_state_accepts_debate_log():
     )
     assert state.debate_log is not None
     assert state.debate_log["final_voting_strategy_applied"] == "unanimous"
+
+
+def test_argumentation_state_accepts_dimension_objects():
+    state = ArgumentationState(
+        source_text="source",
+        target_text="target",
+        dimensions=[CHARACTER],
+        max_rounds=3,
+    )
+    assert len(state.dimensions) == 1
+    assert state.dimensions[0].name == "character"
