@@ -31,28 +31,30 @@ class ArgumentationPhase(BasePhase):
     def _build_graph(self):
         graph = StateGraph(ArgumentationState)
 
-        graph.add_node("prosecutor_gather", self._prosecutor_gather)
+        graph.add_node("prosecution_argue", self._prosecution_argue)
         graph.add_node("judge_validate_prosecution", self._judge_validate_prosecution)
-        graph.add_node("defense_gather", self._defense_gather)
+        graph.add_node("defense_counter", self._defense_counter)
+        graph.add_node("judge_validate_defense_counter", self._judge_validate_defense_counter)
+        graph.add_node("defense_argue", self._defense_argue)
         graph.add_node("judge_validate_defense", self._judge_validate_defense)
-        graph.add_node("cross_examination", self._cross_examination)
+        graph.add_node("prosecution_counter", self._prosecution_counter)
+        graph.add_node("judge_validate_prosecution_counter", self._judge_validate_prosecution_counter)
         graph.add_node("check_next_round", self._check_next_round)
         graph.add_node("finalize_arguments", self._finalize_arguments)
 
-        graph.set_entry_point("prosecutor_gather")
-        graph.add_edge("prosecutor_gather", "judge_validate_prosecution")
-        graph.add_edge("judge_validate_prosecution", "defense_gather")
-        graph.add_edge("defense_gather", "judge_validate_defense")
-        graph.add_conditional_edges(
-            "judge_validate_defense",
-            self._route_cross_exam,
-            {"cross_examine": "cross_examination", "skip": "check_next_round"},
-        )
-        graph.add_edge("cross_examination", "check_next_round")
+        graph.set_entry_point("prosecution_argue")
+        graph.add_edge("prosecution_argue", "judge_validate_prosecution")
+        graph.add_edge("judge_validate_prosecution", "defense_counter")
+        graph.add_edge("defense_counter", "judge_validate_defense_counter")
+        graph.add_edge("judge_validate_defense_counter", "defense_argue")
+        graph.add_edge("defense_argue", "judge_validate_defense")
+        graph.add_edge("judge_validate_defense", "prosecution_counter")
+        graph.add_edge("prosecution_counter", "judge_validate_prosecution_counter")
+        graph.add_edge("judge_validate_prosecution_counter", "check_next_round")
         graph.add_conditional_edges(
             "check_next_round",
             self._route_next_round,
-            {"continue": "prosecutor_gather", "done": "finalize_arguments"},
+            {"continue": "prosecution_argue", "done": "finalize_arguments"},
         )
         graph.add_edge("finalize_arguments", END)
 
@@ -71,10 +73,10 @@ class ArgumentationPhase(BasePhase):
             return ArgumentationLog(**log_data)
         return log_data
 
-    # --- Nodes ---
+    # --- Step 1: Prosecution affirmative arguments ---
 
-    async def _prosecutor_gather(self, state: ArgumentationState) -> dict[str, Any]:
-        prior_defense = list(state.counter_arguments) or None
+    async def _prosecution_argue(self, state: ArgumentationState) -> dict[str, Any]:
+        prior_defense = list(state.defense_arguments) or None
         arguments = await self._prosecutor.gather_arguments(
             source_text=state.source_text,
             target_text=state.target_text,
@@ -91,77 +93,129 @@ class ArgumentationPhase(BasePhase):
             result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
             if result.is_valid:
                 valid.append(arg.model_dump())
-        return {"validated_prosecution_arguments": valid}
+        existing = [a.model_dump() for a in state.prosecution_arguments]
+        return {
+            "validated_prosecution_arguments": valid,
+            "prosecution_arguments": existing + valid,
+        }
 
-    async def _defense_gather(self, state: ArgumentationState) -> dict[str, Any]:
+    # --- Step 2: Defense counters prosecution ---
+
+    async def _defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
         prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
-        counter_arguments = await self._defense.gather_counter_arguments(
+        counters = await self._defense.gather_counter_arguments(
             source_text=state.source_text,
             target_text=state.target_text,
             dimensions=state.dimensions,
             prosecutor_arguments=prosecution_args,
             round=state.current_round + 1,
         )
-        return {"pending_defense_arguments": [a.model_dump() for a in counter_arguments]}
+        return {"pending_defense_counters": [a.model_dump() for a in counters]}
 
-    async def _judge_validate_defense(self, state: ArgumentationState) -> dict[str, Any]:
-        pending = [Argument(**a) for a in state.pending_defense_arguments]
-        prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
+    async def _judge_validate_defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
+        pending = [Argument(**a) for a in state.pending_defense_counters]
         valid = []
         for arg in pending:
             result = await self._judge.validate_argument(
                 arg, state.source_text, state.target_text, role="defense"
             )
             if result.is_valid:
-                valid.append(arg)
-        cross_exam = await self._judge.should_cross_examine(prosecution_args, valid)
-        existing_args = list(state.arguments)
-        existing_counters = list(state.counter_arguments)
+                valid.append(arg.model_dump())
+        existing = [a.model_dump() for a in state.defense_counters]
         return {
-            "cross_examination_triggered": cross_exam,
-            "arguments": [a.model_dump() for a in existing_args + prosecution_args],
-            "counter_arguments": [a.model_dump() for a in existing_counters + valid],
+            "validated_defense_counters": valid,
+            "defense_counters": existing + valid,
         }
 
-    async def _cross_examination(self, state: ArgumentationState) -> dict[str, Any]:
-        return {}  # Future extension point
+    # --- Step 3: Defense affirmative arguments ---
+
+    async def _defense_argue(self, state: ArgumentationState) -> dict[str, Any]:
+        arguments = await self._defense.gather_arguments(
+            source_text=state.source_text,
+            target_text=state.target_text,
+            dimensions=state.dimensions,
+            round=state.current_round + 1,
+        )
+        return {"pending_defense_arguments": [a.model_dump() for a in arguments]}
+
+    async def _judge_validate_defense(self, state: ArgumentationState) -> dict[str, Any]:
+        pending = [Argument(**a) for a in state.pending_defense_arguments]
+        valid = []
+        for arg in pending:
+            result = await self._judge.validate_argument(
+                arg, state.source_text, state.target_text, role="defense"
+            )
+            if result.is_valid:
+                valid.append(arg.model_dump())
+        existing = [a.model_dump() for a in state.defense_arguments]
+        return {
+            "validated_defense_arguments": valid,
+            "defense_arguments": existing + valid,
+        }
+
+    # --- Step 4: Prosecution counters defense ---
+
+    async def _prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
+        defense_args = [Argument(**a) for a in state.validated_defense_arguments]
+        counters = await self._prosecutor.gather_counter_arguments(
+            source_text=state.source_text,
+            target_text=state.target_text,
+            dimensions=state.dimensions,
+            defense_arguments=defense_args,
+            round=state.current_round + 1,
+        )
+        return {"pending_prosecution_counters": [a.model_dump() for a in counters]}
+
+    async def _judge_validate_prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
+        pending = [Argument(**a) for a in state.pending_prosecution_counters]
+        valid = []
+        for arg in pending:
+            result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
+            if result.is_valid:
+                valid.append(arg.model_dump())
+        existing = [a.model_dump() for a in state.prosecution_counters]
+        return {
+            "validated_prosecution_counters": valid,
+            "prosecution_counters": existing + valid,
+        }
+
+    # --- Round control ---
 
     async def _check_next_round(self, state: ArgumentationState) -> dict[str, Any]:
-        prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
-        prev_round_args = [a for a in state.arguments if a.round == state.current_round]
-        stability = await self._judge.detect_stability(prosecution_args, prev_round_args)
-        # Stop immediately if the current round produced nothing from either side —
-        # continuing with identical inputs only burns LLM calls on stochastic retries.
-        current_round_num = state.current_round + 1
-        current_defense_args = [a for a in state.counter_arguments if a.round == current_round_num]
-        current_round_empty = len(prosecution_args) == 0 and len(current_defense_args) == 0
+        round_num = state.current_round + 1
+        pros_this_round = [a for a in state.prosecution_arguments if a.round == round_num]
+        def_this_round = [a for a in state.defense_arguments if a.round == round_num]
+        both_empty = len(pros_this_round) == 0 and len(def_this_round) == 0
+        stability = await self._judge.detect_stability(
+            [Argument(**a) for a in state.validated_prosecution_arguments],
+            [a for a in state.prosecution_arguments if a.round == state.current_round],
+        )
         return {
             "current_round": state.current_round + 1,
-            "stability_detected": stability or current_round_empty,
+            "stability_detected": stability or both_empty,
         }
 
     async def _finalize_arguments(self, state: ArgumentationState) -> dict[str, Any]:
         rounds = []
         for r in range(1, state.current_round + 1):
-            round_args = [a for a in state.arguments if a.round == r]
-            round_counters = [a for a in state.counter_arguments if a.round == r]
-            if round_args or round_counters:  # omit rounds that produced nothing
+            pros_args = [a for a in state.prosecution_arguments if a.round == r]
+            def_counters = [a for a in state.defense_counters if a.round == r]
+            def_args = [a for a in state.defense_arguments if a.round == r]
+            pros_counters = [a for a in state.prosecution_counters if a.round == r]
+            if pros_args or def_counters or def_args or pros_counters:
                 rounds.append(
                     RoundArguments(
                         round=r,
-                        prosecution_arguments=round_args,
-                        defense_counters=round_counters,
-                        defense_arguments=[],
-                        prosecution_counters=[],
+                        prosecution_arguments=pros_args,
+                        defense_counters=def_counters,
+                        defense_arguments=def_args,
+                        prosecution_counters=pros_counters,
                     )
                 )
         log = ArgumentationLog(rounds=rounds)
         return {"argumentation_log": log.model_dump()}
 
     # --- Routing ---
-
-    def _route_cross_exam(self, state: ArgumentationState) -> str:
-        return "cross_examine" if state.cross_examination_triggered else "skip"
 
     def _route_next_round(self, state: ArgumentationState) -> str:
         if state.stability_detected or state.current_round >= state.max_rounds:
