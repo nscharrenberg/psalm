@@ -6,6 +6,7 @@ import pytest
 
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
+from psalm.dimensions import CHARACTER
 from psalm.models.config import DebateConfig
 from psalm.models.result import JurorVote
 from psalm.phases.deliberation import DeliberationPhase
@@ -54,13 +55,13 @@ def deliberation_phase(mock_jurors, voting_strategies, mock_judge):
 
 
 async def test_unanimous_verdict_first_round(deliberation_phase, minimal_argumentation_log):
-    verdict, log = await deliberation_phase.run(minimal_argumentation_log)
+    verdict, log, weighted_score = await deliberation_phase.run(minimal_argumentation_log, CHARACTER)
     assert verdict == "Guilty"
     assert len(log.rounds) == 1
 
 
 async def test_debate_log_contains_rounds(deliberation_phase, minimal_argumentation_log):
-    verdict, log = await deliberation_phase.run(minimal_argumentation_log)
+    verdict, log, weighted_score = await deliberation_phase.run(minimal_argumentation_log, CHARACTER)
     assert len(log.rounds) > 0
     assert log.rounds[0].votes is not None
 
@@ -82,7 +83,7 @@ async def test_non_unanimous_triggers_more_rounds(mock_jurors, voting_strategies
 
     config = DebateConfig(deliberation_rounds=3)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
-    verdict, log = await phase.run(minimal_argumentation_log)
+    verdict, log, weighted_score = await phase.run(minimal_argumentation_log, CHARACTER)
     assert len(log.rounds) > 1
 
 
@@ -99,7 +100,7 @@ async def test_jury_votes_in_parallel(mock_jurors, voting_strategies, mock_judge
 
     config = DebateConfig(deliberation_rounds=1)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
-    await phase.run(minimal_argumentation_log)
+    await phase.run(minimal_argumentation_log, CHARACTER)
 
     assert len(call_times) == 3
     time_spread = max(call_times) - min(call_times)
@@ -119,6 +120,6 @@ async def test_exhausted_rounds_applies_voting_strategy(mock_jurors, voting_stra
     mock_judge.tiebreak = AsyncMock(return_value="Undecided")
     config = DebateConfig(deliberation_rounds=2)
     phase = DeliberationPhase(mock_jurors, voting_strategies, mock_judge, config)
-    verdict, log = await phase.run(minimal_argumentation_log)
+    verdict, log, weighted_score = await phase.run(minimal_argumentation_log, CHARACTER)
     assert verdict in {"Guilty", "Not Guilty", "Undecided"}
     assert len(log.rounds) == 2

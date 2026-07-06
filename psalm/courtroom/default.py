@@ -22,7 +22,8 @@ class DefaultCourtroom(CourtroomSetup):
         start = time.monotonic()
 
         arg_log = await self._argumentation_phase.run(case_input)
-        verdict, debate_log = await self._deliberation_phase.run(arg_log)
+        dimension = case_input.dimensions[0]   # temporary: Plan 11 replaces this with per-dim orchestration
+        verdict, debate_log, weighted_score = await self._deliberation_phase.run(arg_log, dimension)
 
         duration = time.monotonic() - start
         metadata = ResultMetadata(
