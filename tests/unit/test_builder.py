@@ -6,6 +6,7 @@ import pytest
 from psalm.builder import PSALM
 from psalm.dimensions import CHARACTER
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
+from psalm.models.config import EvaluationStrategy
 
 
 def _agent_kwargs():
@@ -100,3 +101,20 @@ async def test_evaluate_raises_on_empty_target():
     with pytest.raises(PSALMValidationError) as exc_info:
         courtroom.evaluate(source_text="some text", target_text="")
     assert "PSALM-V002" in str(exc_info.value)
+
+
+async def test_with_evaluation_strategy_sets_strategy():
+    builder = (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_evaluation_strategy(EvaluationStrategy.SHARED_ALL)
+    )
+    assert builder._debate_config.evaluation_strategy == EvaluationStrategy.SHARED_ALL
+
+
+async def test_default_evaluation_strategy_is_fully_separate():
+    builder = PSALM()
+    assert builder._debate_config.evaluation_strategy == EvaluationStrategy.FULLY_SEPARATE

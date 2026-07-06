@@ -12,7 +12,7 @@ from psalm.agents.prosecutor import Prosecutor
 from psalm.courtroom.default import DefaultCourtroom
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
-from psalm.models.config import AgentConfig, CaseInput, DebateConfig
+from psalm.models.config import AgentConfig, CaseInput, DebateConfig, EvaluationStrategy
 from psalm.models.result import PSALMResult
 from psalm.phases.argumentation import ArgumentationPhase
 from psalm.phases.deliberation import DeliberationPhase
@@ -80,6 +80,12 @@ class PSALM:
     def with_voting(self, strategies: list[str]) -> PSALM:
         self._debate_config = self._debate_config.model_copy(
             update={"voting_strategies": strategies}
+        )
+        return self
+
+    def with_evaluation_strategy(self, strategy: EvaluationStrategy) -> PSALM:
+        self._debate_config = self._debate_config.model_copy(
+            update={"evaluation_strategy": strategy}
         )
         return self
 
