@@ -91,3 +91,35 @@ async def test_gather_arguments_retries_on_failure(prosecutor, sample_argument):
 
     assert call_count == 3
     assert len(result) == 1
+
+
+async def test_prosecutor_gather_counter_arguments(prosecutor, sample_argument, sample_counter_argument):
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(arguments=[sample_argument]))
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
+        result = await prosecutor.gather_counter_arguments(
+            source_text="src",
+            target_text="tgt",
+            dimensions=[CHARACTER],
+            defense_arguments=[sample_counter_argument],
+            round=1,
+        )
+    assert len(result) == 1
+    assert result[0].agent_role == "prosecutor"
+
+
+async def test_prosecutor_counter_prompt_mentions_defense_args(prosecutor, sample_argument, sample_counter_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(prosecutor._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await prosecutor.gather_counter_arguments("src", "tgt", [CHARACTER], [sample_counter_argument], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "Eye color is a generic trait" in user_content or "defense" in user_content.lower()

@@ -109,3 +109,44 @@ class Defense(BaseAgent):
                 suggestion="Check the LLM model supports structured output.",
                 cause=exc,
             ) from exc
+
+    async def gather_arguments(
+        self,
+        source_text: str,
+        target_text: str,
+        dimensions: list[Dimension],
+        round: int,
+    ) -> list[Argument]:
+        """Step 3: Defense makes independent affirmative arguments (no prosecution args to counter)."""
+        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        dim_names = ", ".join(d.name for d in dimensions)
+        prompt = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": (
+                    f"SOURCE TEXT:\n{source_text}\n\n"
+                    f"TARGET TEXT:\n{target_text}\n\n"
+                    f"Dimensions: {dim_names}\nRound: {round}\n\n"
+                    "Make affirmative arguments about why the target text does NOT infringe the "
+                    "source. Highlight specific passages where the wording, imagery, and creative "
+                    "choices are distinctly different. You MUST produce at least one argument."
+                ),
+            },
+        ]
+        try:
+            result = await self._call_structured(structured_llm, prompt)
+            return [
+                a.model_copy(update={"round": round, "agent_role": "defense"})
+                for a in result.arguments
+            ]
+        except PSALMAgentError:
+            raise
+        except Exception as exc:
+            raise PSALMAgentError(
+                code="PSALM-A002",
+                message="Defense failed to produce affirmative arguments.",
+                context={"role": self.role, "round": round},
+                suggestion="Check the LLM model supports structured output.",
+                cause=exc,
+            ) from exc

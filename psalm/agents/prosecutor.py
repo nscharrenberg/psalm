@@ -92,3 +92,49 @@ class Prosecutor(BaseAgent):
                 ),
                 cause=exc,
             ) from exc
+
+    async def gather_counter_arguments(
+        self,
+        source_text: str,
+        target_text: str,
+        dimensions: list[Dimension],
+        defense_arguments: list[Argument],
+        round: int,
+    ) -> list[Argument]:
+        """Step 4: Prosecution counters defense's affirmative arguments."""
+        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        dim_names = ", ".join(d.name for d in dimensions)
+        defense_text = "\n".join(
+            f"- [{a.dimension}] {a.claim}" for a in defense_arguments
+        )
+        prompt = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": (
+                    f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
+                    f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
+                    f"Dimensions: {dim_names}\nRound: {round}\n\n"
+                    f"Defense affirmative arguments to rebut:\n{defense_text}\n\n"
+                    "Counter each defense argument: show why their claimed differences are "
+                    "insufficient to rule out infringement, or present additional similarities "
+                    "the defense ignored. You MUST produce at least one argument."
+                ),
+            },
+        ]
+        try:
+            result = await self._call_structured(structured_llm, prompt)
+            return [
+                a.model_copy(update={"round": round, "agent_role": "prosecutor"})
+                for a in result.arguments
+            ]
+        except PSALMAgentError:
+            raise
+        except Exception as exc:
+            raise PSALMAgentError(
+                code="PSALM-A002",
+                message="Prosecutor failed to counter defense arguments.",
+                context={"role": self.role, "round": round, "dimensions": [d.name for d in dimensions]},
+                suggestion="Check the LLM model supports structured output.",
+                cause=exc,
+            ) from exc

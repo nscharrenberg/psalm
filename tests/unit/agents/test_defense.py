@@ -109,3 +109,34 @@ async def test_counter_argument_includes_prosecutor_args_in_prompt(defense, samp
 
     user_content = next(m["content"] for m in captured_prompt if m["role"] == "user")
     assert "prosecutor" in user_content.lower() or "argument" in user_content.lower()
+
+
+async def test_defense_gather_arguments_affirmative(defense, sample_argument):
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(arguments=[sample_argument]))
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(defense._llm), "with_structured_output", mock_with_structured):
+        result = await defense.gather_arguments(
+            source_text="The wizard had blue eyes.",
+            target_text="The sorcerer had azure eyes.",
+            dimensions=[CHARACTER],
+            round=1,
+        )
+    assert len(result) == 1
+    assert result[0].agent_role == "defense"
+
+
+async def test_defense_gather_arguments_prompt_mentions_affirmative(defense, sample_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.gather_arguments("src", "tgt", [CHARACTER], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "affirmative" in user_content.lower() or "distinct" in user_content.lower()
