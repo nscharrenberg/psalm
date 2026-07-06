@@ -146,8 +146,10 @@ class Judge(BaseAgent):
         structured_llm = self._llm.with_structured_output(_TiebreakDecision)
         votes_text = "\n".join(f"- {v.juror_id}: {v.vote} — {v.rationale}" for v in votes)
         rounds_text = "\n".join(
-            f"Round {r.round}: {len(r.arguments)} arguments, "
-            f"{len(r.counter_arguments)} counter-arguments"
+            f"Round {r.round}: {len(r.prosecution_arguments)} prosecution arguments, "
+            f"{len(r.defense_counters)} defense counters, "
+            f"{len(r.defense_arguments)} defense arguments, "
+            f"{len(r.prosecution_counters)} prosecution counters"
             for r in argumentation_log.rounds
         )
         system_content = (

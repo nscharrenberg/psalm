@@ -69,8 +69,10 @@ def minimal_argumentation_log(
         rounds=[
             RoundArguments(
                 round=1,
-                arguments=[sample_argument],
-                counter_arguments=[sample_counter_argument],
+                prosecution_arguments=[sample_argument],
+                defense_counters=[sample_counter_argument],
+                defense_arguments=[],
+                prosecution_counters=[],
             )
         ]
     )

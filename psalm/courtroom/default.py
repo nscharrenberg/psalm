@@ -41,8 +41,8 @@ class DefaultCourtroom(CourtroomSetup):
         )
 
     def _synthesize_rationale(self, verdict, arg_log, debate_log) -> str:
-        arg_count = sum(len(r.arguments) for r in arg_log.rounds)
-        counter_count = sum(len(r.counter_arguments) for r in arg_log.rounds)
+        arg_count = sum(len(r.prosecution_arguments) + len(r.defense_arguments) for r in arg_log.rounds)
+        counter_count = sum(len(r.defense_counters) + len(r.prosecution_counters) for r in arg_log.rounds)
         delib_rounds = len(debate_log.rounds)
         return (
             f"Verdict: {verdict}. "

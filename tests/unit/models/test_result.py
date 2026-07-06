@@ -37,7 +37,13 @@ def argument(proof):
 
 @pytest.fixture
 def minimal_result(argument):
-    round_args = RoundArguments(round=1, arguments=[argument], counter_arguments=[])
+    round_args = RoundArguments(
+        round=1,
+        prosecution_arguments=[argument],
+        defense_counters=[],
+        defense_arguments=[],
+        prosecution_counters=[],
+    )
     arg_log = ArgumentationLog(rounds=[round_args])
     vote = JurorVote(juror_id="juror-0", vote="Guilty", rationale="Strong evidence.")
     round_delib = RoundDeliberation(
@@ -97,3 +103,41 @@ def test_result_metadata_defaults():
         voting_strategy_applied="simple_majority",
     )
     assert m.agent_failures == []
+
+
+def _make_arg(dimension: str = "character", round: int = 1, role: str = "prosecutor") -> Argument:
+    return Argument(
+        claim="A test claim.",
+        dimension=dimension,
+        proofs=[Proof(source_excerpt="src", target_excerpt="tgt", relevance="rel")],
+        agent_role=role,
+        round=round,
+    )
+
+
+def test_round_arguments_has_four_fields():
+    from psalm.models.result import RoundArguments
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[_make_arg(role="prosecutor")],
+        defense_counters=[_make_arg(role="defense")],
+        defense_arguments=[_make_arg(role="defense")],
+        prosecution_counters=[_make_arg(role="prosecutor")],
+    )
+    assert len(ra.prosecution_arguments) == 1
+    assert len(ra.defense_counters) == 1
+    assert len(ra.defense_arguments) == 1
+    assert len(ra.prosecution_counters) == 1
+
+
+def test_round_arguments_old_fields_are_gone():
+    from psalm.models.result import RoundArguments
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[],
+        defense_counters=[],
+        defense_arguments=[],
+        prosecution_counters=[],
+    )
+    assert not hasattr(ra, "arguments")
+    assert not hasattr(ra, "counter_arguments")

@@ -149,8 +149,10 @@ class ArgumentationPhase(BasePhase):
                 rounds.append(
                     RoundArguments(
                         round=r,
-                        arguments=round_args,
-                        counter_arguments=round_counters,
+                        prosecution_arguments=round_args,
+                        defense_counters=round_counters,
+                        defense_arguments=[],
+                        prosecution_counters=[],
                     )
                 )
         log = ArgumentationLog(rounds=rounds)

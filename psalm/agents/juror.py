@@ -54,14 +54,28 @@ def _format_argumentation_log(argumentation_log: ArgumentationLog) -> str:
     for r in argumentation_log.rounds:
         parts.append(f"=== Argumentation Round {r.round} ===")
         parts.append("PROSECUTION ARGUMENTS:")
-        for i, arg in enumerate(r.arguments, 1):
+        for i, arg in enumerate(r.prosecution_arguments, 1):
             parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
             for p in arg.proofs:
                 parts.append(f'     Source: "{p.source_excerpt}"')
                 parts.append(f'     Target: "{p.target_excerpt}"')
                 parts.append(f"     Relevance: {p.relevance}")
-        parts.append("DEFENSE COUNTER-ARGUMENTS:")
-        for i, arg in enumerate(r.counter_arguments, 1):
+        parts.append("DEFENSE COUNTERS TO PROSECUTION:")
+        for i, arg in enumerate(r.defense_counters, 1):
+            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                parts.append(f'     Source: "{p.source_excerpt}"')
+                parts.append(f'     Target: "{p.target_excerpt}"')
+                parts.append(f"     Relevance: {p.relevance}")
+        parts.append("DEFENSE AFFIRMATIVE ARGUMENTS:")
+        for i, arg in enumerate(r.defense_arguments, 1):
+            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                parts.append(f'     Source: "{p.source_excerpt}"')
+                parts.append(f'     Target: "{p.target_excerpt}"')
+                parts.append(f"     Relevance: {p.relevance}")
+        parts.append("PROSECUTION COUNTERS TO DEFENSE:")
+        for i, arg in enumerate(r.prosecution_counters, 1):
             parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
             for p in arg.proofs:
                 parts.append(f'     Source: "{p.source_excerpt}"')

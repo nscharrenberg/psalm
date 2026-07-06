@@ -85,7 +85,12 @@ async def test_invalid_arguments_excluded(mock_prosecutor, mock_defense, mock_ju
     log = await phase.run(case_input)
     # Completely empty rounds must be excluded from the log
     for round_rec in log.rounds:
-        assert round_rec.arguments != [] or round_rec.counter_arguments != []
+        assert (
+            round_rec.prosecution_arguments != []
+            or round_rec.defense_counters != []
+            or round_rec.defense_arguments != []
+            or round_rec.prosecution_counters != []
+        )
 
 
 async def test_stability_terminates_early(mock_prosecutor, mock_defense, mock_judge, case_input):
@@ -126,7 +131,12 @@ async def test_empty_rounds_excluded_from_log(mock_prosecutor, mock_defense, moc
     log = await phase.run(case_input)
     # The empty round 1 must not appear in the log
     for round_rec in log.rounds:
-        assert round_rec.arguments != [] or round_rec.counter_arguments != []
+        assert (
+            round_rec.prosecution_arguments != []
+            or round_rec.defense_counters != []
+            or round_rec.defense_arguments != []
+            or round_rec.prosecution_counters != []
+        )
 
 
 async def test_defense_is_always_called_regardless_of_prosecution(

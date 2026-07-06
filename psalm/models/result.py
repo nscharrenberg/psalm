@@ -14,8 +14,10 @@ class ValidationResult(BaseModel):
 
 class RoundArguments(BaseModel):
     round: int
-    arguments: list[Argument]
-    counter_arguments: list[Argument]
+    prosecution_arguments: list[Argument]
+    defense_counters: list[Argument]
+    defense_arguments: list[Argument]
+    prosecution_counters: list[Argument]
 
 
 class ArgumentationLog(BaseModel):
