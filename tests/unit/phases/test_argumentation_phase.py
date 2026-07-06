@@ -130,3 +130,41 @@ async def test_continues_when_only_one_side_empty(mock_judge):
     # both_empty requires ALL four steps empty, so defense_arguments being non-empty keeps
     # the debate going through round 3 (max_rounds), not stopping early at round 2.
     assert mock_prosecutor.gather_arguments.call_count == 3
+
+
+async def test_continues_when_step_two_nonempty_but_steps_one_and_three_empty(mock_judge):
+    # Discriminates the OLD 2-field both_empty check (prosecution_arguments +
+    # defense_arguments only) from the NEW 4-field check (adds defense_counters and
+    # prosecution_counters). From round 2 onward, step 1 (prosecution_arguments) and
+    # step 3 (defense_arguments) are BOTH empty for that round, but step 2
+    # (defense_counters) is non-empty every round. Under the old 2-field check this
+    # would incorrectly compute both_empty=True at round 2 and stop early. Under the
+    # new 4-field check, the non-empty defense_counters keeps both_empty False, so the
+    # debate continues through all 3 rounds.
+    async def prosecution_first_round_only(*args, **kwargs):
+        if kwargs["round"] == 1:
+            return [_make_arg(role="prosecutor", round=1)]
+        return []
+
+    async def defense_counters_every_round(*args, **kwargs):
+        return [_make_arg(role="defense", round=kwargs["round"])]
+
+    mock_prosecutor = MagicMock()
+    mock_prosecutor.gather_arguments = AsyncMock(side_effect=prosecution_first_round_only)
+    mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=[])
+    mock_defense = MagicMock()
+    mock_defense.gather_counter_arguments = AsyncMock(side_effect=defense_counters_every_round)
+    mock_defense.gather_arguments = AsyncMock(return_value=[])
+
+    mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
+    mock_judge.detect_stability = AsyncMock(return_value=False)
+
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=3, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+    case_input = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+
+    result = await phase.run(case_input)
+    # If both_empty only checked steps 1 and 3, the phase would have stopped after
+    # round 2 (2 calls). The 4-field check keeps it going through round 3.
+    assert mock_prosecutor.gather_arguments.call_count == 3
+    assert mock_defense.gather_counter_arguments.call_count == 3
