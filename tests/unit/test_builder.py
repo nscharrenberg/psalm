@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from psalm.builder import PSALM
-from psalm.dimensions import CHARACTER
+from psalm.dimensions import CHARACTER, PLOT
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 from psalm.models.config import EvaluationStrategy
 from psalm.models.result import DimensionVerdict, PSALMResult
@@ -146,3 +146,51 @@ async def test_evaluate_returns_psalm_result_with_dimension_verdicts():
     assert isinstance(result, PSALMResult)
     assert len(result.dimension_verdicts) >= 1
     assert isinstance(result.dimension_verdicts[0], DimensionVerdict)
+
+
+async def test_shared_all_argumentation_rounds_not_multiplied_per_dimension():
+    """Under SHARED_ALL, every DimensionVerdict shares the same ArgumentationLog
+    instance (one argumentation phase run reused across dimensions). The reported
+    argumentation_rounds_used must count that shared log once, not once per
+    dimension."""
+    from unittest.mock import AsyncMock, patch
+    from psalm.models.result import DebateLog, ArgumentationLog, RoundArguments
+
+    builder = (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_dimensions([CHARACTER, PLOT])
+        .with_debate(argumentation_rounds=2, deliberation_rounds=1, time_limit_seconds=60)
+        .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
+        .with_evaluation_strategy(EvaluationStrategy.SHARED_ALL)
+    )
+    with patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)):
+        courtroom = await builder.build()
+
+    arg_log = ArgumentationLog(rounds=[
+        RoundArguments(
+            round=1,
+            prosecution_arguments=[],
+            defense_counters=[],
+            defense_arguments=[],
+            prosecution_counters=[],
+        )
+    ])
+    debate_log = DebateLog(rounds=[], final_voting_strategy_applied="unanimous")
+
+    # Only one deliberation phase exists for SHARED_ALL; it is reused for both dimensions.
+    assert len(courtroom._courtroom._deliberation_phases) == 1
+
+    with patch.object(courtroom._courtroom._argumentation_phase, "run", AsyncMock(return_value=arg_log)):
+        with patch.object(courtroom._courtroom._deliberation_phases[0], "run",
+                          AsyncMock(return_value=("Not Guilty", debate_log, 0.1))):
+            result = await courtroom.aevaluate("source text here", "target text here")
+
+    assert len(result.dimension_verdicts) == 2
+    # Both dimension verdicts reference the exact same ArgumentationLog object.
+    assert result.dimension_verdicts[0].argumentation_log is result.dimension_verdicts[1].argumentation_log
+    # Rounds must be counted once for the shared log, not once per dimension (2x).
+    assert result.metadata.argumentation_rounds_used == 1
