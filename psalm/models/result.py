@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from psalm.dimensions.base import SimilarityScore
+from psalm.dimensions.base import Importance, SimilarityScore
 from psalm.models.evidence import Argument
 
 
@@ -58,11 +58,19 @@ class ResultMetadata(BaseModel):
     agent_failures: list[dict[str, Any]] = Field(default_factory=list)
 
 
+class DimensionVerdict(BaseModel):
+    dimension: str
+    importance: Importance
+    verdict: Literal["Guilty", "Not Guilty", "Undecided"]
+    weighted_score: float
+    argumentation_log: ArgumentationLog
+    debate_log: DebateLog
+
+
 class PSALMResult(BaseModel):
     verdict: Literal["Guilty", "Not Guilty", "Undecided"]
     rationale: str
-    argumentation_log: ArgumentationLog
-    debate_log: DebateLog
+    dimension_verdicts: list[DimensionVerdict]
     metadata: ResultMetadata
 
     def to_dict(self) -> dict[str, Any]:

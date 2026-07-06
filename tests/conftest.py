@@ -6,6 +6,7 @@ from psalm.models.evidence import Argument, Proof
 from psalm.models.result import (
     ArgumentationLog,
     DebateLog,
+    DimensionVerdict,
     JurorVote,
     PSALMResult,
     ResultMetadata,
@@ -99,11 +100,20 @@ def minimal_debate_log() -> DebateLog:
 
 @pytest.fixture
 def minimal_psalm_result(minimal_argumentation_log, minimal_debate_log) -> PSALMResult:
+    from psalm.dimensions.base import Importance
+    from psalm.models.result import DimensionVerdict
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.8,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
     return PSALMResult(
         verdict="Guilty",
         rationale="The target text substantially reproduces protected character traits.",
-        argumentation_log=minimal_argumentation_log,
-        debate_log=minimal_debate_log,
+        dimension_verdicts=[dv],
         metadata=ResultMetadata(
             duration_seconds=5.0,
             argumentation_rounds_used=1,

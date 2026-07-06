@@ -2,10 +2,12 @@ import json
 
 import pytest
 
+from psalm.dimensions.base import Importance
 from psalm.models.evidence import Argument, Proof
 from psalm.models.result import (
     ArgumentationLog,
     DebateLog,
+    DimensionVerdict,
     JurorVote,
     PSALMResult,
     ResultMetadata,
@@ -59,11 +61,18 @@ def minimal_result(argument):
         deliberation_rounds_used=1,
         voting_strategy_applied="simple_majority",
     )
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.8,
+        argumentation_log=arg_log,
+        debate_log=debate_log,
+    )
     return PSALMResult(
         verdict="Guilty",
         rationale="The target text substantially copies character traits.",
-        argumentation_log=arg_log,
-        debate_log=debate_log,
+        dimension_verdicts=[dv],
         metadata=metadata,
     )
 
@@ -86,7 +95,7 @@ def test_psalm_result_to_dict(minimal_result):
     d = minimal_result.to_dict()
     assert isinstance(d, dict)
     assert d["verdict"] == "Guilty"
-    assert "argumentation_log" in d
+    assert "dimension_verdicts" in d
 
 
 def test_psalm_result_to_json(minimal_result):
@@ -179,3 +188,71 @@ def test_juror_vote_dimension_scores_defaults_to_empty():
     from psalm.models.result import JurorVote
     vote = JurorVote(juror_id="juror-0", vote="Not Guilty", rationale="No evidence.")
     assert vote.dimension_scores == []
+
+
+def test_dimension_verdict_model(minimal_argumentation_log, minimal_debate_log):
+    from psalm.models.result import DimensionVerdict
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.75,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
+    assert dv.dimension == "character"
+    assert dv.verdict == "Guilty"
+    assert dv.weighted_score == 0.75
+
+
+def test_psalm_result_has_dimension_verdicts(minimal_argumentation_log, minimal_debate_log):
+    from psalm.models.result import DimensionVerdict, PSALMResult, ResultMetadata
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.8,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
+    result = PSALMResult(
+        verdict="Guilty",
+        rationale="Strong similarities in character.",
+        dimension_verdicts=[dv],
+        metadata=ResultMetadata(
+            duration_seconds=1.0,
+            argumentation_rounds_used=1,
+            deliberation_rounds_used=1,
+            voting_strategy_applied="simple_majority",
+        ),
+    )
+    assert len(result.dimension_verdicts) == 1
+    assert not hasattr(result, "argumentation_log")
+    assert not hasattr(result, "debate_log")
+
+
+def test_psalm_result_to_dict_contains_dimension_verdicts(minimal_argumentation_log, minimal_debate_log):
+    from psalm.models.result import DimensionVerdict, PSALMResult, ResultMetadata
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.8,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
+    result = PSALMResult(
+        verdict="Guilty",
+        rationale="r.",
+        dimension_verdicts=[dv],
+        metadata=ResultMetadata(
+            duration_seconds=1.0,
+            argumentation_rounds_used=1,
+            deliberation_rounds_used=1,
+            voting_strategy_applied="simple_majority",
+        ),
+    )
+    d = result.to_dict()
+    assert "dimension_verdicts" in d
+    assert "argumentation_log" not in d
+    assert "debate_log" not in d
