@@ -141,3 +141,41 @@ def test_round_arguments_old_fields_are_gone():
     )
     assert not hasattr(ra, "arguments")
     assert not hasattr(ra, "counter_arguments")
+
+
+def test_dimension_score_model():
+    from psalm.dimensions.base import SimilarityScore
+    from psalm.models.result import DimensionScore
+    ds = DimensionScore(
+        sub_dimension="Identity & Properties",
+        score=SimilarityScore.CLEAR,
+        reasoning="Both characters share identical eye color descriptions.",
+    )
+    assert ds.sub_dimension == "Identity & Properties"
+    assert ds.score == SimilarityScore.CLEAR
+    assert ds.reasoning
+
+
+def test_juror_vote_has_dimension_scores():
+    from psalm.dimensions.base import SimilarityScore
+    from psalm.models.result import DimensionScore, JurorVote
+    vote = JurorVote(
+        juror_id="juror-0",
+        vote="Guilty",
+        rationale="Strong evidence.",
+        dimension_scores=[
+            DimensionScore(
+                sub_dimension="Identity & Properties",
+                score=SimilarityScore.CLEAR,
+                reasoning="Identical traits.",
+            )
+        ],
+    )
+    assert len(vote.dimension_scores) == 1
+    assert vote.dimension_scores[0].score == SimilarityScore.CLEAR
+
+
+def test_juror_vote_dimension_scores_defaults_to_empty():
+    from psalm.models.result import JurorVote
+    vote = JurorVote(juror_id="juror-0", vote="Not Guilty", rationale="No evidence.")
+    assert vote.dimension_scores == []

@@ -4,6 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from psalm.dimensions.base import SimilarityScore
 from psalm.models.evidence import Argument
 
 
@@ -24,10 +25,17 @@ class ArgumentationLog(BaseModel):
     rounds: list[RoundArguments]
 
 
+class DimensionScore(BaseModel):
+    sub_dimension: str
+    score: SimilarityScore
+    reasoning: str
+
+
 class JurorVote(BaseModel):
     juror_id: str
     vote: Literal["Guilty", "Not Guilty", "Undecided"]
     rationale: str
+    dimension_scores: list[DimensionScore] = Field(default_factory=list)
 
 
 class RoundDeliberation(BaseModel):
