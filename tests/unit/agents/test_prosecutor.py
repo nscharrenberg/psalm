@@ -32,11 +32,13 @@ async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_
 def test_prosecutor_prompt_prioritizes_expression_over_idea_arguments():
     # Prosecutor should prioritize expression-level arguments but is allowed to make weaker
     # idea/genre/archetype arguments so the debate can proceed — defense will rebut them.
+    # Note: as of the self-censorship removal, the prosecutor no longer pre-emptively labels
+    # these as "unprotectable" — that judgment is left to the defense/judge.
     from psalm.agents.prosecutor import _SYSTEM_PROMPT
     prompt = _SYSTEM_PROMPT.lower()
     assert "prioritize" in prompt or "strongest" in prompt
     assert "archetype" in prompt or "theme" in prompt or "genre" in prompt
-    assert "unprotectable" in prompt  # should still know the defense will challenge weak args
+    assert "debate must proceed" in prompt  # weaker args still allowed to proceed
 
 
 async def test_gather_arguments_role():
@@ -123,3 +125,31 @@ async def test_prosecutor_counter_prompt_mentions_defense_args(prosecutor, sampl
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "Eye color is a generic trait" in user_content or "defense" in user_content.lower()
+
+
+async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, sample_argument):
+    from psalm.agents.prosecutor import Prosecutor
+    prosecutor = Prosecutor(config=agent_config)
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(prosecutor._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    # Must contain sub-dimension names and importance markers
+    assert "Identity & Properties" in user_content
+    assert "CRITICAL" in user_content or "HIGH" in user_content
+
+
+def test_prosecutor_system_prompt_no_self_censorship():
+    from psalm.agents.prosecutor import _SYSTEM_PROMPT
+    # Removed: "be aware the defense will challenge those as legally unprotectable"
+    assert "be aware the defense will challenge" not in _SYSTEM_PROMPT
+    # New framing: surface all similarities
+    assert "surface" in _SYSTEM_PROMPT.lower() or "all" in _SYSTEM_PROMPT.lower()

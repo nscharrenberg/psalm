@@ -140,3 +140,21 @@ async def test_defense_gather_arguments_prompt_mentions_affirmative(defense, sam
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "affirmative" in user_content.lower() or "distinct" in user_content.lower()
+
+
+async def test_defense_counter_prompt_includes_sub_dimension_context(agent_config, sample_argument, sample_counter_argument):
+    from psalm.agents.defense import Defense
+    defense = Defense(config=agent_config)
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument])
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.gather_counter_arguments("src", "tgt", [CHARACTER], [sample_counter_argument], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "Identity & Properties" in user_content or "character" in user_content.lower()

@@ -12,9 +12,23 @@ class _ArgumentList(BaseModel):
     arguments: list[Argument]
 
 
+def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
+    lines: list[str] = []
+    for dim in dimensions:
+        lines.append(
+            f"\nDimension: {dim.name} — {dim.description}"
+        )
+        lines.append("Sub-dimensions (argue ALL marked HIGH or CRITICAL):")
+        for sd in dim.sub_dimensions:
+            lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+    return "\n".join(lines)
+
+
 _SYSTEM_PROMPT = """\
 You are a legal prosecutor in a copyright infringement case governed by EU copyright law.
 Your goal is to argue that the target text infringes the source's copyright.
+
+Surface ALL similarities between the texts — the court filters; you argue.
 
 PRIORITIZE these argument types (strongest first):
 1. Near-verbatim or closely paraphrased passages — the same distinctive words or phrases appear
@@ -22,16 +36,12 @@ PRIORITIZE these argument types (strongest first):
 2. A unique metaphor, image, or narrative detail that appears in both texts.
 3. Highly specific plot details that could not be independently invented — same names, same
    events, same distinctive sequence of choices.
+4. Structural or expression-level similarities (genre conventions, shared archetypes) — present
+   these even if the defense may rebut them. The debate must proceed.
 
-If none of the above exist, present weaker arguments based on structural similarities,
-shared character archetypes, genre conventions, or abstract themes — be aware the defense will
-challenge those as legally unprotectable ideas under EU law. Make the argument anyway: the
-debate must proceed and the defense will rebut.
-
-Every argument must include relevant passages from both texts. Quote as closely as possible to
-the original; close approximations are acceptable. You MUST produce at least one argument —
-if strong evidence is absent, make the best case available so the debate can proceed.
-If you are rebutting defense arguments from prior rounds, directly address their challenge.
+You MUST produce at least one argument per HIGH and CRITICAL sub-dimension where any similarity
+exists — including generic or weak ones. Every argument must include relevant passages from both
+texts. Quote as closely as possible to the original; close approximations are acceptable.
 """
 
 
@@ -60,17 +70,20 @@ class Prosecutor(BaseAgent):
                 "Address these challenges in your arguments — explain why the defense is wrong "
                 "or present new evidence they did not counter."
             )
+        sub_dim_block = _format_sub_dimensions(dimensions)
+        content = (
+            f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
+            f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
+            f"{sub_dim_block}\n"
+            f"Round: {round}{rebuttal_section}\n\n"
+            "Provide arguments with relevant passages from both texts. "
+            "For each HIGH and CRITICAL sub-dimension, produce at least one argument."
+        )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": (
-                    f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
-                    f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
-                    f"Dimensions to analyze: {', '.join(d.name for d in dimensions)}\n"
-                    f"Round: {round}{rebuttal_section}\n\n"
-                    "Provide arguments with relevant passages from both texts."
-                ),
+                "content": content,
             },
         ]
         try:

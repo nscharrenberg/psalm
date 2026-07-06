@@ -12,6 +12,18 @@ class _ArgumentList(BaseModel):
     arguments: list[Argument]
 
 
+def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
+    lines: list[str] = []
+    for dim in dimensions:
+        lines.append(
+            f"\nDimension: {dim.name} — {dim.description}"
+        )
+        lines.append("Sub-dimensions (argue ALL marked HIGH or CRITICAL):")
+        for sd in dim.sub_dimensions:
+            lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+    return "\n".join(lines)
+
+
 _SYSTEM_PROMPT = """\
 You are a defense attorney in a copyright infringement case governed by EU copyright law.
 Challenge the prosecutor's arguments AND make proactive affirmative claims about the texts.
@@ -80,17 +92,20 @@ class Defense(BaseAgent):
                 "created. The prosecution will counter your arguments in the next round. "
                 "You MUST produce at least one argument."
             )
+        sub_dim_block = _format_sub_dimensions(dimensions)
+        content = (
+            f"SOURCE TEXT:\n{source_text}\n\n"
+            f"TARGET TEXT:\n{target_text}\n\n"
+            f"Prosecutor's arguments:\n{args_text}\n\n"
+            f"{sub_dim_block}\n"
+            f"Round: {round}\n\n"
+            f"{instruction}"
+        )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": (
-                    f"SOURCE TEXT:\n{source_text}\n\n"
-                    f"TARGET TEXT:\n{target_text}\n\n"
-                    f"Prosecutor's arguments:\n{args_text}\n\n"
-                    f"Dimensions: {', '.join(d.name for d in dimensions)}\nRound: {round}\n\n"
-                    f"{instruction}"
-                ),
+                "content": content,
             },
         ]
         try:
@@ -119,19 +134,22 @@ class Defense(BaseAgent):
     ) -> list[Argument]:
         """Step 3: Defense makes independent affirmative arguments (no prosecution args to counter)."""
         structured_llm = self._llm.with_structured_output(_ArgumentList)
-        dim_names = ", ".join(d.name for d in dimensions)
+        sub_dim_block = _format_sub_dimensions(dimensions)
+        content = (
+            f"SOURCE TEXT:\n{source_text}\n\n"
+            f"TARGET TEXT:\n{target_text}\n\n"
+            f"{sub_dim_block}\n"
+            f"Round: {round}\n\n"
+            "Make affirmative arguments about why the target text does NOT infringe the "
+            "source. Address each HIGH and CRITICAL sub-dimension. Highlight specific passages "
+            "where the wording, imagery, and creative choices are distinctly different. "
+            "You MUST produce at least one argument."
+        )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": (
-                    f"SOURCE TEXT:\n{source_text}\n\n"
-                    f"TARGET TEXT:\n{target_text}\n\n"
-                    f"Dimensions: {dim_names}\nRound: {round}\n\n"
-                    "Make affirmative arguments about why the target text does NOT infringe the "
-                    "source. Highlight specific passages where the wording, imagery, and creative "
-                    "choices are distinctly different. You MUST produce at least one argument."
-                ),
+                "content": content,
             },
         ]
         try:
