@@ -52,6 +52,10 @@ class ArgumentationState(BaseModel):
     defense_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
     prosecution_counter_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
 
+    # Dedicated final closing arguments — delivered once, after the round loop ends.
+    prosecution_closing_argument: str | None = None
+    defense_closing_argument: str | None = None
+
 
 class DeliberationState(BaseModel):
     argumentation_log: ArgumentationLog

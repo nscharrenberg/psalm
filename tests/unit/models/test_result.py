@@ -124,6 +124,24 @@ def _make_arg(dimension: str = "character", round: int = 1, role: str = "prosecu
     )
 
 
+def test_argumentation_log_closing_arguments_default_none():
+    from psalm.models.result import ArgumentationLog
+    log = ArgumentationLog(rounds=[])
+    assert log.prosecution_closing_argument is None
+    assert log.defense_closing_argument is None
+
+
+def test_argumentation_log_accepts_closing_arguments():
+    from psalm.models.result import ArgumentationLog
+    log = ArgumentationLog(
+        rounds=[],
+        prosecution_closing_argument="The prosecution's closing argument.",
+        defense_closing_argument="The defense's closing argument.",
+    )
+    assert log.prosecution_closing_argument == "The prosecution's closing argument."
+    assert log.defense_closing_argument == "The defense's closing argument."
+
+
 def test_rejected_argument_model():
     from psalm.models.result import RejectedArgument
     ra = RejectedArgument(argument=_make_arg(), rejection_reason="Passage was fabricated.")

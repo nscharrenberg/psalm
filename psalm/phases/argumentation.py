@@ -57,6 +57,8 @@ class ArgumentationPhase(BasePhase):
         graph.add_node("prosecution_counter", self._prosecution_counter)
         graph.add_node("judge_validate_prosecution_counter", self._judge_validate_prosecution_counter)
         graph.add_node("check_next_round", self._check_next_round)
+        graph.add_node("prosecution_closing_argument", self._prosecution_closing_argument)
+        graph.add_node("defense_closing_argument", self._defense_closing_argument)
         graph.add_node("finalize_arguments", self._finalize_arguments)
 
         graph.set_entry_point("prosecution_argue")
@@ -71,8 +73,10 @@ class ArgumentationPhase(BasePhase):
         graph.add_conditional_edges(
             "check_next_round",
             self._route_next_round,
-            {"continue": "prosecution_argue", "done": "finalize_arguments"},
+            {"continue": "prosecution_argue", "done": "prosecution_closing_argument"},
         )
+        graph.add_edge("prosecution_closing_argument", "defense_closing_argument")
+        graph.add_edge("defense_closing_argument", "finalize_arguments")
         graph.add_edge("finalize_arguments", END)
 
         return graph.compile()
@@ -272,6 +276,32 @@ class ArgumentationPhase(BasePhase):
             "prosecution_counter_rejected_arguments": state.prosecution_counter_rejected_arguments + rejected,
         }
 
+    # --- Dedicated closing arguments (delivered once, after the round loop ends) ---
+
+    async def _prosecution_closing_argument(self, state: ArgumentationState) -> dict[str, Any]:
+        statement = await self._prosecutor.deliver_closing_argument(
+            source_text=state.source_text,
+            target_text=state.target_text,
+            dimensions=state.dimensions,
+            prosecution_arguments=state.prosecution_arguments,
+            prosecution_counters=state.prosecution_counters,
+            defense_counters=state.defense_counters,
+            defense_arguments=state.defense_arguments,
+        )
+        return {"prosecution_closing_argument": statement}
+
+    async def _defense_closing_argument(self, state: ArgumentationState) -> dict[str, Any]:
+        statement = await self._defense.deliver_closing_argument(
+            source_text=state.source_text,
+            target_text=state.target_text,
+            dimensions=state.dimensions,
+            defense_counters=state.defense_counters,
+            defense_arguments=state.defense_arguments,
+            prosecution_arguments=state.prosecution_arguments,
+            prosecution_counters=state.prosecution_counters,
+        )
+        return {"defense_closing_argument": statement}
+
     # --- Round control ---
 
     async def _check_next_round(self, state: ArgumentationState) -> dict[str, Any]:
@@ -343,7 +373,11 @@ class ArgumentationPhase(BasePhase):
                         prosecution_counter_closing_statement=pros_counter_closing,
                     )
                 )
-        log = ArgumentationLog(rounds=rounds)
+        log = ArgumentationLog(
+            rounds=rounds,
+            prosecution_closing_argument=state.prosecution_closing_argument,
+            defense_closing_argument=state.defense_closing_argument,
+        )
         return {"argumentation_log": log.model_dump()}
 
     # --- Routing ---

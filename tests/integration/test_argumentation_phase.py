@@ -29,6 +29,7 @@ def mock_prosecutor(agent_config, sample_argument):
     prosecutor.gather_counter_arguments = AsyncMock(
         return_value=ArgumentBatch(no_further_arguments=True, closing_statement="No rebuttal needed.")
     )
+    prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     return prosecutor
 
 
@@ -41,6 +42,7 @@ def mock_defense(agent_config, sample_counter_argument):
     defense.gather_arguments = AsyncMock(
         return_value=ArgumentBatch(no_further_arguments=True, closing_statement="The defense rests.")
     )
+    defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     return defense
 
 

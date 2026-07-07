@@ -36,6 +36,8 @@ class RoundArguments(BaseModel):
 
 class ArgumentationLog(BaseModel):
     rounds: list[RoundArguments]
+    prosecution_closing_argument: str | None = None
+    defense_closing_argument: str | None = None
 
 
 class DimensionScore(BaseModel):

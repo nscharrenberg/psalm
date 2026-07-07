@@ -124,6 +124,18 @@ def test_format_argumentation_log_includes_closing_statements():
     assert "No rebuttal needed." in text
 
 
+def test_format_argumentation_log_includes_closing_arguments():
+    from psalm.models.result import ArgumentationLog
+    log = ArgumentationLog(
+        rounds=[],
+        prosecution_closing_argument="The prosecution's final case for infringement.",
+        defense_closing_argument="The defense's final case for independence.",
+    )
+    text = _format_argumentation_log(log)
+    assert "The prosecution's final case for infringement." in text
+    assert "The defense's final case for independence." in text
+
+
 def test_format_argumentation_log_excludes_rejected_arguments():
     from psalm.models.evidence import Argument, Proof
     from psalm.models.result import ArgumentationLog, RejectedArgument, RoundArguments

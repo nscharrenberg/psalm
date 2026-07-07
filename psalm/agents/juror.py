@@ -85,6 +85,12 @@ def _format_argumentation_log(argumentation_log: ArgumentationLog) -> str:
         _format_argument_section(
             parts, "PROSECUTION COUNTERS TO DEFENSE:", r.prosecution_counters, r.prosecution_counter_closing_statement
         )
+    if argumentation_log.prosecution_closing_argument or argumentation_log.defense_closing_argument:
+        parts.append("=== Closing Arguments ===")
+        if argumentation_log.prosecution_closing_argument:
+            parts.append(f"PROSECUTION CLOSING ARGUMENT: {argumentation_log.prosecution_closing_argument}")
+        if argumentation_log.defense_closing_argument:
+            parts.append(f"DEFENSE CLOSING ARGUMENT: {argumentation_log.defense_closing_argument}")
     return "\n".join(parts)
 
 

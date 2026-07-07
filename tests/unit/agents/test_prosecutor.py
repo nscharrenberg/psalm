@@ -219,3 +219,47 @@ async def test_gather_arguments_returns_no_further_arguments(prosecutor):
     assert result.arguments == []
     assert result.no_further_arguments is True
     assert result.closing_statement == "No further unambiguous similarities remain."
+
+
+async def test_deliver_closing_argument_returns_string(prosecutor, sample_argument, sample_counter_argument):
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(
+        return_value=MagicMock(statement="The evidence clearly shows the target text infringes.")
+    )
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
+        result = await prosecutor.deliver_closing_argument(
+            source_text="src",
+            target_text="tgt",
+            dimensions=[CHARACTER],
+            prosecution_arguments=[sample_argument],
+            prosecution_counters=[],
+            defense_counters=[sample_counter_argument],
+            defense_arguments=[],
+        )
+    assert result == "The evidence clearly shows the target text infringes."
+
+
+async def test_deliver_closing_argument_prompt_includes_case_history(prosecutor, sample_argument, sample_counter_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(statement="Closing.")
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(prosecutor._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await prosecutor.deliver_closing_argument(
+            source_text="src",
+            target_text="tgt",
+            dimensions=[CHARACTER],
+            prosecution_arguments=[sample_argument],
+            prosecution_counters=[],
+            defense_counters=[sample_counter_argument],
+            defense_arguments=[],
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "Both characters share unique physical traits." in user_content
+    assert "Eye color is a generic trait not protected by copyright." in user_content

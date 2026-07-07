@@ -31,6 +31,7 @@ def mock_prosecutor():
     p = MagicMock()
     p.gather_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="prosecutor")]))
     p.gather_counter_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="prosecutor")]))
+    p.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     return p
 
 
@@ -39,6 +40,7 @@ def mock_defense():
     d = MagicMock()
     d.gather_counter_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="defense")]))
     d.gather_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="defense")]))
+    d.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     return d
 
 
@@ -91,9 +93,11 @@ async def test_stop_when_both_sides_empty(mock_judge):
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(return_value=_make_batch())
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
 
@@ -121,9 +125,11 @@ async def test_continues_when_only_one_side_empty(mock_judge):
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(side_effect=prosecution_with_falloff)
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(side_effect=defense_argues_every_round)
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
 
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
@@ -150,9 +156,11 @@ async def test_continues_when_step_two_nonempty_but_steps_one_and_three_empty(mo
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(side_effect=prosecution_first_round_only)
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(side_effect=defense_counters_every_round)
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
 
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
@@ -172,9 +180,11 @@ async def test_closing_statement_recorded_in_round(mock_judge):
         return_value=ArgumentBatch(no_further_arguments=True, closing_statement="The prosecution rests.")
     )
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
 
@@ -207,9 +217,11 @@ async def test_completeness_retry_triggers_on_ambiguous_batch(mock_judge):
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(side_effect=ambiguous_then_valid)
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
     mock_judge.validate_batch_completeness = AsyncMock(side_effect=completeness_side_effect)
@@ -226,9 +238,11 @@ async def test_completeness_retry_exhausted_raises(mock_judge):
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(return_value=ArgumentBatch())  # always ambiguous
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
     mock_judge.detect_stability = AsyncMock(return_value=False)
     mock_judge.validate_batch_completeness = AsyncMock(return_value=False)  # never satisfied
@@ -246,9 +260,11 @@ async def test_rejected_arguments_recorded_with_reason():
     mock_prosecutor = MagicMock()
     mock_prosecutor.gather_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="prosecutor")]))
     mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
     mock_defense = MagicMock()
     mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
     mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
     mock_judge = MagicMock()
     mock_judge.validate_argument = AsyncMock(
         return_value=MagicMock(is_valid=False, rejection_reason="Passage does not appear in either text.")
@@ -269,3 +285,43 @@ async def test_rejected_arguments_recorded_with_reason():
     assert len(r.prosecution_rejected_arguments) == 1
     assert r.prosecution_rejected_arguments[0].rejection_reason == "Passage does not appear in either text."
     assert r.prosecution_rejected_arguments[0].argument.agent_role == "prosecutor"
+
+
+async def test_closing_arguments_delivered_once_regardless_of_round_count(mock_prosecutor, mock_defense, mock_judge):
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=3, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+    case_input = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+
+    result = await phase.run(case_input)
+
+    mock_prosecutor.deliver_closing_argument.assert_called_once()
+    mock_defense.deliver_closing_argument.assert_called_once()
+    assert result.prosecution_closing_argument == "Prosecution closing argument."
+    assert result.defense_closing_argument == "Defense closing argument."
+
+
+async def test_closing_arguments_delivered_even_when_round_loop_stops_immediately(mock_judge):
+    mock_prosecutor = MagicMock()
+    mock_prosecutor.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
+    mock_defense = MagicMock()
+    mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
+    mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
+    mock_judge.detect_stability = AsyncMock(return_value=False)
+
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=5, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+    case_input = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+
+    result = await phase.run(case_input)
+
+    # Both sides declared nothing further immediately (round loop stops after round 1), but a
+    # dedicated closing argument must still be delivered — even an empty debate gets closing
+    # statements, like a real trial.
+    mock_prosecutor.deliver_closing_argument.assert_called_once()
+    mock_defense.deliver_closing_argument.assert_called_once()
+    assert result.prosecution_closing_argument == "Prosecution closing argument."
+    assert result.defense_closing_argument == "Defense closing argument."

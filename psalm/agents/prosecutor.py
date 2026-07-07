@@ -1,9 +1,31 @@
 from __future__ import annotations
 
+from pydantic import BaseModel
+
 from psalm.agents.base import BaseAgent
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument, ArgumentBatch
+
+
+class _ClosingArgument(BaseModel):
+    statement: str
+
+
+def _format_case_history(
+    prosecution_arguments: list[Argument],
+    prosecution_counters: list[Argument],
+    defense_counters: list[Argument],
+    defense_arguments: list[Argument],
+) -> str:
+    lines: list[str] = []
+    lines.append("YOUR SIDE'S ARGUMENTS (prosecution):")
+    for arg in prosecution_arguments + prosecution_counters:
+        lines.append(f"  - [{arg.dimension}] {arg.claim}")
+    lines.append("OPPOSING SIDE'S ARGUMENTS (defense):")
+    for arg in defense_counters + defense_arguments:
+        lines.append(f"  - [{arg.dimension}] {arg.claim}")
+    return "\n".join(lines)
 
 
 def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
@@ -177,6 +199,52 @@ class Prosecutor(BaseAgent):
                 code="PSALM-A002",
                 message="Prosecutor failed to counter defense arguments.",
                 context={"role": self.role, "round": round, "dimensions": [d.name for d in dimensions]},
+                suggestion="Check the LLM model supports structured output.",
+                cause=exc,
+            ) from exc
+
+    async def deliver_closing_argument(
+        self,
+        source_text: str,
+        target_text: str,
+        dimensions: list[Dimension],
+        prosecution_arguments: list[Argument],
+        prosecution_counters: list[Argument],
+        defense_counters: list[Argument],
+        defense_arguments: list[Argument],
+    ) -> str:
+        """Delivered once, after the round loop ends, regardless of how the debate went."""
+        structured_llm = self._llm.with_structured_output(_ClosingArgument)
+        case_history = _format_case_history(
+            prosecution_arguments, prosecution_counters, defense_counters, defense_arguments
+        )
+        dim_names = ", ".join(d.name for d in dimensions)
+        prompt = [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": (
+                    f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
+                    f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
+                    f"Dimensions: {dim_names}\n\n"
+                    f"{case_history}\n\n"
+                    "The argumentation rounds are complete. Deliver your closing argument: "
+                    "summarize the strongest surviving evidence for infringement, address the "
+                    "defense's strongest points, and make your final case to the jury. Base it "
+                    "only on the arguments listed above — do not introduce new evidence."
+                ),
+            },
+        ]
+        try:
+            result = await self._call_structured(structured_llm, prompt)
+            return result.statement
+        except PSALMAgentError:
+            raise
+        except Exception as exc:
+            raise PSALMAgentError(
+                code="PSALM-A002",
+                message="Prosecutor failed to deliver a closing argument.",
+                context={"role": self.role, "dimensions": [d.name for d in dimensions]},
                 suggestion="Check the LLM model supports structured output.",
                 cause=exc,
             ) from exc

@@ -98,6 +98,14 @@ async def test_e2e_mock_full_pipeline(cases):
             new=AsyncMock(return_value=no_further),
         ),
         patch(
+            "psalm.agents.prosecutor.Prosecutor.deliver_closing_argument",
+            new=AsyncMock(return_value="Prosecution closing argument."),
+        ),
+        patch(
+            "psalm.agents.defense.Defense.deliver_closing_argument",
+            new=AsyncMock(return_value="Defense closing argument."),
+        ),
+        patch(
             "psalm.agents.judge.Judge.validate_argument",
             new=AsyncMock(return_value=ValidationResult(is_valid=True)),
         ),
