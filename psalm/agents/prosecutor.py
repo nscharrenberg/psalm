@@ -19,12 +19,29 @@ def _format_case_history(
     defense_arguments: list[Argument],
 ) -> str:
     lines: list[str] = []
-    lines.append("YOUR SIDE'S ARGUMENTS (prosecution):")
-    for arg in prosecution_arguments + prosecution_counters:
-        lines.append(f"  - [{arg.dimension}] {arg.claim}")
-    lines.append("OPPOSING SIDE'S ARGUMENTS (defense):")
-    for arg in defense_counters + defense_arguments:
-        lines.append(f"  - [{arg.dimension}] {arg.claim}")
+    own_args = prosecution_arguments + prosecution_counters
+    opposing_args = defense_counters + defense_arguments
+
+    lines.append("YOUR SIDE'S SURVIVING ARGUMENTS (prosecution):")
+    if own_args:
+        for arg in own_args:
+            lines.append(f"  - [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                lines.append(f'      Source: "{p.source_excerpt}"')
+                lines.append(f'      Target: "{p.target_excerpt}"')
+    else:
+        lines.append("  (none survived judge validation)")
+
+    lines.append("OPPOSING SIDE'S SURVIVING ARGUMENTS (defense):")
+    if opposing_args:
+        for arg in opposing_args:
+            lines.append(f"  - [{arg.dimension}] {arg.claim}")
+            for p in arg.proofs:
+                lines.append(f'      Source: "{p.source_excerpt}"')
+                lines.append(f'      Target: "{p.target_excerpt}"')
+    else:
+        lines.append("  (none survived judge validation)")
+
     return "\n".join(lines)
 
 
@@ -211,15 +228,18 @@ class Prosecutor(BaseAgent):
 
     async def deliver_closing_argument(
         self,
-        source_text: str,
-        target_text: str,
         dimensions: list[Dimension],
         prosecution_arguments: list[Argument],
         prosecution_counters: list[Argument],
         defense_counters: list[Argument],
         defense_arguments: list[Argument],
     ) -> str:
-        """Delivered once, after the round loop ends, regardless of how the debate went."""
+        """Delivered once, after the round loop ends, regardless of how the debate went.
+
+        Deliberately has no access to the raw source/target text — only to arguments that
+        already survived judge validation — so it cannot introduce comparisons the Judge
+        never had a chance to check.
+        """
         structured_llm = self._llm.with_structured_output(_ClosingArgument)
         case_history = _format_case_history(
             prosecution_arguments, prosecution_counters, defense_counters, defense_arguments
@@ -230,14 +250,15 @@ class Prosecutor(BaseAgent):
             {
                 "role": "user",
                 "content": (
-                    f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
-                    f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
                     f"Dimensions: {dim_names}\n\n"
                     f"{case_history}\n\n"
-                    "The argumentation rounds are complete. Deliver your closing argument: "
-                    "summarize the strongest surviving evidence for infringement, address the "
-                    "defense's strongest points, and make your final case to the jury. Base it "
-                    "only on the arguments listed above — do not introduce new evidence."
+                    "The argumentation rounds are complete. Deliver your closing argument using "
+                    "ONLY the surviving arguments and proofs listed above — you do not have "
+                    "access to the full source or target text here, and must not invent or "
+                    "recall passages beyond what is quoted above. Summarize the strongest "
+                    "surviving evidence for infringement, address the defense's strongest "
+                    "surviving points, and make your final case to the jury. If your side has "
+                    "no surviving arguments, say so plainly rather than introducing new claims."
                 ),
             },
         ]

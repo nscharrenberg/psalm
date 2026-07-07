@@ -247,8 +247,6 @@ async def test_deliver_closing_argument_returns_string(defense, sample_argument,
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(defense._llm), "with_structured_output", mock_with_structured):
         result = await defense.deliver_closing_argument(
-            source_text="src",
-            target_text="tgt",
             dimensions=[CHARACTER],
             defense_counters=[sample_counter_argument],
             defense_arguments=[],
@@ -269,8 +267,6 @@ async def test_deliver_closing_argument_prompt_includes_case_history(defense, sa
     mock_chain.ainvoke = capture_invoke
     with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
         await defense.deliver_closing_argument(
-            source_text="src",
-            target_text="tgt",
             dimensions=[CHARACTER],
             defense_counters=[sample_counter_argument],
             defense_arguments=[],
@@ -281,3 +277,72 @@ async def test_deliver_closing_argument_prompt_includes_case_history(defense, sa
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "Both characters share unique physical traits." in user_content
     assert "Eye color is a generic trait not protected by copyright." in user_content
+
+
+async def test_deliver_closing_argument_prompt_includes_proof_excerpts(defense, sample_counter_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(statement="Closing.")
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.deliver_closing_argument(
+            dimensions=[CHARACTER],
+            defense_counters=[sample_counter_argument],
+            defense_arguments=[],
+            prosecution_arguments=[],
+            prosecution_counters=[],
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "The wizard had bright blue eyes." in user_content
+    assert "The sorcerer possessed striking azure irises." in user_content
+
+
+async def test_deliver_closing_argument_has_no_raw_text_access(defense, sample_counter_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(statement="Closing.")
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.deliver_closing_argument(
+            dimensions=[CHARACTER],
+            defense_counters=[sample_counter_argument],
+            defense_arguments=[],
+            prosecution_arguments=[],
+            prosecution_counters=[],
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "SOURCE TEXT" not in user_content
+    assert "TARGET TEXT" not in user_content
+    assert "do not have access to the full source or target text" in user_content
+
+
+async def test_deliver_closing_argument_empty_case_states_no_evidence(defense):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(statement="The defense has no surviving evidence to present.")
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.deliver_closing_argument(
+            dimensions=[CHARACTER],
+            defense_counters=[],
+            defense_arguments=[],
+            prosecution_arguments=[],
+            prosecution_counters=[],
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "none survived judge validation" in user_content

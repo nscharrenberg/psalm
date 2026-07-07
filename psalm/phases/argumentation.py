@@ -280,8 +280,6 @@ class ArgumentationPhase(BasePhase):
 
     async def _prosecution_closing_argument(self, state: ArgumentationState) -> dict[str, Any]:
         statement = await self._prosecutor.deliver_closing_argument(
-            source_text=state.source_text,
-            target_text=state.target_text,
             dimensions=state.dimensions,
             prosecution_arguments=state.prosecution_arguments,
             prosecution_counters=state.prosecution_counters,
@@ -292,8 +290,6 @@ class ArgumentationPhase(BasePhase):
 
     async def _defense_closing_argument(self, state: ArgumentationState) -> dict[str, Any]:
         statement = await self._defense.deliver_closing_argument(
-            source_text=state.source_text,
-            target_text=state.target_text,
             dimensions=state.dimensions,
             defense_counters=state.defense_counters,
             defense_arguments=state.defense_arguments,
