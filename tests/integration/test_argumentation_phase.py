@@ -8,6 +8,7 @@ from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor
 from psalm.dimensions import CHARACTER
 from psalm.models.config import CaseInput, DebateConfig
+from psalm.models.evidence import ArgumentBatch
 from psalm.models.result import ValidationResult
 from psalm.phases.argumentation import ArgumentationPhase
 
@@ -24,14 +25,22 @@ def case_input():
 @pytest.fixture
 def mock_prosecutor(agent_config, sample_argument):
     prosecutor = AsyncMock(spec=Prosecutor)
-    prosecutor.gather_arguments = AsyncMock(return_value=[sample_argument])
+    prosecutor.gather_arguments = AsyncMock(return_value=ArgumentBatch(arguments=[sample_argument]))
+    prosecutor.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="No rebuttal needed.")
+    )
     return prosecutor
 
 
 @pytest.fixture
 def mock_defense(agent_config, sample_counter_argument):
     defense = AsyncMock(spec=Defense)
-    defense.gather_counter_arguments = AsyncMock(return_value=[sample_counter_argument])
+    defense.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(arguments=[sample_counter_argument])
+    )
+    defense.gather_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="The defense rests.")
+    )
     return defense
 
 
@@ -40,6 +49,7 @@ def mock_judge(agent_config):
     judge = AsyncMock(spec=Judge)
     judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=True))
     judge.detect_stability = AsyncMock(return_value=False)
+    judge.validate_batch_completeness = AsyncMock(return_value=True)
     return judge
 
 
@@ -76,19 +86,25 @@ async def test_argumentation_phase_validates_arguments(argumentation_phase, case
 
 
 async def test_invalid_arguments_excluded(mock_prosecutor, mock_defense, mock_judge, case_input):
-    # When judge rejects everything, rounds are empty and should be excluded from the log.
+    # When judge rejects everything, a round is only recorded if it carries at least one
+    # argument OR at least one closing statement.
     mock_judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=False, rejection_reason="No excerpts."))
-    mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
+    mock_defense.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing to counter.")
+    )
     config = DebateConfig(argumentation_rounds=1)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     log = await phase.run(case_input)
-    # Completely empty rounds must be excluded from the log
     for round_rec in log.rounds:
         assert (
             round_rec.prosecution_arguments != []
             or round_rec.defense_counters != []
             or round_rec.defense_arguments != []
             or round_rec.prosecution_counters != []
+            or round_rec.prosecution_closing_statement is not None
+            or round_rec.defense_counter_closing_statement is not None
+            or round_rec.defense_closing_statement is not None
+            or round_rec.prosecution_counter_closing_statement is not None
         )
 
 
@@ -97,54 +113,54 @@ async def test_stability_terminates_early(mock_prosecutor, mock_defense, mock_ju
     config = DebateConfig(argumentation_rounds=5)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     log = await phase.run(case_input)
-    # Should terminate after 1 round due to stability
     assert len(log.rounds) == 1
 
 
 async def test_empty_round_stops_loop(mock_prosecutor, mock_defense, mock_judge, case_input):
-    # When a round produces 0 prosecution AND 0 defense arguments, the loop must stop —
-    # continuing would just repeat identical empty LLM calls (pure stochasticity waste).
-    mock_prosecutor.gather_arguments = AsyncMock(return_value=[])
-    mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
+    mock_prosecutor.gather_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing further.")
+    )
+    mock_defense.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing to counter.")
+    )
     config = DebateConfig(argumentation_rounds=5)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
-    _ = await phase.run(case_input)
-    # Must stop after first empty round, not run all 5 rounds
+    await phase.run(case_input)
     assert mock_prosecutor.gather_arguments.call_count == 1
 
 
-async def test_empty_rounds_excluded_from_log(mock_prosecutor, mock_defense, mock_judge, case_input, sample_argument, sample_counter_argument):
-    # Rounds that produced nothing should not appear in the log.
-    # Simulate: round 1 empty, round 2 has content.
+async def test_closing_statement_rounds_are_recorded(mock_prosecutor, mock_defense, mock_judge, case_input, sample_argument):
+    # A round where prosecution declares done but later rounds resume must be recorded
+    # (not silently dropped) — the closing statement itself is round content.
     call_count = 0
 
     async def prosecution_side_effect(*args, **kwargs):
         nonlocal call_count
         call_count += 1
-        return [] if call_count == 1 else [sample_argument]
+        if call_count == 1:
+            return ArgumentBatch(no_further_arguments=True, closing_statement="Nothing yet.")
+        return ArgumentBatch(arguments=[sample_argument])
 
     mock_prosecutor.gather_arguments = AsyncMock(side_effect=prosecution_side_effect)
-    mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
+    mock_defense.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing to counter.")
+    )
     config = DebateConfig(argumentation_rounds=3)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     log = await phase.run(case_input)
-    # The empty round 1 must not appear in the log
-    for round_rec in log.rounds:
-        assert (
-            round_rec.prosecution_arguments != []
-            or round_rec.defense_counters != []
-            or round_rec.defense_arguments != []
-            or round_rec.prosecution_counters != []
-        )
+    assert len(log.rounds) >= 1
+    assert log.rounds[0].prosecution_closing_statement == "Nothing yet."
 
 
 async def test_defense_is_always_called_regardless_of_prosecution(
     mock_prosecutor, mock_defense, mock_judge, case_input
 ):
-    # Defense must be called in every round — even when prosecution produces no valid arguments —
-    # so it can make affirmative arguments about the texts' independence.
-    mock_prosecutor.gather_arguments = AsyncMock(return_value=[])
-    mock_defense.gather_counter_arguments = AsyncMock(return_value=[])
+    mock_prosecutor.gather_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing further.")
+    )
+    mock_defense.gather_counter_arguments = AsyncMock(
+        return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing to counter.")
+    )
     config = DebateConfig(argumentation_rounds=1)
     phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
     await phase.run(case_input)
