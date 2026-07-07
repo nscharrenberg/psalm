@@ -32,12 +32,11 @@ Reject the argument (is_valid=false) if ANY of the following criteria fails:
 (4) The passages show some connection to the argument's claim — even a weak connection passes;
     the defense will challenge it. Reject only if the described similarity is entirely absent
     from the passages (factually false claim).
-(5) The claim is stated as a clear, unambiguous assertion — reject if it uses hedging or
-    speculative language ("might", "could suggest", "possibly", "perhaps", "may indicate") or
-    otherwise presents an inference or guess as settled fact without clear textual grounding.
 
-Note: Do NOT reject arguments solely because they argue idea-level or thematic similarity.
-Those are legally weak and the defense will rebut them.
+Note: Do NOT reject arguments solely because they argue idea-level or thematic similarity, or
+because they are weakly or interpretively phrased. Argument strength and certainty are for the
+opposing side to challenge, not grounds for you to reject. Reject ONLY on clear factual
+fabrication — a passage or claim with no basis in the actual texts.
 """
 
 _DEFENSE_VALIDATION_PROMPT = """\
@@ -50,14 +49,13 @@ Reject the argument (is_valid=false) if ANY of the following criteria fails:
     in the actual texts).
 (3) The reasoning is relevant either to a prosecution argument being challenged, or to
     establishing why the texts differ or are independently created.
-(4) The claim is stated as a clear, unambiguous assertion — reject if it uses hedging or
-    speculative language ("might", "could suggest", "possibly", "perhaps", "may indicate") or
-    otherwise presents an inference or guess as settled fact without clear textual grounding.
 
 Defense arguments may challenge prosecution claims as legally insufficient (unprotectable ideas,
 genre conventions), show differences in specific expression, argue independent creation, or
 make affirmative claims about the texts' distinctiveness. They are NOT required to demonstrate
-similarity — that is the prosecution's burden.
+similarity — that is the prosecution's burden. Do NOT reject an argument for being weakly or
+interpretively phrased — that is the prosecution's job to challenge, not yours. Reject ONLY on
+clear factual fabrication — a passage or claim with no basis in the actual texts.
 """
 
 

@@ -97,17 +97,33 @@ async def test_tiebreak_returns_valid_verdict(judge, minimal_argumentation_log):
     assert verdict in {"Guilty", "Not Guilty", "Undecided"}
 
 
-def test_prosecution_validation_prompt_rejects_hedging_language():
+def test_prosecution_validation_prompt_does_not_reject_hedging_language():
+    # The Judge must not police argument strength/certainty — only truthfulness. Weak or
+    # interpretively-phrased arguments are the opposing side's job to rebut, not grounds
+    # for the Judge to silently discard them.
     from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
     prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
-    assert "hedg" in prompt or "speculat" in prompt
-    assert "might" in prompt or "possibly" in prompt
+    assert "hedg" not in prompt
+    assert "speculat" not in prompt
 
 
-def test_defense_validation_prompt_rejects_hedging_language():
+def test_defense_validation_prompt_does_not_reject_hedging_language():
     from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
     prompt = _DEFENSE_VALIDATION_PROMPT.lower()
-    assert "hedg" in prompt or "speculat" in prompt
+    assert "hedg" not in prompt
+    assert "speculat" not in prompt
+
+
+def test_prosecution_validation_prompt_only_rejects_fabrication():
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
+    assert "fabricat" in prompt
+
+
+def test_defense_validation_prompt_only_rejects_fabrication():
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "fabricat" in prompt
 
 
 async def test_validate_batch_completeness_true_when_has_arguments(judge, sample_argument):
