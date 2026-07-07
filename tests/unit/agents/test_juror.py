@@ -352,6 +352,23 @@ def test_juror_vote_system_prompt_has_rubric():
     assert "none" in prompt
     assert "generic" in prompt
     assert "possible" in prompt
+
+
+def test_vote_prompt_grounds_verbatim_text_as_strong_evidence():
+    # A juror seeing near-identical wording across a substantial passage should not be talked out
+    # of "clear" by a defense label ("archetype", "unprotectable idea") that isn't actually backed
+    # by differing wording — the prompt must say so explicitly, not leave it to the model's own
+    # unguided judgment.
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "identical" in prompt or "verbatim" in prompt
+    assert "label" in prompt or "framing" in prompt
+
+
+def test_vote_prompt_says_single_differing_detail_does_not_launder_whole_passage():
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "single" in prompt or "one detail" in prompt or "renamed" in prompt
     assert "clear" in prompt
 
 

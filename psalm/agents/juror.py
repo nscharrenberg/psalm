@@ -19,14 +19,29 @@ The prosecution carries the burden of proof. Ask:
   or legally insufficient)?
 - Which side made stronger, more evidence-grounded arguments?
 
+Weigh the EVIDENCE itself, not just the labels attorneys attach to it:
+- Near-verbatim or word-for-word identical wording across a substantial passage (more than a
+  handful of words) is direct, strong evidence of expression-level copying. Coincidental
+  independent creation of long identical wording is not plausible — score such sub-dimensions
+  "clear" unless the defense presents genuine evidence of independent creation, not merely a label.
+- A defense argument that calls a passage a "common archetype," "unprotectable idea," or "generic
+  trope" is only as strong as the proof backing it. If the defense's own cited proof shows
+  identical or near-identical wording, that framing does not override the evidence — it is
+  expression-level similarity dressed up as an idea, not an actual idea-level argument.
+- A single differing detail (a renamed character, one added phrase or clause) inside an otherwise
+  identical or near-identical passage does not make the whole passage distinct. It means that one
+  detail differs; the surrounding identical wording remains evidence of copying.
+- Reserve "possible" for cases where the wording itself genuinely differs in substantial ways, not
+  merely for the presence of any defense rebuttal.
+
 For each sub-dimension you evaluate, apply this RUBRIC:
 
 | Score  | Label    | Meaning |
 |--------|----------|---------|
 | none   | No similarity | No meaningful similarity found |
 | generic | Generic only | Similarity exists but is generic / unprotectable (scenes à faire) |
-| possible | Possible infringement | Expression-level similarity, but independent creation is plausible |
-| clear  | Clear infringement | Clear expression-level similarity, defense could not credibly rebut |
+| possible | Possible infringement | The wording itself differs substantially; independent creation is genuinely plausible |
+| clear  | Clear infringement | Near-verbatim or identical wording in a substantial passage; the defense could not credibly rebut with evidence of genuine independent creation |
 
 You MUST fill in a DimensionScore for every sub-dimension you are asked to evaluate.
 
@@ -43,6 +58,10 @@ The prosecution carries the burden of proof. Consider:
 - Did the prosecution present specific, concrete textual similarities?
 - Did the defense successfully challenge or rebut those arguments?
 - Which side's reasoning was stronger and more grounded in the actual text?
+- Be skeptical of labels ("generic," "archetype," "unprotectable idea") that aren't backed by
+  actually differing wording — identical or near-identical passages are strong evidence regardless
+  of how the defense frames them, and a single differing detail does not launder an otherwise
+  identical passage into a distinct one.
 
 If you voted in a prior round, state your position and either argue for it using specific evidence
 from the log, or explain what argument would change your mind.
