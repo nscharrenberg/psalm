@@ -57,7 +57,7 @@ async def test_e2e_real_llm(cases):
 
 
 async def test_e2e_mock_full_pipeline(cases):
-    from psalm.models.evidence import Argument, Proof
+    from psalm.models.evidence import Argument, ArgumentBatch, Proof
 
     sample_proof = Proof(
         source_excerpt="silver hair that shimmered like moonlight",
@@ -78,15 +78,24 @@ async def test_e2e_mock_full_pipeline(cases):
         agent_role="defense",
         round=1,
     )
+    no_further = ArgumentBatch(no_further_arguments=True, closing_statement="Nothing further to add.")
 
     with (
         patch(
             "psalm.agents.prosecutor.Prosecutor.gather_arguments",
-            new=AsyncMock(return_value=[sample_arg]),
+            new=AsyncMock(return_value=ArgumentBatch(arguments=[sample_arg])),
+        ),
+        patch(
+            "psalm.agents.prosecutor.Prosecutor.gather_counter_arguments",
+            new=AsyncMock(return_value=no_further),
         ),
         patch(
             "psalm.agents.defense.Defense.gather_counter_arguments",
-            new=AsyncMock(return_value=[sample_counter]),
+            new=AsyncMock(return_value=ArgumentBatch(arguments=[sample_counter])),
+        ),
+        patch(
+            "psalm.agents.defense.Defense.gather_arguments",
+            new=AsyncMock(return_value=no_further),
         ),
         patch(
             "psalm.agents.judge.Judge.validate_argument",
@@ -95,6 +104,10 @@ async def test_e2e_mock_full_pipeline(cases):
         patch(
             "psalm.agents.judge.Judge.detect_stability",
             new=AsyncMock(return_value=False),
+        ),
+        patch(
+            "psalm.agents.judge.Judge.validate_batch_completeness",
+            new=AsyncMock(return_value=True),
         ),
         patch(
             "psalm.agents.juror.Juror.discuss",
@@ -129,8 +142,9 @@ async def test_e2e_mock_full_pipeline(cases):
     assert isinstance(result, PSALMResult)
     assert result.verdict in {"Guilty", "Not Guilty", "Undecided"}
     assert result.rationale
-    assert len(result.argumentation_log.rounds) > 0
-    assert len(result.debate_log.rounds) > 0
+    assert len(result.dimension_verdicts) == 1
+    assert len(result.dimension_verdicts[0].argumentation_log.rounds) > 0
+    assert len(result.dimension_verdicts[0].debate_log.rounds) > 0
     assert result.metadata.duration_seconds >= 0
 
 

@@ -194,3 +194,9 @@ async def test_shared_all_argumentation_rounds_not_multiplied_per_dimension():
     assert result.dimension_verdicts[0].argumentation_log is result.dimension_verdicts[1].argumentation_log
     # Rounds must be counted once for the shared log, not once per dimension (2x).
     assert result.metadata.argumentation_rounds_used == 1
+
+
+async def test_identical_texts_result_sets_dimension_type():
+    courtroom = await _build_psalm()
+    result = courtroom._identical_texts_result("some text")
+    assert result.dimension_verdicts[0].dimension_type == "infringement"

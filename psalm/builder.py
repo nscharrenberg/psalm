@@ -236,6 +236,7 @@ class _BuiltPSALM:
         dim_verdicts = [
             DimensionVerdict(
                 dimension=dim.name,
+                dimension_type=dim.dimension_type,
                 importance=dim.importance,
                 verdict="Guilty",
                 weighted_score=1.0,
