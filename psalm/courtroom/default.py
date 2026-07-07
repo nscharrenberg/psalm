@@ -79,11 +79,17 @@ class DefaultCourtroom(CourtroomSetup):
         delib_phase: DeliberationPhase,
         case_input: CaseInput,
     ) -> DimensionVerdict:
-        scoped_input = case_input.model_copy(update={"dimensions": [dimension]})
+        if dimension.dimension_type == "infringement":
+            exception_dims = [d for d in case_input.dimensions if d.dimension_type == "exception"]
+            scoped_dims = [dimension] + exception_dims
+        else:
+            scoped_dims = [dimension]
+        scoped_input = case_input.model_copy(update={"dimensions": scoped_dims})
         arg_log = await self._argumentation_phase.run(scoped_input)
         verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
         return DimensionVerdict(
             dimension=dimension.name,
+            dimension_type=dimension.dimension_type,
             importance=dimension.importance,
             verdict=verdict,
             weighted_score=weighted_score,
@@ -108,6 +114,7 @@ class DefaultCourtroom(CourtroomSetup):
         verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
         return DimensionVerdict(
             dimension=dimension.name,
+            dimension_type=dimension.dimension_type,
             importance=dimension.importance,
             verdict=verdict,
             weighted_score=weighted_score,
@@ -117,9 +124,7 @@ class DefaultCourtroom(CourtroomSetup):
 
     async def _run_shared_all(self, case_input: CaseInput) -> list[DimensionVerdict]:
         arg_log = await self._argumentation_phase.run(case_input)
-        # Single deliberation phase handles all dimensions; use first deliberation phase
         delib_phase = self._deliberation_phases[0]
-        # Each dimension deliberates with the full shared arg log
         tasks = [
             self._deliberate_single(dim, delib_phase, arg_log)
             for dim in case_input.dimensions
@@ -131,18 +136,19 @@ def _aggregate_verdict(
     dimension_verdicts: list[DimensionVerdict],
     guilty_threshold: float,
 ) -> Literal["Guilty", "Not Guilty", "Undecided"]:
-    if not dimension_verdicts:
+    infringement_verdicts = [dv for dv in dimension_verdicts if dv.dimension_type == "infringement"]
+    if not infringement_verdicts:
         return "Undecided"
 
-    # Hard override: any CRITICAL dimension that is Guilty → overall Guilty
-    for dv in dimension_verdicts:
+    # Hard override: any CRITICAL infringement dimension that is Guilty → overall Guilty
+    for dv in infringement_verdicts:
         if dv.importance == Importance.CRITICAL and dv.verdict == "Guilty":
             return "Guilty"
 
-    # Weighted score aggregation
+    # Weighted score aggregation — exception dimensions never contribute
     total_weighted = 0.0
     total_weight = 0.0
-    for dv in dimension_verdicts:
+    for dv in infringement_verdicts:
         multiplier = _IMPORTANCE_MULTIPLIERS[dv.importance]
         total_weighted += dv.weighted_score * multiplier
         total_weight += multiplier
@@ -162,8 +168,9 @@ def _synthesize_rationale(
 ) -> str:
     lines = [f"Verdict: {verdict}."]
     for dv in dimension_verdicts:
+        suffix = "" if dv.dimension_type == "infringement" else " [exception, excluded from verdict]"
         lines.append(
-            f"  {dv.dimension} [{dv.importance.value}]: {dv.verdict} "
+            f"  {dv.dimension} [{dv.importance.value}]{suffix}: {dv.verdict} "
             f"(weighted score: {dv.weighted_score:.2f})"
         )
     return " ".join(lines)

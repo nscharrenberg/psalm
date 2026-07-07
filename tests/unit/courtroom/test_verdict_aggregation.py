@@ -71,3 +71,76 @@ def test_synthesize_rationale_contains_dimension_names():
     assert "character" in rationale
     assert "plot" in rationale
     assert "Guilty" in rationale
+
+
+def test_exception_dimension_excluded_from_aggregation():
+    from psalm.models.result import DimensionVerdict
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Guilty", 0.9),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Guilty",
+            weighted_score=0.1,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    # Only the infringement dimension (character, HIGH, 0.9) drives the aggregation; the
+    # exception dimension's low weighted_score must not pull it down.
+    assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Guilty"
+
+
+def test_exception_only_verdicts_is_undecided():
+    from psalm.models.result import DimensionVerdict
+    dvs = [
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Guilty",
+            weighted_score=0.9,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Undecided"
+
+
+def test_exception_critical_guilty_does_not_trigger_hard_override():
+    from psalm.models.result import DimensionVerdict
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Not Guilty", 0.1),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.CRITICAL,
+            verdict="Guilty",
+            weighted_score=0.95,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    # CRITICAL + Guilty must NOT trigger the hard override when it's an exception dimension —
+    # only infringement dimensions can trigger it.
+    assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Not Guilty"
+
+
+def test_synthesize_rationale_labels_exception_dimensions():
+    from psalm.models.result import DimensionVerdict
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Guilty", 0.8),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Not Guilty",
+            weighted_score=0.2,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    rationale = _synthesize_rationale("Guilty", dvs)
+    assert "scenes-a-faire" in rationale
+    assert "excluded from verdict" in rationale
