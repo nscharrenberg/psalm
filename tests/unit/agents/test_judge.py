@@ -45,8 +45,8 @@ async def test_validate_argument_accepts_role_parameter(judge, sample_argument):
     with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
         result = await judge.validate_argument(
             argument=sample_argument,
-            source_text="source",
-            target_text="target",
+            source_text="The wizard had bright blue eyes.",
+            target_text="The sorcerer possessed striking azure irises.",
             role="defense",
         )
     assert result.is_valid is True
@@ -61,8 +61,8 @@ async def test_validate_argument_valid(judge, sample_argument):
     with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
         result = await judge.validate_argument(
             argument=sample_argument,
-            source_text="The wizard had blue eyes.",
-            target_text="The sorcerer had azure eyes.",
+            source_text="The wizard had bright blue eyes.",
+            target_text="The sorcerer possessed striking azure irises.",
         )
 
     assert result.is_valid is True
@@ -70,16 +70,77 @@ async def test_validate_argument_valid(judge, sample_argument):
 
 
 async def test_validate_argument_invalid(judge, sample_argument):
-    mock_result = ValidationResult(is_valid=False, rejection_reason="Excerpts not verbatim.")
+    # The proofs are authentic (they match source_text/target_text below), so this exercises
+    # the LLM coherence-check path, not the authenticity gate.
+    mock_result = ValidationResult(is_valid=False, rejection_reason="Proof contradicts the claim.")
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_result)
 
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
-        result = await judge.validate_argument(sample_argument, "src", "tgt")
+        result = await judge.validate_argument(
+            sample_argument,
+            "The wizard had bright blue eyes.",
+            "The sorcerer possessed striking azure irises.",
+        )
 
     assert result.is_valid is False
-    assert "verbatim" in result.rejection_reason
+    assert "contradicts" in result.rejection_reason
+
+
+async def test_validate_argument_rejects_inauthentic_proof_without_llm_call(judge):
+    # A proof that doesn't genuinely appear in its text must be rejected deterministically,
+    # without ever asking the LLM — this is the structural fix: the LLM never sees full-text
+    # content it could wander into, because inauthentic proofs never reach it at all.
+    from psalm.models.evidence import Argument, Proof
+    arg = Argument(
+        claim="Fabricated claim about content that isn't there.",
+        dimension="character",
+        proofs=[
+            Proof(
+                source_excerpt="This sentence does not exist anywhere in the source.",
+                target_excerpt="Nor does this one exist in the target.",
+                relevance="r",
+            )
+        ],
+        agent_role="prosecutor",
+        round=1,
+    )
+    mock_with_structured = MagicMock()
+    with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
+        result = await judge.validate_argument(
+            arg,
+            "The wizard had bright blue eyes.",
+            "The sorcerer possessed striking azure irises.",
+        )
+
+    assert result.is_valid is False
+    assert "does not genuinely appear" in result.rejection_reason
+    mock_with_structured.assert_not_called()
+
+
+async def test_validate_argument_prompt_has_no_full_text_access(judge, sample_argument):
+    # The LLM coherence-check call must never see the full source/target text — only the
+    # argument's own claim and (already-verified-authentic) proofs. This is what prevents the
+    # Judge from citing unrelated discrepancies elsewhere in the document.
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return ValidationResult(is_valid=True)
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.validate_argument(
+            sample_argument,
+            "Preamble the argument never cited. The wizard had bright blue eyes. Epilogue unrelated to this proof.",
+            "Preamble the argument never cited. The sorcerer possessed striking azure irises. Epilogue unrelated to this proof.",
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "Preamble the argument never cited." not in user_content
+    assert "Epilogue unrelated to this proof." not in user_content
 
 
 async def test_tiebreak_returns_valid_verdict(judge, minimal_argumentation_log):
@@ -114,30 +175,44 @@ def test_defense_validation_prompt_does_not_reject_hedging_language():
     assert "speculat" not in prompt
 
 
-def test_prosecution_validation_prompt_only_rejects_fabrication():
-    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
-    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
-    assert "fabricat" in prompt
+def test_is_proof_authentic_exact_match():
+    from psalm.agents.judge import is_proof_authentic
+    assert is_proof_authentic(
+        "The wizard had blue eyes.", "Once upon a time, the wizard had blue eyes."
+    ) is True
 
 
-def test_defense_validation_prompt_only_rejects_fabrication():
-    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
-    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
-    assert "fabricat" in prompt
+def test_is_proof_authentic_close_paraphrase_with_insertion():
+    # Matches the real production pattern: near-identical text with one inserted phrase.
+    from psalm.agents.judge import is_proof_authentic
+    assert is_proof_authentic(
+        "De opzichter, een Nederlander met een gezicht als een gesloten vuist, legde uit hoe het werkte",
+        "De opzichter, een Nederlander met een gezicht als een gesloten vuist en een stem als "
+        "schuurpapier, legde uit hoe het werkte",
+    ) is True
 
 
-def test_prosecution_validation_prompt_scopes_to_cited_proofs_only():
-    # The Judge must evaluate only the proofs THIS argument cites — not go hunting for
-    # unrelated discrepancies elsewhere in the full text and reject based on those.
-    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
-    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
-    assert "do not search the rest of the text" in prompt
+def test_is_proof_authentic_ignores_whitespace_differences():
+    from psalm.agents.judge import is_proof_authentic
+    assert is_proof_authentic("The   wizard  had blue eyes.", "The wizard had blue eyes.") is True
 
 
-def test_defense_validation_prompt_scopes_to_cited_proofs_only():
-    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
-    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
-    assert "do not search the rest of the text" in prompt
+def test_is_proof_authentic_rejects_fabricated_excerpt():
+    from psalm.agents.judge import is_proof_authentic
+    assert is_proof_authentic("The dragon breathed fire over the castle.", "The wizard had blue eyes.") is False
+
+
+def test_is_proof_authentic_single_word_difference_still_authentic():
+    # A single differing word (e.g. a character's name) elsewhere in an otherwise identical
+    # passage does not make the excerpt inauthentic — authenticity is about whether the
+    # excerpt genuinely exists in the text, not whether every word matches perfectly.
+    from psalm.agents.judge import is_proof_authentic
+    assert is_proof_authentic(
+        "Ik herinner me een oude man, Pak Haji, die me op een avond vertelde over de tijd dat "
+        "zijn dorp nog vrij was.",
+        "Ik herinner me een oude man, Oom Rahmat, die me op een avond vertelde over de tijd dat "
+        "zijn dorp nog vrij was.",
+    ) is True
 
 
 def test_prosecution_validation_prompt_rejects_self_contradicting_proofs():

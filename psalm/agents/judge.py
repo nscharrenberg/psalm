@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import difflib
+import re
 from typing import Literal
 
 from pydantic import BaseModel
@@ -8,6 +10,31 @@ from psalm.agents.base import BaseAgent
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument, ArgumentBatch
 from psalm.models.result import ArgumentationLog, JurorVote, ValidationResult
+
+_AUTHENTICITY_THRESHOLD = 0.75
+
+
+def _normalize(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def is_proof_authentic(excerpt: str, full_text: str) -> bool:
+    """Deterministic, no-LLM check: does `excerpt` genuinely appear in `full_text`?
+
+    Structural fix for a Judge that, when handed the full text alongside an excerpt, would
+    "notice" unrelated discrepancies elsewhere in the document and reject arguments based on
+    content they never cited. A plain string/fuzzy check has no such wandering attention: it
+    only ever compares the one excerpt against the one text it's asked about.
+    """
+    normalized_excerpt = _normalize(excerpt)
+    normalized_text = _normalize(full_text)
+    if not normalized_excerpt:
+        return False
+    if normalized_excerpt in normalized_text:
+        return True
+    matcher = difflib.SequenceMatcher(None, normalized_excerpt, normalized_text, autojunk=False)
+    matched = sum(block.size for block in matcher.get_matching_blocks())
+    return (matched / len(normalized_excerpt)) >= _AUTHENTICITY_THRESHOLD
 
 
 class _StabilityDecision(BaseModel):
@@ -22,51 +49,33 @@ class _TiebreakDecision(BaseModel):
 
 _PROSECUTION_VALIDATION_PROMPT = """\
 You are a judge validating a prosecution argument in a copyright case governed by EU copyright law.
-Reject the argument (is_valid=false) if ANY of the following criteria fails:
+The cited proofs have already been verified as authentic (they genuinely appear in the source and
+target text) — you do not need to and cannot re-check that; you are not shown the full text.
 
-(1) Each cited proof is authentic: the source_excerpt genuinely appears in (or is a close,
-    faithful paraphrase of) the source text, and the target_excerpt genuinely appears in (or is
-    a close, faithful paraphrase of) the target text. Reject if a cited excerpt is fabricated —
-    it does not actually exist in the text it claims to be from.
-(2) The cited proofs do not contradict the claim they are offered to support — e.g. a claim of
-    similarity must be backed by proofs that actually correspond, not an unrelated or opposite
-    relationship.
-
-Evaluate ONLY the specific proofs this argument cites, checked against the passages of the
-source and target text they claim to come from. Do NOT search the rest of the text for other
-discrepancies or details the argument did not mention — a difference found elsewhere in the text
-that this argument never referenced is irrelevant to whether THIS argument's cited proofs are
-authentic.
+Reject the argument (is_valid=false) ONLY if the cited proofs contradict the claim they are
+offered to support — e.g. a claim of similarity is not backed by proofs that actually correspond,
+or an unrelated or opposite relationship is presented as if it supports the claim.
 
 Do NOT reject for weak, interpretive, idea-level, or thematic reasoning, and do NOT reject merely
 because a proof does not by itself sufficiently "prove" or "establish" the claim — argument
 strength and sufficiency are for the opposing side to challenge, not grounds for you to reject.
-Reject ONLY on fabrication (criterion 1) or self-contradiction (criterion 2).
 """
 
 _DEFENSE_VALIDATION_PROMPT = """\
 You are a judge validating a defense argument in a copyright case governed by EU copyright law.
-Reject the argument (is_valid=false) if ANY of the following criteria fails:
+The cited proofs have already been verified as authentic (they genuinely appear in the source and
+target text) — you do not need to and cannot re-check that; you are not shown the full text.
 
-(1) Each cited proof is authentic: the source_excerpt genuinely appears in (or is a close,
-    faithful paraphrase of) the source text, and the target_excerpt genuinely appears in (or is
-    a close, faithful paraphrase of) the target text. Reject if a cited excerpt is fabricated —
-    it does not actually exist in the text it claims to be from.
-(2) The cited proofs do not contradict the claim they are offered to support. In particular: if
-    the claim asserts the texts are distinct or independently created, an identical (or
-    near-identical) passage in both texts is evidence of similarity, not distinctness — such a
-    proof undermines rather than supports the claim and must be rejected.
-
-Evaluate ONLY the specific proofs this argument cites, checked against the passages of the
-source and target text they claim to come from. Do NOT search the rest of the text for other
-discrepancies or details the argument did not mention.
+Reject the argument (is_valid=false) ONLY if the cited proofs contradict the claim they are
+offered to support. In particular: if the claim asserts the texts are distinct or independently
+created, an identical (or near-identical) passage in both texts is evidence of similarity, not
+distinctness — such a proof undermines rather than supports the claim and must be rejected.
 
 Defense arguments may challenge prosecution claims as legally insufficient (unprotectable ideas,
 genre conventions), show differences in specific expression, argue independent creation, or make
 affirmative claims about the texts' distinctiveness. They are not required to demonstrate
 similarity — that is the prosecution's burden. Do NOT reject for weak or interpretive reasoning —
-that is the prosecution's job to challenge, not yours to discard. Reject ONLY on fabrication
-(criterion 1) or self-contradiction (criterion 2).
+that is the prosecution's job to challenge, not yours to discard.
 """
 
 
@@ -82,6 +91,24 @@ class Judge(BaseAgent):
         target_text: str,
         role: str = "prosecution",
     ) -> ValidationResult:
+        for proof in argument.proofs:
+            if not is_proof_authentic(proof.source_excerpt, source_text):
+                return ValidationResult(
+                    is_valid=False,
+                    rejection_reason=(
+                        "The cited source excerpt does not genuinely appear in the source "
+                        f'text: "{proof.source_excerpt}"'
+                    ),
+                )
+            if not is_proof_authentic(proof.target_excerpt, target_text):
+                return ValidationResult(
+                    is_valid=False,
+                    rejection_reason=(
+                        "The cited target excerpt does not genuinely appear in the target "
+                        f'text: "{proof.target_excerpt}"'
+                    ),
+                )
+
         structured_llm = self._llm.with_structured_output(ValidationResult)
         validation_prompt = (
             _DEFENSE_VALIDATION_PROMPT if role == "defense" else _PROSECUTION_VALIDATION_PROMPT
@@ -98,9 +125,7 @@ class Judge(BaseAgent):
                 "content": (
                     f"Argument claim: {argument.claim}\n"
                     f"Dimension: {argument.dimension}\n"
-                    f"Proofs:\n{proofs_text}\n\n"
-                    f"Full source text:\n{source_text}\n\n"
-                    f"Full target text:\n{target_text}"
+                    f"Proofs (already verified authentic):\n{proofs_text}"
                 ),
             },
         ]
