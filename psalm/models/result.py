@@ -61,6 +61,7 @@ class ResultMetadata(BaseModel):
 
 class DimensionVerdict(BaseModel):
     dimension: str
+    dimension_type: Literal["infringement", "exception"] = "infringement"
     importance: Importance
     verdict: Literal["Guilty", "Not Guilty", "Undecided"]
     weighted_score: float

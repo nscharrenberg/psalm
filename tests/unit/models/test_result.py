@@ -256,3 +256,30 @@ def test_psalm_result_to_dict_contains_dimension_verdicts(minimal_argumentation_
     assert "dimension_verdicts" in d
     assert "argumentation_log" not in d
     assert "debate_log" not in d
+
+
+def test_dimension_verdict_defaults_to_infringement_type(minimal_argumentation_log, minimal_debate_log):
+    from psalm.models.result import DimensionVerdict
+    dv = DimensionVerdict(
+        dimension="character",
+        importance=Importance.HIGH,
+        verdict="Guilty",
+        weighted_score=0.75,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
+    assert dv.dimension_type == "infringement"
+
+
+def test_dimension_verdict_accepts_exception_type(minimal_argumentation_log, minimal_debate_log):
+    from psalm.models.result import DimensionVerdict
+    dv = DimensionVerdict(
+        dimension="scenes-a-faire",
+        dimension_type="exception",
+        importance=Importance.MEDIUM,
+        verdict="Not Guilty",
+        weighted_score=0.2,
+        argumentation_log=minimal_argumentation_log,
+        debate_log=minimal_debate_log,
+    )
+    assert dv.dimension_type == "exception"
