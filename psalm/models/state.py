@@ -39,6 +39,12 @@ class ArgumentationState(BaseModel):
     pending_prosecution_counters: list[dict[str, Any]] = Field(default_factory=list)
     prosecution_counters: list[Argument] = Field(default_factory=list)
 
+    # Closing statements — round-tagged, one accumulator per step
+    prosecution_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
+    defense_counter_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
+    defense_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
+    prosecution_counter_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
+
 
 class DeliberationState(BaseModel):
     argumentation_log: ArgumentationLog

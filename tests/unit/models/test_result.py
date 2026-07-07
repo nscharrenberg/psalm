@@ -283,3 +283,37 @@ def test_dimension_verdict_accepts_exception_type(minimal_argumentation_log, min
         debate_log=minimal_debate_log,
     )
     assert dv.dimension_type == "exception"
+
+
+def test_round_arguments_closing_statements_default_none():
+    from psalm.models.result import RoundArguments
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[],
+        defense_counters=[],
+        defense_arguments=[],
+        prosecution_counters=[],
+    )
+    assert ra.prosecution_closing_statement is None
+    assert ra.defense_counter_closing_statement is None
+    assert ra.defense_closing_statement is None
+    assert ra.prosecution_counter_closing_statement is None
+
+
+def test_round_arguments_accepts_closing_statements():
+    from psalm.models.result import RoundArguments
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[],
+        prosecution_closing_statement="The prosecution rests.",
+        defense_counters=[],
+        defense_counter_closing_statement="No counters to offer.",
+        defense_arguments=[],
+        defense_closing_statement="The defense rests.",
+        prosecution_counters=[],
+        prosecution_counter_closing_statement="No rebuttal needed.",
+    )
+    assert ra.prosecution_closing_statement == "The prosecution rests."
+    assert ra.defense_counter_closing_statement == "No counters to offer."
+    assert ra.defense_closing_statement == "The defense rests."
+    assert ra.prosecution_counter_closing_statement == "No rebuttal needed."

@@ -112,3 +112,13 @@ def test_deliberation_state_weighted_score_defaults_to_zero(minimal_argumentatio
         current_dimension=CHARACTER,
     )
     assert state.weighted_score == 0.0
+
+
+def test_argumentation_state_has_closing_statement_accumulators():
+    state = ArgumentationState(
+        source_text="src", target_text="tgt", dimensions=[CHARACTER], max_rounds=3
+    )
+    assert state.prosecution_closing_statements == []
+    assert state.defense_counter_closing_statements == []
+    assert state.defense_closing_statements == []
+    assert state.prosecution_counter_closing_statements == []

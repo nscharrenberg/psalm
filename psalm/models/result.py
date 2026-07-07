@@ -16,9 +16,13 @@ class ValidationResult(BaseModel):
 class RoundArguments(BaseModel):
     round: int
     prosecution_arguments: list[Argument]
+    prosecution_closing_statement: str | None = None
     defense_counters: list[Argument]
+    defense_counter_closing_statement: str | None = None
     defense_arguments: list[Argument]
+    defense_closing_statement: str | None = None
     prosecution_counters: list[Argument]
+    prosecution_counter_closing_statement: str | None = None
 
 
 class ArgumentationLog(BaseModel):
