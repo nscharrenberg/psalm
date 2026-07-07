@@ -105,13 +105,18 @@ def test_argument_batch_no_further_arguments_valid_with_statement():
     assert batch.closing_statement == "Nothing further to add."
 
 
-def test_argument_batch_no_further_arguments_rejects_nonempty_arguments(proof):
-    from psalm.exceptions import PSALMRuntimeError
+def test_argument_batch_nonempty_arguments_auto_corrects_no_further_arguments(proof):
+    # Some models conflate "no_further_arguments" (intended: zero arguments) with "this is my
+    # final/complete batch" and set the flag alongside real arguments. Real, substantive
+    # arguments are the stronger signal of intent — trust them and normalize the flag rather
+    # than discarding genuinely useful output over a mislabeled boolean.
     from psalm.models.evidence import ArgumentBatch
     arg = Argument(claim="c", dimension="character", proofs=[proof], agent_role="prosecutor", round=1)
-    with pytest.raises(PSALMRuntimeError) as exc_info:
-        ArgumentBatch(arguments=[arg], no_further_arguments=True, closing_statement="Done.")
-    assert exc_info.value.code == "PSALM-R005"
+    batch = ArgumentBatch(arguments=[arg], no_further_arguments=True, closing_statement="Done.")
+    assert batch.no_further_arguments is False
+    assert len(batch.arguments) == 1
+    # closing_statement is left as informational context, not cleared.
+    assert batch.closing_statement == "Done."
 
 
 def test_closing_statement_model():

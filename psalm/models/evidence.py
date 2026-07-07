@@ -43,6 +43,13 @@ class ArgumentBatch(BaseModel):
 
     @model_validator(mode="after")
     def check_consistency(self) -> "ArgumentBatch":
+        if self.no_further_arguments and self.arguments:
+            # Some models conflate "no_further_arguments" (intended: zero arguments) with
+            # "this is my final/complete batch" and set the flag alongside real arguments.
+            # Real, substantive arguments are the stronger signal of intent — trust them and
+            # normalize the flag rather than discarding genuinely useful output over a
+            # mislabeled boolean. closing_statement (if any) is left as informational context.
+            self.no_further_arguments = False
         if self.no_further_arguments and not self.closing_statement:
             raise PSALMRuntimeError(
                 code="PSALM-R004",
@@ -52,13 +59,6 @@ class ArgumentBatch(BaseModel):
                     "Provide a one-sentence closing_statement explaining why there is nothing "
                     "further to argue."
                 ),
-            )
-        if self.no_further_arguments and self.arguments:
-            raise PSALMRuntimeError(
-                code="PSALM-R005",
-                message="no_further_arguments=True must not include arguments.",
-                context={"argument_count": len(self.arguments)},
-                suggestion="Either clear no_further_arguments or remove the arguments list.",
             )
         return self
 
