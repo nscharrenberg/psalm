@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.prosecutor import Prosecutor
-from psalm.dimensions import CHARACTER
+from psalm.dimensions import CHARACTER, SCENES_A_FAIRE
 
 
 @pytest.fixture
@@ -11,9 +11,13 @@ def prosecutor(agent_config):
     return Prosecutor(config=agent_config)
 
 
-async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_config):
+async def test_gather_arguments_returns_batch(prosecutor, sample_argument, agent_config):
     mock_chain = AsyncMock()
-    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(arguments=[sample_argument]))
+    mock_chain.ainvoke = AsyncMock(
+        return_value=MagicMock(
+            arguments=[sample_argument], no_further_arguments=False, closing_statement=None
+        )
+    )
 
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
@@ -24,16 +28,15 @@ async def test_gather_arguments_returns_list(prosecutor, sample_argument, agent_
             round=1,
         )
 
-    assert len(result) == 1
-    assert result[0].agent_role == "prosecutor"
-    assert result[0].dimension == "character"
+    assert len(result.arguments) == 1
+    assert result.arguments[0].agent_role == "prosecutor"
+    assert result.arguments[0].dimension == "character"
+    assert result.no_further_arguments is False
 
 
 def test_prosecutor_prompt_prioritizes_expression_over_idea_arguments():
     # Prosecutor should prioritize expression-level arguments but is allowed to make weaker
     # idea/genre/archetype arguments so the debate can proceed — defense will rebut them.
-    # Note: as of the self-censorship removal, the prosecutor no longer pre-emptively labels
-    # these as "unprotectable" — that judgment is left to the defense/judge.
     from psalm.agents.prosecutor import _SYSTEM_PROMPT
     prompt = _SYSTEM_PROMPT.lower()
     assert "prioritize" in prompt or "strongest" in prompt
@@ -55,7 +58,7 @@ async def test_prosecutor_includes_prior_defense_arguments_in_prompt(prosecutor,
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return MagicMock(arguments=[sample_argument])
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
 
     mock_chain = MagicMock()
     mock_chain.ainvoke = capture_invoke
@@ -70,7 +73,6 @@ async def test_prosecutor_includes_prior_defense_arguments_in_prompt(prosecutor,
         )
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    # Prior defense counter-argument content must appear in the prompt
     assert "Eye color is a generic trait" in user_content or "defense" in user_content.lower()
 
 
@@ -82,7 +84,7 @@ async def test_gather_arguments_retries_on_failure(prosecutor, sample_argument):
         call_count += 1
         if call_count < 3:
             raise Exception("temporary failure")
-        return MagicMock(arguments=[sample_argument])
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
 
     mock_chain = AsyncMock()
     mock_chain.ainvoke = failing_then_success
@@ -92,12 +94,14 @@ async def test_gather_arguments_retries_on_failure(prosecutor, sample_argument):
         result = await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
 
     assert call_count == 3
-    assert len(result) == 1
+    assert len(result.arguments) == 1
 
 
 async def test_prosecutor_gather_counter_arguments(prosecutor, sample_argument, sample_counter_argument):
     mock_chain = AsyncMock()
-    mock_chain.ainvoke = AsyncMock(return_value=MagicMock(arguments=[sample_argument]))
+    mock_chain.ainvoke = AsyncMock(
+        return_value=MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
+    )
     mock_with_structured = MagicMock(return_value=mock_chain)
     with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
         result = await prosecutor.gather_counter_arguments(
@@ -107,8 +111,8 @@ async def test_prosecutor_gather_counter_arguments(prosecutor, sample_argument, 
             defense_arguments=[sample_counter_argument],
             round=1,
         )
-    assert len(result) == 1
-    assert result[0].agent_role == "prosecutor"
+    assert len(result.arguments) == 1
+    assert result.arguments[0].agent_role == "prosecutor"
 
 
 async def test_prosecutor_counter_prompt_mentions_defense_args(prosecutor, sample_argument, sample_counter_argument):
@@ -116,7 +120,7 @@ async def test_prosecutor_counter_prompt_mentions_defense_args(prosecutor, sampl
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return MagicMock(arguments=[sample_argument])
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
 
     mock_chain = MagicMock()
     mock_chain.ainvoke = capture_invoke
@@ -134,7 +138,7 @@ async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, sa
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return MagicMock(arguments=[sample_argument])
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
 
     mock_chain = MagicMock()
     mock_chain.ainvoke = capture_invoke
@@ -142,14 +146,76 @@ async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, sa
         await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    # Must contain sub-dimension names and importance markers
     assert "Identity & Properties" in user_content
     assert "CRITICAL" in user_content or "HIGH" in user_content
 
 
 def test_prosecutor_system_prompt_no_self_censorship():
     from psalm.agents.prosecutor import _SYSTEM_PROMPT
-    # Removed: "be aware the defense will challenge those as legally unprotectable"
     assert "be aware the defense will challenge" not in _SYSTEM_PROMPT
-    # New framing: surface all similarities
     assert "surface" in _SYSTEM_PROMPT.lower() or "all" in _SYSTEM_PROMPT.lower()
+
+
+def test_prosecutor_system_prompt_forbids_padding_and_guesswork():
+    from psalm.agents.prosecutor import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    assert "including generic or weak ones" not in prompt
+    assert "unambiguous" in prompt
+    assert "guess" in prompt or "speculative" in prompt
+    assert "no_further_arguments" in prompt
+
+
+async def test_prosecutor_prompt_separates_infringement_and_exception_dimensions(agent_config, sample_argument):
+    prosecutor = Prosecutor(config=agent_config)
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(prosecutor._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await prosecutor.gather_arguments("src", "tgt", [CHARACTER, SCENES_A_FAIRE], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "PRIMARY DIMENSION (must argue): character" in user_content
+    assert "AVAILABLE EXCEPTION TOOLS" in user_content
+    assert "scenes-a-faire" in user_content
+
+
+async def test_prosecutor_retry_hint_appears_in_prompt(agent_config, sample_argument):
+    prosecutor = Prosecutor(config=agent_config)
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(prosecutor._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await prosecutor.gather_arguments(
+            "src", "tgt", [CHARACTER], 1, retry_hint="You must either argue or declare done."
+        )
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "You must either argue or declare done." in user_content
+
+
+async def test_gather_arguments_returns_no_further_arguments(prosecutor):
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(
+        return_value=MagicMock(
+            arguments=[],
+            no_further_arguments=True,
+            closing_statement="No further unambiguous similarities remain.",
+        )
+    )
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(prosecutor._llm), "with_structured_output", mock_with_structured):
+        result = await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
+
+    assert result.arguments == []
+    assert result.no_further_arguments is True
+    assert result.closing_statement == "No further unambiguous similarities remain."

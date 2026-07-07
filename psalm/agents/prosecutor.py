@@ -1,26 +1,32 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-
 from psalm.agents.base import BaseAgent
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
-from psalm.models.evidence import Argument
-
-
-class _ArgumentList(BaseModel):
-    arguments: list[Argument]
+from psalm.models.evidence import Argument, ArgumentBatch
 
 
 def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
     lines: list[str] = []
-    for dim in dimensions:
+    infringement_dims = [d for d in dimensions if d.dimension_type == "infringement"]
+    exception_dims = [d for d in dimensions if d.dimension_type == "exception"]
+
+    for dim in infringement_dims:
+        lines.append(f"\nPRIMARY DIMENSION (must argue): {dim.name} — {dim.description}")
         lines.append(
-            f"\nDimension: {dim.name} — {dim.description}"
+            "Sub-dimensions (argue ALL marked HIGH or CRITICAL where factually supportable):"
         )
-        lines.append("Sub-dimensions (argue ALL marked HIGH or CRITICAL):")
         for sd in dim.sub_dimensions:
             lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+
+    for dim in exception_dims:
+        lines.append(
+            f"\nAVAILABLE EXCEPTION TOOLS (optional, cite only if relevant): "
+            f"{dim.name} — {dim.description}"
+        )
+        for sd in dim.sub_dimensions:
+            lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+
     return "\n".join(lines)
 
 
@@ -28,7 +34,7 @@ _SYSTEM_PROMPT = """\
 You are a legal prosecutor in a copyright infringement case governed by EU copyright law.
 Your goal is to argue that the target text infringes the source's copyright.
 
-Surface ALL similarities between the texts — the court filters; you argue.
+Surface all genuine similarities between the texts — the court filters; you argue.
 
 PRIORITIZE these argument types (strongest first):
 1. Near-verbatim or closely paraphrased passages — the same distinctive words or phrases appear
@@ -36,12 +42,22 @@ PRIORITIZE these argument types (strongest first):
 2. A unique metaphor, image, or narrative detail that appears in both texts.
 3. Highly specific plot details that could not be independently invented — same names, same
    events, same distinctive sequence of choices.
-4. Structural or expression-level similarities (genre conventions, shared archetypes) — present
-   these even if the defense may rebut them. The debate must proceed.
+4. Structural or expression-level similarities (genre conventions, shared archetypes) — the
+   debate must proceed even when only weaker signals exist, but never fabricate a signal that
+   isn't there.
 
-You MUST produce at least one argument per HIGH and CRITICAL sub-dimension where any similarity
-exists — including generic or weak ones. Every argument must include relevant passages from both
-texts. Quote as closely as possible to the original; close approximations are acceptable.
+Only assert claims backed by clear, unambiguous textual evidence. If no such evidence exists for
+a sub-dimension, do not argue it — omit it. Never present a guess, inference, or possibility as
+if it were a settled fact. Quote as closely as possible to the original; close approximations of
+the wording are acceptable, but the underlying claim of similarity must be certain, not
+speculative.
+
+If you have nothing further that meets this bar — for this call, across every sub-dimension you
+were asked to address — set no_further_arguments=True and provide a one-sentence
+closing_statement explaining why (e.g. "All HIGH and CRITICAL sub-dimensions have been argued
+with the available evidence" or "No further unambiguous similarities remain in the text"). Do
+not pad with a weak or speculative claim just to appear productive.
+If you are rebutting defense arguments from prior rounds, directly address their challenge.
 """
 
 
@@ -57,8 +73,9 @@ class Prosecutor(BaseAgent):
         dimensions: list[Dimension],
         round: int,
         prior_defense_arguments: list[Argument] | None = None,
-    ) -> list[Argument]:
-        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        retry_hint: str | None = None,
+    ) -> ArgumentBatch:
+        structured_llm = self._llm.with_structured_output(ArgumentBatch)
         rebuttal_section = ""
         if prior_defense_arguments:
             rebuttals = "\n".join(
@@ -71,27 +88,31 @@ class Prosecutor(BaseAgent):
                 "or present new evidence they did not counter."
             )
         sub_dim_block = _format_sub_dimensions(dimensions)
+        retry_section = f"\n\n{retry_hint}" if retry_hint else ""
         content = (
             f"SOURCE TEXT (copyright-protected):\n{source_text}\n\n"
             f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
             f"{sub_dim_block}\n"
-            f"Round: {round}{rebuttal_section}\n\n"
-            "Provide arguments with relevant passages from both texts. "
-            "For each HIGH and CRITICAL sub-dimension, produce at least one argument."
+            f"Round: {round}{rebuttal_section}{retry_section}\n\n"
+            "Provide arguments with relevant passages from both texts, for every sub-dimension "
+            "where clear, unambiguous evidence exists. If none exists anywhere, declare "
+            "no_further_arguments."
         )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": content,
-            },
+            {"role": "user", "content": content},
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            return [
+            arguments = [
                 a.model_copy(update={"round": round, "agent_role": "prosecutor"})
                 for a in result.arguments
             ]
+            return ArgumentBatch(
+                arguments=arguments,
+                no_further_arguments=result.no_further_arguments,
+                closing_statement=result.closing_statement,
+            )
         except PSALMAgentError:
             raise
         except Exception as exc:
@@ -113,13 +134,15 @@ class Prosecutor(BaseAgent):
         dimensions: list[Dimension],
         defense_arguments: list[Argument],
         round: int,
-    ) -> list[Argument]:
+        retry_hint: str | None = None,
+    ) -> ArgumentBatch:
         """Step 4: Prosecution counters defense's affirmative arguments."""
-        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        structured_llm = self._llm.with_structured_output(ArgumentBatch)
         dim_names = ", ".join(d.name for d in dimensions)
         defense_text = "\n".join(
             f"- [{a.dimension}] {a.claim}" for a in defense_arguments
         )
+        retry_section = f"\n\n{retry_hint}" if retry_hint else ""
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
@@ -129,18 +152,24 @@ class Prosecutor(BaseAgent):
                     f"TARGET TEXT (potentially infringing):\n{target_text}\n\n"
                     f"Dimensions: {dim_names}\nRound: {round}\n\n"
                     f"Defense affirmative arguments to rebut:\n{defense_text}\n\n"
-                    "Counter each defense argument: show why their claimed differences are "
-                    "insufficient to rule out infringement, or present additional similarities "
-                    "the defense ignored. You MUST produce at least one argument."
+                    "Counter each defense argument only where you have clear, unambiguous "
+                    "grounds: show why their claimed differences are insufficient to rule out "
+                    "infringement, or present additional similarities the defense ignored. If "
+                    f"no such grounds exist, declare no_further_arguments.{retry_section}"
                 ),
             },
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            return [
+            arguments = [
                 a.model_copy(update={"round": round, "agent_role": "prosecutor"})
                 for a in result.arguments
             ]
+            return ArgumentBatch(
+                arguments=arguments,
+                no_further_arguments=result.no_further_arguments,
+                closing_statement=result.closing_statement,
+            )
         except PSALMAgentError:
             raise
         except Exception as exc:
