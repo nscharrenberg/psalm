@@ -56,38 +56,35 @@ class _DiscussionMessage(BaseModel):
     message: str
 
 
+def _format_argument_section(parts: list[str], header: str, arguments: list, closing_statement: str | None) -> None:
+    parts.append(header)
+    for i, arg in enumerate(arguments, 1):
+        parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
+        for p in arg.proofs:
+            parts.append(f'     Source: "{p.source_excerpt}"')
+            parts.append(f'     Target: "{p.target_excerpt}"')
+            parts.append(f"     Relevance: {p.relevance}")
+    if closing_statement:
+        parts.append(f"  CLOSING STATEMENT: {closing_statement}")
+
+
 def _format_argumentation_log(argumentation_log: ArgumentationLog) -> str:
+    # Rejected arguments are audit-only (Judge discarded them as fabricated) — never shown here.
     parts: list[str] = []
     for r in argumentation_log.rounds:
         parts.append(f"=== Argumentation Round {r.round} ===")
-        parts.append("PROSECUTION ARGUMENTS:")
-        for i, arg in enumerate(r.prosecution_arguments, 1):
-            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
-            for p in arg.proofs:
-                parts.append(f'     Source: "{p.source_excerpt}"')
-                parts.append(f'     Target: "{p.target_excerpt}"')
-                parts.append(f"     Relevance: {p.relevance}")
-        parts.append("DEFENSE COUNTERS TO PROSECUTION:")
-        for i, arg in enumerate(r.defense_counters, 1):
-            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
-            for p in arg.proofs:
-                parts.append(f'     Source: "{p.source_excerpt}"')
-                parts.append(f'     Target: "{p.target_excerpt}"')
-                parts.append(f"     Relevance: {p.relevance}")
-        parts.append("DEFENSE AFFIRMATIVE ARGUMENTS:")
-        for i, arg in enumerate(r.defense_arguments, 1):
-            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
-            for p in arg.proofs:
-                parts.append(f'     Source: "{p.source_excerpt}"')
-                parts.append(f'     Target: "{p.target_excerpt}"')
-                parts.append(f"     Relevance: {p.relevance}")
-        parts.append("PROSECUTION COUNTERS TO DEFENSE:")
-        for i, arg in enumerate(r.prosecution_counters, 1):
-            parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
-            for p in arg.proofs:
-                parts.append(f'     Source: "{p.source_excerpt}"')
-                parts.append(f'     Target: "{p.target_excerpt}"')
-                parts.append(f"     Relevance: {p.relevance}")
+        _format_argument_section(
+            parts, "PROSECUTION ARGUMENTS:", r.prosecution_arguments, r.prosecution_closing_statement
+        )
+        _format_argument_section(
+            parts, "DEFENSE COUNTERS TO PROSECUTION:", r.defense_counters, r.defense_counter_closing_statement
+        )
+        _format_argument_section(
+            parts, "DEFENSE AFFIRMATIVE ARGUMENTS:", r.defense_arguments, r.defense_closing_statement
+        )
+        _format_argument_section(
+            parts, "PROSECUTION COUNTERS TO DEFENSE:", r.prosecution_counters, r.prosecution_counter_closing_statement
+        )
     return "\n".join(parts)
 
 

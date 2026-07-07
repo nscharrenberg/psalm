@@ -100,6 +100,60 @@ def test_format_argumentation_log_includes_round_header(minimal_argumentation_lo
     assert "DEFENSE" in text
 
 
+def test_format_argumentation_log_includes_closing_statements():
+    from psalm.models.result import ArgumentationLog, RoundArguments
+    log = ArgumentationLog(
+        rounds=[
+            RoundArguments(
+                round=1,
+                prosecution_arguments=[],
+                prosecution_closing_statement="The prosecution has no further arguments.",
+                defense_counters=[],
+                defense_counter_closing_statement="Nothing to counter.",
+                defense_arguments=[],
+                defense_closing_statement="The defense rests.",
+                prosecution_counters=[],
+                prosecution_counter_closing_statement="No rebuttal needed.",
+            )
+        ]
+    )
+    text = _format_argumentation_log(log)
+    assert "The prosecution has no further arguments." in text
+    assert "Nothing to counter." in text
+    assert "The defense rests." in text
+    assert "No rebuttal needed." in text
+
+
+def test_format_argumentation_log_excludes_rejected_arguments():
+    from psalm.models.evidence import Argument, Proof
+    from psalm.models.result import ArgumentationLog, RejectedArgument, RoundArguments
+    rejected_arg = Argument(
+        claim="This claim was fabricated and rejected by the Judge.",
+        dimension="character",
+        proofs=[Proof(source_excerpt="src", target_excerpt="tgt", relevance="rel")],
+        agent_role="prosecutor",
+        round=1,
+    )
+    log = ArgumentationLog(
+        rounds=[
+            RoundArguments(
+                round=1,
+                prosecution_arguments=[],
+                prosecution_rejected_arguments=[
+                    RejectedArgument(argument=rejected_arg, rejection_reason="Fabricated excerpt.")
+                ],
+                defense_counters=[],
+                defense_arguments=[],
+                prosecution_counters=[],
+            )
+        ]
+    )
+    text = _format_argumentation_log(log)
+    # Rejected arguments are audit-only — the jury must never see them.
+    assert "This claim was fabricated and rejected by the Judge." not in text
+    assert "Fabricated excerpt." not in text
+
+
 def test_format_prior_rounds_includes_rationale_and_attribution():
     previous_rounds = [
         {
