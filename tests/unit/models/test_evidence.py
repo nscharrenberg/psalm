@@ -72,3 +72,50 @@ def test_argument_accepts_multiple_proofs(proof):
     )
     assert len(arg.proofs) == 2
     assert arg.agent_role == "defense"
+
+
+def test_argument_batch_defaults():
+    from psalm.models.evidence import ArgumentBatch
+    batch = ArgumentBatch()
+    assert batch.arguments == []
+    assert batch.no_further_arguments is False
+    assert batch.closing_statement is None
+
+
+def test_argument_batch_with_arguments(proof):
+    from psalm.models.evidence import ArgumentBatch
+    arg = Argument(claim="c", dimension="character", proofs=[proof], agent_role="prosecutor", round=1)
+    batch = ArgumentBatch(arguments=[arg])
+    assert len(batch.arguments) == 1
+    assert batch.no_further_arguments is False
+
+
+def test_argument_batch_no_further_arguments_requires_closing_statement():
+    from psalm.exceptions import PSALMRuntimeError
+    from psalm.models.evidence import ArgumentBatch
+    with pytest.raises(PSALMRuntimeError) as exc_info:
+        ArgumentBatch(no_further_arguments=True)
+    assert exc_info.value.code == "PSALM-R004"
+
+
+def test_argument_batch_no_further_arguments_valid_with_statement():
+    from psalm.models.evidence import ArgumentBatch
+    batch = ArgumentBatch(no_further_arguments=True, closing_statement="Nothing further to add.")
+    assert batch.no_further_arguments is True
+    assert batch.closing_statement == "Nothing further to add."
+
+
+def test_argument_batch_no_further_arguments_rejects_nonempty_arguments(proof):
+    from psalm.exceptions import PSALMRuntimeError
+    from psalm.models.evidence import ArgumentBatch
+    arg = Argument(claim="c", dimension="character", proofs=[proof], agent_role="prosecutor", round=1)
+    with pytest.raises(PSALMRuntimeError) as exc_info:
+        ArgumentBatch(arguments=[arg], no_further_arguments=True, closing_statement="Done.")
+    assert exc_info.value.code == "PSALM-R005"
+
+
+def test_closing_statement_model():
+    from psalm.models.evidence import ClosingStatement
+    cs = ClosingStatement(round=1, statement="The prosecution rests.")
+    assert cs.round == 1
+    assert cs.statement == "The prosecution rests."
