@@ -95,3 +95,34 @@ async def test_tiebreak_returns_valid_verdict(judge, minimal_argumentation_log):
         verdict = await judge.tiebreak(votes, minimal_argumentation_log)
 
     assert verdict in {"Guilty", "Not Guilty", "Undecided"}
+
+
+def test_prosecution_validation_prompt_rejects_hedging_language():
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
+    assert "hedg" in prompt or "speculat" in prompt
+    assert "might" in prompt or "possibly" in prompt
+
+
+def test_defense_validation_prompt_rejects_hedging_language():
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "hedg" in prompt or "speculat" in prompt
+
+
+async def test_validate_batch_completeness_true_when_has_arguments(judge, sample_argument):
+    from psalm.models.evidence import ArgumentBatch
+    batch = ArgumentBatch(arguments=[sample_argument])
+    assert await judge.validate_batch_completeness(batch) is True
+
+
+async def test_validate_batch_completeness_true_when_no_further_arguments(judge):
+    from psalm.models.evidence import ArgumentBatch
+    batch = ArgumentBatch(no_further_arguments=True, closing_statement="Nothing further.")
+    assert await judge.validate_batch_completeness(batch) is True
+
+
+async def test_validate_batch_completeness_false_when_empty_and_not_declared(judge):
+    from psalm.models.evidence import ArgumentBatch
+    batch = ArgumentBatch()
+    assert await judge.validate_batch_completeness(batch) is False

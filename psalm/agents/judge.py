@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from psalm.agents.base import BaseAgent
 from psalm.exceptions import PSALMAgentError
-from psalm.models.evidence import Argument
+from psalm.models.evidence import Argument, ArgumentBatch
 from psalm.models.result import ArgumentationLog, JurorVote, ValidationResult
 
 
@@ -32,6 +32,9 @@ Reject the argument (is_valid=false) if ANY of the following criteria fails:
 (4) The passages show some connection to the argument's claim — even a weak connection passes;
     the defense will challenge it. Reject only if the described similarity is entirely absent
     from the passages (factually false claim).
+(5) The claim is stated as a clear, unambiguous assertion — reject if it uses hedging or
+    speculative language ("might", "could suggest", "possibly", "perhaps", "may indicate") or
+    otherwise presents an inference or guess as settled fact without clear textual grounding.
 
 Note: Do NOT reject arguments solely because they argue idea-level or thematic similarity.
 Those are legally weak and the defense will rebut them.
@@ -47,6 +50,9 @@ Reject the argument (is_valid=false) if ANY of the following criteria fails:
     in the actual texts).
 (3) The reasoning is relevant either to a prosecution argument being challenged, or to
     establishing why the texts differ or are independently created.
+(4) The claim is stated as a clear, unambiguous assertion — reject if it uses hedging or
+    speculative language ("might", "could suggest", "possibly", "perhaps", "may indicate") or
+    otherwise presents an inference or guess as settled fact without clear textual grounding.
 
 Defense arguments may challenge prosecution claims as legally insufficient (unprotectable ideas,
 genre conventions), show differences in specific expression, argue independent creation, or
@@ -101,6 +107,11 @@ class Judge(BaseAgent):
                 suggestion="Check LLM supports structured output.",
                 cause=exc,
             ) from exc
+
+    async def validate_batch_completeness(self, batch: ArgumentBatch) -> bool:
+        if batch.no_further_arguments:
+            return True  # pydantic validator already enforced closing_statement is present
+        return bool(batch.arguments)
 
     async def detect_stability(
         self, current_arguments: list[Argument], previous_arguments: list[Argument]
