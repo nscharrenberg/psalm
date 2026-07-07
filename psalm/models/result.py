@@ -13,15 +13,24 @@ class ValidationResult(BaseModel):
     rejection_reason: str | None = None
 
 
+class RejectedArgument(BaseModel):
+    argument: Argument
+    rejection_reason: str
+
+
 class RoundArguments(BaseModel):
     round: int
     prosecution_arguments: list[Argument]
+    prosecution_rejected_arguments: list[RejectedArgument] = Field(default_factory=list)
     prosecution_closing_statement: str | None = None
     defense_counters: list[Argument]
+    defense_counter_rejected_arguments: list[RejectedArgument] = Field(default_factory=list)
     defense_counter_closing_statement: str | None = None
     defense_arguments: list[Argument]
+    defense_rejected_arguments: list[RejectedArgument] = Field(default_factory=list)
     defense_closing_statement: str | None = None
     prosecution_counters: list[Argument]
+    prosecution_counter_rejected_arguments: list[RejectedArgument] = Field(default_factory=list)
     prosecution_counter_closing_statement: str | None = None
 
 

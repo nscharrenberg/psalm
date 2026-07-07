@@ -124,6 +124,43 @@ def _make_arg(dimension: str = "character", round: int = 1, role: str = "prosecu
     )
 
 
+def test_rejected_argument_model():
+    from psalm.models.result import RejectedArgument
+    ra = RejectedArgument(argument=_make_arg(), rejection_reason="Passage was fabricated.")
+    assert ra.rejection_reason == "Passage was fabricated."
+    assert ra.argument.dimension == "character"
+
+
+def test_round_arguments_rejected_arguments_default_empty():
+    from psalm.models.result import RoundArguments
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[],
+        defense_counters=[],
+        defense_arguments=[],
+        prosecution_counters=[],
+    )
+    assert ra.prosecution_rejected_arguments == []
+    assert ra.defense_counter_rejected_arguments == []
+    assert ra.defense_rejected_arguments == []
+    assert ra.prosecution_counter_rejected_arguments == []
+
+
+def test_round_arguments_accepts_rejected_arguments():
+    from psalm.models.result import RejectedArgument, RoundArguments
+    rejected = RejectedArgument(argument=_make_arg(), rejection_reason="Fabricated excerpt.")
+    ra = RoundArguments(
+        round=1,
+        prosecution_arguments=[],
+        prosecution_rejected_arguments=[rejected],
+        defense_counters=[],
+        defense_arguments=[],
+        prosecution_counters=[],
+    )
+    assert len(ra.prosecution_rejected_arguments) == 1
+    assert ra.prosecution_rejected_arguments[0].rejection_reason == "Fabricated excerpt."
+
+
 def test_round_arguments_has_four_fields():
     from psalm.models.result import RoundArguments
     ra = RoundArguments(

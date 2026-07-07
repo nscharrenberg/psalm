@@ -45,6 +45,13 @@ class ArgumentationState(BaseModel):
     defense_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
     prosecution_counter_closing_statements: list[dict[str, Any]] = Field(default_factory=list)
 
+    # Rejected-argument audit trail — round-tagged, one accumulator per step. Never shown
+    # to the jury; visible only in the full ArgumentationLog for transparency/audit.
+    prosecution_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    defense_counter_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    defense_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
+    prosecution_counter_rejected_arguments: list[dict[str, Any]] = Field(default_factory=list)
+
 
 class DeliberationState(BaseModel):
     argumentation_log: ArgumentationLog

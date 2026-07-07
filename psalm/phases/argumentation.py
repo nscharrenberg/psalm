@@ -10,7 +10,7 @@ from psalm.agents.prosecutor import Prosecutor
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import CaseInput, DebateConfig
 from psalm.models.evidence import Argument, ArgumentBatch, ClosingStatement
-from psalm.models.result import ArgumentationLog, RoundArguments
+from psalm.models.result import ArgumentationLog, RejectedArgument, RoundArguments
 from psalm.models.state import ArgumentationState
 from psalm.phases.base import BasePhase
 
@@ -21,6 +21,14 @@ _COMPLETENESS_RETRY_HINT = (
     "argument, or explicitly set no_further_arguments=True with a closing_statement "
     "explaining why you have nothing further to add."
 )
+
+
+def _rejected_entry(arg: Argument, rejection_reason: str | None) -> dict[str, Any]:
+    return {
+        "round": arg.round,
+        "argument": arg.model_dump(),
+        "rejection_reason": rejection_reason or "No reason provided.",
+    }
 
 
 class ArgumentationPhase(BasePhase):
@@ -127,14 +135,18 @@ class ArgumentationPhase(BasePhase):
     async def _judge_validate_prosecution(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_prosecution_arguments]
         valid = []
+        rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
             if result.is_valid:
                 valid.append(arg.model_dump())
+            else:
+                rejected.append(_rejected_entry(arg, result.rejection_reason))
         existing = [a.model_dump() for a in state.prosecution_arguments]
         return {
             "validated_prosecution_arguments": valid,
             "prosecution_arguments": existing + valid,
+            "prosecution_rejected_arguments": state.prosecution_rejected_arguments + rejected,
         }
 
     # --- Step 2: Defense counters prosecution ---
@@ -164,15 +176,19 @@ class ArgumentationPhase(BasePhase):
     async def _judge_validate_defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_defense_counters]
         valid = []
+        rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(
                 arg, state.source_text, state.target_text, role="defense"
             )
             if result.is_valid:
                 valid.append(arg.model_dump())
+            else:
+                rejected.append(_rejected_entry(arg, result.rejection_reason))
         existing = [a.model_dump() for a in state.defense_counters]
         return {
             "defense_counters": existing + valid,
+            "defense_counter_rejected_arguments": state.defense_counter_rejected_arguments + rejected,
         }
 
     # --- Step 3: Defense affirmative arguments ---
@@ -200,16 +216,20 @@ class ArgumentationPhase(BasePhase):
     async def _judge_validate_defense(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_defense_arguments]
         valid = []
+        rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(
                 arg, state.source_text, state.target_text, role="defense"
             )
             if result.is_valid:
                 valid.append(arg.model_dump())
+            else:
+                rejected.append(_rejected_entry(arg, result.rejection_reason))
         existing = [a.model_dump() for a in state.defense_arguments]
         return {
             "validated_defense_arguments": valid,
             "defense_arguments": existing + valid,
+            "defense_rejected_arguments": state.defense_rejected_arguments + rejected,
         }
 
     # --- Step 4: Prosecution counters defense ---
@@ -239,13 +259,17 @@ class ArgumentationPhase(BasePhase):
     async def _judge_validate_prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_prosecution_counters]
         valid = []
+        rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
             if result.is_valid:
                 valid.append(arg.model_dump())
+            else:
+                rejected.append(_rejected_entry(arg, result.rejection_reason))
         existing = [a.model_dump() for a in state.prosecution_counters]
         return {
             "prosecution_counters": existing + valid,
+            "prosecution_counter_rejected_arguments": state.prosecution_counter_rejected_arguments + rejected,
         }
 
     # --- Round control ---
@@ -276,6 +300,13 @@ class ArgumentationPhase(BasePhase):
             match = next((s for s in statements if s["round"] == r), None)
             return match["statement"] if match else None
 
+        def _rejected_for(entries: list[dict[str, Any]], r: int) -> list[RejectedArgument]:
+            return [
+                RejectedArgument(argument=Argument(**e["argument"]), rejection_reason=e["rejection_reason"])
+                for e in entries
+                if e["round"] == r
+            ]
+
         rounds = []
         for r in range(1, state.current_round + 1):
             pros_args = [a for a in state.prosecution_arguments if a.round == r]
@@ -286,20 +317,29 @@ class ArgumentationPhase(BasePhase):
             def_counter_closing = _closing_for(state.defense_counter_closing_statements, r)
             def_closing = _closing_for(state.defense_closing_statements, r)
             pros_counter_closing = _closing_for(state.prosecution_counter_closing_statements, r)
+            pros_rejected = _rejected_for(state.prosecution_rejected_arguments, r)
+            def_counter_rejected = _rejected_for(state.defense_counter_rejected_arguments, r)
+            def_rejected = _rejected_for(state.defense_rejected_arguments, r)
+            pros_counter_rejected = _rejected_for(state.prosecution_counter_rejected_arguments, r)
             if (
                 pros_args or def_counters or def_args or pros_counters
                 or pros_closing or def_counter_closing or def_closing or pros_counter_closing
+                or pros_rejected or def_counter_rejected or def_rejected or pros_counter_rejected
             ):
                 rounds.append(
                     RoundArguments(
                         round=r,
                         prosecution_arguments=pros_args,
+                        prosecution_rejected_arguments=pros_rejected,
                         prosecution_closing_statement=pros_closing,
                         defense_counters=def_counters,
+                        defense_counter_rejected_arguments=def_counter_rejected,
                         defense_counter_closing_statement=def_counter_closing,
                         defense_arguments=def_args,
+                        defense_rejected_arguments=def_rejected,
                         defense_closing_statement=def_closing,
                         prosecution_counters=pros_counters,
+                        prosecution_counter_rejected_arguments=pros_counter_rejected,
                         prosecution_counter_closing_statement=pros_counter_closing,
                     )
                 )

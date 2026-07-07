@@ -122,3 +122,13 @@ def test_argumentation_state_has_closing_statement_accumulators():
     assert state.defense_counter_closing_statements == []
     assert state.defense_closing_statements == []
     assert state.prosecution_counter_closing_statements == []
+
+
+def test_argumentation_state_has_rejected_argument_accumulators():
+    state = ArgumentationState(
+        source_text="src", target_text="tgt", dimensions=[CHARACTER], max_rounds=3
+    )
+    assert state.prosecution_rejected_arguments == []
+    assert state.defense_counter_rejected_arguments == []
+    assert state.defense_rejected_arguments == []
+    assert state.prosecution_counter_rejected_arguments == []

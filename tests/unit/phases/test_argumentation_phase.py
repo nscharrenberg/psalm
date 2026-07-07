@@ -240,3 +240,32 @@ async def test_completeness_retry_exhausted_raises(mock_judge):
     with pytest.raises(PSALMAgentError) as exc_info:
         await phase.run(case_input)
     assert exc_info.value.code == "PSALM-A004"
+
+
+async def test_rejected_arguments_recorded_with_reason():
+    mock_prosecutor = MagicMock()
+    mock_prosecutor.gather_arguments = AsyncMock(return_value=_make_batch([_make_arg(role="prosecutor")]))
+    mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense = MagicMock()
+    mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_judge = MagicMock()
+    mock_judge.validate_argument = AsyncMock(
+        return_value=MagicMock(is_valid=False, rejection_reason="Passage does not appear in either text.")
+    )
+    mock_judge.detect_stability = AsyncMock(return_value=False)
+    mock_judge.validate_batch_completeness = AsyncMock(return_value=True)
+
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=1, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+    case_input = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+
+    result = await phase.run(case_input)
+    assert len(result.rounds) == 1
+    r = result.rounds[0]
+    # The rejected argument must not appear as a validated argument...
+    assert r.prosecution_arguments == []
+    # ...but must be recorded in the audit trail with the Judge's stated reason.
+    assert len(r.prosecution_rejected_arguments) == 1
+    assert r.prosecution_rejected_arguments[0].rejection_reason == "Passage does not appear in either text."
+    assert r.prosecution_rejected_arguments[0].argument.agent_role == "prosecutor"
