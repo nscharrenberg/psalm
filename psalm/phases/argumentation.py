@@ -1,17 +1,26 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Awaitable, Callable
 
 from langgraph.graph import END, StateGraph
 
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor
+from psalm.exceptions import PSALMAgentError
 from psalm.models.config import CaseInput, DebateConfig
-from psalm.models.evidence import Argument
+from psalm.models.evidence import Argument, ArgumentBatch, ClosingStatement
 from psalm.models.result import ArgumentationLog, RoundArguments
 from psalm.models.state import ArgumentationState
 from psalm.phases.base import BasePhase
+
+_COMPLETENESS_RETRY_ATTEMPTS = 2
+_COMPLETENESS_RETRY_HINT = (
+    "Your previous response provided no arguments and did not declare "
+    "no_further_arguments. You MUST either provide at least one factually-grounded "
+    "argument, or explicitly set no_further_arguments=True with a closing_statement "
+    "explaining why you have nothing further to add."
+)
 
 
 class ArgumentationPhase(BasePhase):
@@ -73,18 +82,47 @@ class ArgumentationPhase(BasePhase):
             return ArgumentationLog(**log_data)
         return log_data
 
+    # --- Completeness-gated agent call wrapper ---
+
+    async def _call_with_completeness_retry(
+        self, call: Callable[[str | None], Awaitable[ArgumentBatch]]
+    ) -> ArgumentBatch:
+        hint: str | None = None
+        for _attempt in range(_COMPLETENESS_RETRY_ATTEMPTS + 1):
+            batch = await call(hint)
+            if await self._judge.validate_batch_completeness(batch):
+                return batch
+            hint = _COMPLETENESS_RETRY_HINT
+        raise PSALMAgentError(
+            code="PSALM-A004",
+            message="Agent failed to provide arguments or declare no_further_arguments after retries.",
+            context={"attempts": _COMPLETENESS_RETRY_ATTEMPTS + 1},
+            suggestion="Check the LLM model's instruction-following reliability.",
+        )
+
     # --- Step 1: Prosecution affirmative arguments ---
 
     async def _prosecution_argue(self, state: ArgumentationState) -> dict[str, Any]:
+        round_num = state.current_round + 1
         prior_defense = list(state.defense_arguments) or None
-        arguments = await self._prosecutor.gather_arguments(
-            source_text=state.source_text,
-            target_text=state.target_text,
-            dimensions=state.dimensions,
-            round=state.current_round + 1,
-            prior_defense_arguments=prior_defense,
+        batch = await self._call_with_completeness_retry(
+            lambda hint: self._prosecutor.gather_arguments(
+                source_text=state.source_text,
+                target_text=state.target_text,
+                dimensions=state.dimensions,
+                round=round_num,
+                prior_defense_arguments=prior_defense,
+                retry_hint=hint,
+            )
         )
-        return {"pending_prosecution_arguments": [a.model_dump() for a in arguments]}
+        closing = (
+            [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
+            if batch.closing_statement else []
+        )
+        return {
+            "pending_prosecution_arguments": [a.model_dump() for a in batch.arguments],
+            "prosecution_closing_statements": state.prosecution_closing_statements + closing,
+        }
 
     async def _judge_validate_prosecution(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_prosecution_arguments]
@@ -102,15 +140,26 @@ class ArgumentationPhase(BasePhase):
     # --- Step 2: Defense counters prosecution ---
 
     async def _defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
+        round_num = state.current_round + 1
         prosecution_args = [Argument(**a) for a in state.validated_prosecution_arguments]
-        counters = await self._defense.gather_counter_arguments(
-            source_text=state.source_text,
-            target_text=state.target_text,
-            dimensions=state.dimensions,
-            prosecutor_arguments=prosecution_args,
-            round=state.current_round + 1,
+        batch = await self._call_with_completeness_retry(
+            lambda hint: self._defense.gather_counter_arguments(
+                source_text=state.source_text,
+                target_text=state.target_text,
+                dimensions=state.dimensions,
+                prosecutor_arguments=prosecution_args,
+                round=round_num,
+                retry_hint=hint,
+            )
         )
-        return {"pending_defense_counters": [a.model_dump() for a in counters]}
+        closing = (
+            [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
+            if batch.closing_statement else []
+        )
+        return {
+            "pending_defense_counters": [a.model_dump() for a in batch.arguments],
+            "defense_counter_closing_statements": state.defense_counter_closing_statements + closing,
+        }
 
     async def _judge_validate_defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_defense_counters]
@@ -129,13 +178,24 @@ class ArgumentationPhase(BasePhase):
     # --- Step 3: Defense affirmative arguments ---
 
     async def _defense_argue(self, state: ArgumentationState) -> dict[str, Any]:
-        arguments = await self._defense.gather_arguments(
-            source_text=state.source_text,
-            target_text=state.target_text,
-            dimensions=state.dimensions,
-            round=state.current_round + 1,
+        round_num = state.current_round + 1
+        batch = await self._call_with_completeness_retry(
+            lambda hint: self._defense.gather_arguments(
+                source_text=state.source_text,
+                target_text=state.target_text,
+                dimensions=state.dimensions,
+                round=round_num,
+                retry_hint=hint,
+            )
         )
-        return {"pending_defense_arguments": [a.model_dump() for a in arguments]}
+        closing = (
+            [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
+            if batch.closing_statement else []
+        )
+        return {
+            "pending_defense_arguments": [a.model_dump() for a in batch.arguments],
+            "defense_closing_statements": state.defense_closing_statements + closing,
+        }
 
     async def _judge_validate_defense(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_defense_arguments]
@@ -155,15 +215,26 @@ class ArgumentationPhase(BasePhase):
     # --- Step 4: Prosecution counters defense ---
 
     async def _prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
+        round_num = state.current_round + 1
         defense_args = [Argument(**a) for a in state.validated_defense_arguments]
-        counters = await self._prosecutor.gather_counter_arguments(
-            source_text=state.source_text,
-            target_text=state.target_text,
-            dimensions=state.dimensions,
-            defense_arguments=defense_args,
-            round=state.current_round + 1,
+        batch = await self._call_with_completeness_retry(
+            lambda hint: self._prosecutor.gather_counter_arguments(
+                source_text=state.source_text,
+                target_text=state.target_text,
+                dimensions=state.dimensions,
+                defense_arguments=defense_args,
+                round=round_num,
+                retry_hint=hint,
+            )
         )
-        return {"pending_prosecution_counters": [a.model_dump() for a in counters]}
+        closing = (
+            [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
+            if batch.closing_statement else []
+        )
+        return {
+            "pending_prosecution_counters": [a.model_dump() for a in batch.arguments],
+            "prosecution_counter_closing_statements": state.prosecution_counter_closing_statements + closing,
+        }
 
     async def _judge_validate_prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_prosecution_counters]
@@ -201,20 +272,35 @@ class ArgumentationPhase(BasePhase):
         }
 
     async def _finalize_arguments(self, state: ArgumentationState) -> dict[str, Any]:
+        def _closing_for(statements: list[dict[str, Any]], r: int) -> str | None:
+            match = next((s for s in statements if s["round"] == r), None)
+            return match["statement"] if match else None
+
         rounds = []
         for r in range(1, state.current_round + 1):
             pros_args = [a for a in state.prosecution_arguments if a.round == r]
             def_counters = [a for a in state.defense_counters if a.round == r]
             def_args = [a for a in state.defense_arguments if a.round == r]
             pros_counters = [a for a in state.prosecution_counters if a.round == r]
-            if pros_args or def_counters or def_args or pros_counters:
+            pros_closing = _closing_for(state.prosecution_closing_statements, r)
+            def_counter_closing = _closing_for(state.defense_counter_closing_statements, r)
+            def_closing = _closing_for(state.defense_closing_statements, r)
+            pros_counter_closing = _closing_for(state.prosecution_counter_closing_statements, r)
+            if (
+                pros_args or def_counters or def_args or pros_counters
+                or pros_closing or def_counter_closing or def_closing or pros_counter_closing
+            ):
                 rounds.append(
                     RoundArguments(
                         round=r,
                         prosecution_arguments=pros_args,
+                        prosecution_closing_statement=pros_closing,
                         defense_counters=def_counters,
+                        defense_counter_closing_statement=def_counter_closing,
                         defense_arguments=def_args,
+                        defense_closing_statement=def_closing,
                         prosecution_counters=pros_counters,
+                        prosecution_counter_closing_statement=pros_counter_closing,
                     )
                 )
         log = ArgumentationLog(rounds=rounds)
