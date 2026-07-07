@@ -24,38 +24,49 @@ _PROSECUTION_VALIDATION_PROMPT = """\
 You are a judge validating a prosecution argument in a copyright case governed by EU copyright law.
 Reject the argument (is_valid=false) if ANY of the following criteria fails:
 
-(1) The argument includes at least one proof with relevant passages from both texts.
-(2) The passages are derived from the provided texts — close approximations and paraphrases are
-    acceptable; reject only if the passage appears completely fabricated (not based on anything
-    in the actual texts).
-(3) The reasoning is relevant to the claimed dimension.
-(4) The passages show some connection to the argument's claim — even a weak connection passes;
-    the defense will challenge it. Reject only if the described similarity is entirely absent
-    from the passages (factually false claim).
+(1) Each cited proof is authentic: the source_excerpt genuinely appears in (or is a close,
+    faithful paraphrase of) the source text, and the target_excerpt genuinely appears in (or is
+    a close, faithful paraphrase of) the target text. Reject if a cited excerpt is fabricated —
+    it does not actually exist in the text it claims to be from.
+(2) The cited proofs do not contradict the claim they are offered to support — e.g. a claim of
+    similarity must be backed by proofs that actually correspond, not an unrelated or opposite
+    relationship.
 
-Note: Do NOT reject arguments solely because they argue idea-level or thematic similarity, or
-because they are weakly or interpretively phrased. Argument strength and certainty are for the
-opposing side to challenge, not grounds for you to reject. Reject ONLY on clear factual
-fabrication — a passage or claim with no basis in the actual texts.
+Evaluate ONLY the specific proofs this argument cites, checked against the passages of the
+source and target text they claim to come from. Do NOT search the rest of the text for other
+discrepancies or details the argument did not mention — a difference found elsewhere in the text
+that this argument never referenced is irrelevant to whether THIS argument's cited proofs are
+authentic.
+
+Do NOT reject for weak, interpretive, idea-level, or thematic reasoning, and do NOT reject merely
+because a proof does not by itself sufficiently "prove" or "establish" the claim — argument
+strength and sufficiency are for the opposing side to challenge, not grounds for you to reject.
+Reject ONLY on fabrication (criterion 1) or self-contradiction (criterion 2).
 """
 
 _DEFENSE_VALIDATION_PROMPT = """\
 You are a judge validating a defense argument in a copyright case governed by EU copyright law.
 Reject the argument (is_valid=false) if ANY of the following criteria fails:
 
-(1) The argument includes at least one proof with relevant passages from both texts.
-(2) The passages are derived from the provided texts — close approximations and paraphrases are
-    acceptable; reject only if a passage appears completely fabricated (not based on anything
-    in the actual texts).
-(3) The reasoning is relevant either to a prosecution argument being challenged, or to
-    establishing why the texts differ or are independently created.
+(1) Each cited proof is authentic: the source_excerpt genuinely appears in (or is a close,
+    faithful paraphrase of) the source text, and the target_excerpt genuinely appears in (or is
+    a close, faithful paraphrase of) the target text. Reject if a cited excerpt is fabricated —
+    it does not actually exist in the text it claims to be from.
+(2) The cited proofs do not contradict the claim they are offered to support. In particular: if
+    the claim asserts the texts are distinct or independently created, an identical (or
+    near-identical) passage in both texts is evidence of similarity, not distinctness — such a
+    proof undermines rather than supports the claim and must be rejected.
+
+Evaluate ONLY the specific proofs this argument cites, checked against the passages of the
+source and target text they claim to come from. Do NOT search the rest of the text for other
+discrepancies or details the argument did not mention.
 
 Defense arguments may challenge prosecution claims as legally insufficient (unprotectable ideas,
-genre conventions), show differences in specific expression, argue independent creation, or
-make affirmative claims about the texts' distinctiveness. They are NOT required to demonstrate
-similarity — that is the prosecution's burden. Do NOT reject an argument for being weakly or
-interpretively phrased — that is the prosecution's job to challenge, not yours. Reject ONLY on
-clear factual fabrication — a passage or claim with no basis in the actual texts.
+genre conventions), show differences in specific expression, argue independent creation, or make
+affirmative claims about the texts' distinctiveness. They are not required to demonstrate
+similarity — that is the prosecution's burden. Do NOT reject for weak or interpretive reasoning —
+that is the prosecution's job to challenge, not yours to discard. Reject ONLY on fabrication
+(criterion 1) or self-contradiction (criterion 2).
 """
 
 

@@ -126,6 +126,36 @@ def test_defense_validation_prompt_only_rejects_fabrication():
     assert "fabricat" in prompt
 
 
+def test_prosecution_validation_prompt_scopes_to_cited_proofs_only():
+    # The Judge must evaluate only the proofs THIS argument cites — not go hunting for
+    # unrelated discrepancies elsewhere in the full text and reject based on those.
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
+    assert "do not search the rest of the text" in prompt
+
+
+def test_defense_validation_prompt_scopes_to_cited_proofs_only():
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "do not search the rest of the text" in prompt
+
+
+def test_prosecution_validation_prompt_rejects_self_contradicting_proofs():
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
+    assert "contradict" in prompt
+
+
+def test_defense_validation_prompt_rejects_identical_text_as_distinctness_proof():
+    # Citing an identical passage in both texts as "proof" that the texts are distinct is
+    # self-contradicting — the evidence argues the opposite of the claim — and must be
+    # rejectable on that narrow, factual basis (not lumped in with "weak arguments").
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "contradict" in prompt
+    assert "identical" in prompt
+
+
 async def test_validate_batch_completeness_true_when_has_arguments(judge, sample_argument):
     from psalm.models.evidence import ArgumentBatch
     batch = ArgumentBatch(arguments=[sample_argument])
