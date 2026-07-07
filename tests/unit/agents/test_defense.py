@@ -183,6 +183,27 @@ async def test_defense_prompt_separates_infringement_and_exception_dimensions(ag
     assert "scenes-a-faire" in user_content
 
 
+async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
+    # When an exception dimension runs its own standalone pipeline (no infringement dimension
+    # present), it IS the subject of that pipeline's verdict and must be framed as mandatory —
+    # not as an optional tool for a dimension that isn't even in the room.
+    defense = Defense(config=agent_config)
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[sample_argument], no_further_arguments=False, closing_statement=None)
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.gather_arguments("src", "tgt", [SCENES_A_FAIRE], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "PRIMARY DIMENSION (must argue): scenes-a-faire" in user_content
+    assert "AVAILABLE EXCEPTION TOOLS" not in user_content
+
+
 async def test_defense_retry_hint_appears_in_prompt(agent_config, sample_argument):
     defense = Defense(config=agent_config)
     captured: list = []

@@ -33,7 +33,13 @@ def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
     infringement_dims = [d for d in dimensions if d.dimension_type == "infringement"]
     exception_dims = [d for d in dimensions if d.dimension_type == "exception"]
 
-    for dim in infringement_dims:
+    # When no infringement dimension is present, the exception dimension(s) are the sole
+    # subject of this pipeline's own verdict and must be argued directly — not treated as
+    # optional tools for a dimension that isn't in the room.
+    mandatory_dims = infringement_dims or exception_dims
+    optional_dims = exception_dims if infringement_dims else []
+
+    for dim in mandatory_dims:
         lines.append(f"\nPRIMARY DIMENSION (must argue): {dim.name} — {dim.description}")
         lines.append(
             "Sub-dimensions (argue ALL marked HIGH or CRITICAL where factually supportable):"
@@ -41,7 +47,7 @@ def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
         for sd in dim.sub_dimensions:
             lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
 
-    for dim in exception_dims:
+    for dim in optional_dims:
         lines.append(
             f"\nAVAILABLE EXCEPTION TOOLS (optional, cite only if relevant): "
             f"{dim.name} — {dim.description}"
