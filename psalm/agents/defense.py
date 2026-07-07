@@ -1,26 +1,32 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-
 from psalm.agents.base import BaseAgent
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
-from psalm.models.evidence import Argument
-
-
-class _ArgumentList(BaseModel):
-    arguments: list[Argument]
+from psalm.models.evidence import Argument, ArgumentBatch
 
 
 def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
     lines: list[str] = []
-    for dim in dimensions:
+    infringement_dims = [d for d in dimensions if d.dimension_type == "infringement"]
+    exception_dims = [d for d in dimensions if d.dimension_type == "exception"]
+
+    for dim in infringement_dims:
+        lines.append(f"\nPRIMARY DIMENSION (must argue): {dim.name} — {dim.description}")
         lines.append(
-            f"\nDimension: {dim.name} — {dim.description}"
+            "Sub-dimensions (argue ALL marked HIGH or CRITICAL where factually supportable):"
         )
-        lines.append("Sub-dimensions (argue ALL marked HIGH or CRITICAL):")
         for sd in dim.sub_dimensions:
             lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+
+    for dim in exception_dims:
+        lines.append(
+            f"\nAVAILABLE EXCEPTION TOOLS (optional, cite only if relevant): "
+            f"{dim.name} — {dim.description}"
+        )
+        for sd in dim.sub_dimensions:
+            lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
+
     return "\n".join(lines)
 
 
@@ -51,10 +57,19 @@ AFFIRMATIVE ARGUMENTS — you may also proactively argue why the texts are disti
 - Argue that the overall creative expression is so different that no reasonable reader
   would confuse the two works.
 
+Only assert claims backed by clear, unambiguous textual evidence. If no such evidence exists for
+a prosecution argument or a sub-dimension, do not argue it — omit it. Never present a guess,
+inference, or possibility as if it were a settled fact. Quote as closely as possible to the
+original; close approximations of the wording are acceptable, but the underlying claim must be
+certain, not speculative.
+
 For each prosecution argument, decide: does it rest on an unprotectable idea (challenge as
 legally insufficient) or on specific expression (challenge on the merits)?
-Every argument must include relevant passages from both texts. Quote as closely as possible
-to the original; close approximations are acceptable. You MUST produce at least one argument.
+
+If you have nothing further that meets this bar — for this call, across every prosecution
+argument and sub-dimension you were asked to address — set no_further_arguments=True and provide
+a one-sentence closing_statement explaining why. Do not pad with a weak or speculative claim just
+to appear productive.
 """
 
 
@@ -70,50 +85,55 @@ class Defense(BaseAgent):
         dimensions: list[Dimension],
         prosecutor_arguments: list[Argument],
         round: int,
-    ) -> list[Argument]:
-        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        retry_hint: str | None = None,
+    ) -> ArgumentBatch:
+        structured_llm = self._llm.with_structured_output(ArgumentBatch)
         args_text = "\n".join(
             f"- [{a.dimension}] {a.claim} (proofs: {len(a.proofs)})"
             for a in prosecutor_arguments
         )
         if prosecutor_arguments:
             instruction = (
-                "Counter each prosecution argument by identifying weaknesses (unprotectable "
+                "Counter each prosecution argument where you have clear grounds (unprotectable "
                 "ideas, lack of expression-level similarity, independent creation). "
-                "Additionally, make at least one affirmative argument about why the texts are "
+                "Additionally, you may make an affirmative argument about why the texts are "
                 "independently created — cite specific passages where the expression and "
-                "creative choices diverge. You MUST produce at least one argument."
+                "creative choices diverge. If no clear grounds exist anywhere, declare "
+                "no_further_arguments."
             )
         else:
             instruction = (
-                "The prosecution has not yet raised any arguments. Make affirmative arguments "
-                "about why the target text does NOT infringe the source — highlight specific "
-                "passages where the wording, imagery, and creative choices are independently "
-                "created. The prosecution will counter your arguments in the next round. "
-                "You MUST produce at least one argument."
+                "The prosecution has not yet raised any arguments. You may make affirmative "
+                "arguments about why the target text does NOT infringe the source — highlight "
+                "specific passages where the wording, imagery, and creative choices are "
+                "independently created. If no clear, unambiguous grounds exist, declare "
+                "no_further_arguments."
             )
         sub_dim_block = _format_sub_dimensions(dimensions)
+        retry_section = f"\n\n{retry_hint}" if retry_hint else ""
         content = (
             f"SOURCE TEXT:\n{source_text}\n\n"
             f"TARGET TEXT:\n{target_text}\n\n"
             f"Prosecutor's arguments:\n{args_text}\n\n"
             f"{sub_dim_block}\n"
             f"Round: {round}\n\n"
-            f"{instruction}"
+            f"{instruction}{retry_section}"
         )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": content,
-            },
+            {"role": "user", "content": content},
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            return [
+            arguments = [
                 a.model_copy(update={"round": round, "agent_role": "defense"})
                 for a in result.arguments
             ]
+            return ArgumentBatch(
+                arguments=arguments,
+                no_further_arguments=result.no_further_arguments,
+                closing_statement=result.closing_statement,
+            )
         except PSALMAgentError:
             raise
         except Exception as exc:
@@ -131,33 +151,38 @@ class Defense(BaseAgent):
         target_text: str,
         dimensions: list[Dimension],
         round: int,
-    ) -> list[Argument]:
+        retry_hint: str | None = None,
+    ) -> ArgumentBatch:
         """Step 3: Defense makes independent affirmative arguments (no prosecution args to counter)."""
-        structured_llm = self._llm.with_structured_output(_ArgumentList)
+        structured_llm = self._llm.with_structured_output(ArgumentBatch)
         sub_dim_block = _format_sub_dimensions(dimensions)
+        retry_section = f"\n\n{retry_hint}" if retry_hint else ""
         content = (
             f"SOURCE TEXT:\n{source_text}\n\n"
             f"TARGET TEXT:\n{target_text}\n\n"
             f"{sub_dim_block}\n"
             f"Round: {round}\n\n"
             "Make affirmative arguments about why the target text does NOT infringe the "
-            "source. Address each HIGH and CRITICAL sub-dimension. Highlight specific passages "
-            "where the wording, imagery, and creative choices are distinctly different. "
-            "You MUST produce at least one argument."
+            "source, for each HIGH and CRITICAL sub-dimension where clear, unambiguous evidence "
+            "exists. Highlight specific passages where the wording, imagery, and creative "
+            "choices are distinctly different. If no such evidence exists anywhere, declare "
+            f"no_further_arguments.{retry_section}"
         )
         prompt = [
             {"role": "system", "content": _SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": content,
-            },
+            {"role": "user", "content": content},
         ]
         try:
             result = await self._call_structured(structured_llm, prompt)
-            return [
+            arguments = [
                 a.model_copy(update={"round": round, "agent_role": "defense"})
                 for a in result.arguments
             ]
+            return ArgumentBatch(
+                arguments=arguments,
+                no_further_arguments=result.no_further_arguments,
+                closing_statement=result.closing_statement,
+            )
         except PSALMAgentError:
             raise
         except Exception as exc:
