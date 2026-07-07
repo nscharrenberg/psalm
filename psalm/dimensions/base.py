@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -46,3 +47,4 @@ class Dimension(BaseModel):
     description: str
     sub_dimensions: list[SubDimension]
     importance: Importance = Importance.MEDIUM
+    dimension_type: Literal["infringement", "exception"] = "infringement"

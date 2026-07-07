@@ -4,6 +4,7 @@ SCENES_A_FAIRE = Dimension(
     name="scenes-a-faire",
     description="Stock elements that are not copyright-protected.",
     importance=Importance.MEDIUM,
+    dimension_type="exception",
     sub_dimensions=[
         SubDimension(
             name="Genre Conventions & Setting",

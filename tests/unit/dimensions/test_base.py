@@ -67,3 +67,22 @@ def test_dimension_with_sub_dimensions():
     )
     assert len(dim.sub_dimensions) == 2
     assert dim.sub_dimensions[0].importance == Importance.CRITICAL
+
+
+def test_dimension_defaults_to_infringement_type():
+    dim = Dimension(
+        name="test",
+        description="A test dimension.",
+        sub_dimensions=[SubDimension(name="Sub1", description="sub1")],
+    )
+    assert dim.dimension_type == "infringement"
+
+
+def test_dimension_accepts_exception_type():
+    dim = Dimension(
+        name="test-exception",
+        description="A test exception dimension.",
+        dimension_type="exception",
+        sub_dimensions=[SubDimension(name="Sub1", description="sub1")],
+    )
+    assert dim.dimension_type == "exception"

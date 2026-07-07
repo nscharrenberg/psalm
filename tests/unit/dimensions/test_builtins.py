@@ -55,3 +55,13 @@ def test_all_sub_dimensions_have_name_and_description():
         for sd in dim.sub_dimensions:
             assert sd.name
             assert sd.description
+
+
+def test_scenes_a_faire_is_exception_type():
+    assert SCENES_A_FAIRE.dimension_type == "exception"
+
+
+def test_character_plot_world_building_are_infringement_type():
+    assert CHARACTER.dimension_type == "infringement"
+    assert PLOT.dimension_type == "infringement"
+    assert WORLD_BUILDING.dimension_type == "infringement"
