@@ -238,7 +238,10 @@ class _BuiltPSALM:
                     await outcome
             if isinstance(event, FinalVerdictReached):
                 result = event.result
-        assert result is not None
+        if result is None:
+            raise RuntimeError(
+                "astream_evaluate() completed without emitting FinalVerdictReached."
+            )
         return result
 
     async def astream_evaluate(
