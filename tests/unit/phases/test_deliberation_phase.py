@@ -8,6 +8,7 @@ from psalm.models.config import DebateConfig
 from psalm.models.result import DimensionScore, JurorVote
 from psalm.models.state import DeliberationState
 from psalm.phases.deliberation import DeliberationPhase
+from tests.conftest import bound_event_sink, drain_events
 
 
 @pytest.fixture
@@ -191,3 +192,88 @@ async def test_graph_entry_is_jury_vote(mock_juror, mock_judge, mock_voting_stra
     assert len(vote_called_times) >= 1
     if discussion_called_times:
         assert vote_called_times[0] < discussion_called_times[0]
+
+
+async def test_jury_vote_emits_round_started_and_vote_cast(deliberation_phase, minimal_argumentation_log):
+    from psalm.events.types import DeliberationRoundStarted, JurorVoteCast
+
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log, max_rounds=2, current_dimension=CHARACTER,
+    )
+    with bound_event_sink() as sink:
+        await deliberation_phase._jury_vote(state)
+        events = await drain_events(sink)
+
+    round_started = [e for e in events if isinstance(e, DeliberationRoundStarted)]
+    votes_cast = [e for e in events if isinstance(e, JurorVoteCast)]
+    assert len(round_started) == 1
+    assert round_started[0].round == 1
+    assert len(votes_cast) == 1
+    assert votes_cast[0].juror_id == "juror-0"
+    assert votes_cast[0].vote == "Guilty"
+
+
+async def test_check_consensus_emits_jury_consensus_checked(deliberation_phase, minimal_argumentation_log):
+    from psalm.events.types import JuryConsensusChecked
+
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log, max_rounds=2, current_dimension=CHARACTER,
+        current_round=1,
+        vote_history=[{
+            "round": 1, "votes": [], "discussion_messages": [],
+            "is_unanimous": True, "top_verdict": "Guilty",
+        }],
+    )
+    with bound_event_sink() as sink:
+        await deliberation_phase._check_consensus(state)
+        events = await drain_events(sink)
+
+    checked = [e for e in events if isinstance(e, JuryConsensusChecked)]
+    assert len(checked) == 1
+    assert checked[0].is_unanimous is True
+    assert checked[0].top_verdict == "Guilty"
+
+
+async def test_jury_discussion_emits_discussion_message(deliberation_phase, minimal_argumentation_log):
+    from psalm.events.types import JuryDiscussionMessage
+
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log, max_rounds=2, current_dimension=CHARACTER,
+    )
+    with bound_event_sink() as sink:
+        await deliberation_phase._jury_discussion(state)
+        events = await drain_events(sink)
+
+    messages = [e for e in events if isinstance(e, JuryDiscussionMessage)]
+    assert len(messages) == 1
+    assert messages[0].juror_id == "juror-0"
+    assert isinstance(messages[0].message, str)
+
+
+async def test_apply_voting_strategy_emits_voting_strategy_applied(
+    mock_juror, mock_judge, mock_voting_strategy, minimal_argumentation_log
+):
+    from psalm.events.types import VotingStrategyApplied
+
+    phase = DeliberationPhase(
+        jury=[mock_juror], voting_strategies=[mock_voting_strategy], judge=mock_judge, config=DebateConfig(),
+    )
+    state = DeliberationState(
+        argumentation_log=minimal_argumentation_log, max_rounds=1, current_dimension=CHARACTER,
+        vote_history=[{
+            "round": 1,
+            "votes": [{
+                "juror_id": "juror-0", "vote": "Guilty", "rationale": "r",
+                "dimension_scores": [], "dimension": None,
+            }],
+            "discussion_messages": [], "is_unanimous": False, "top_verdict": None,
+        }],
+    )
+    with bound_event_sink() as sink:
+        await phase._apply_voting_strategy(state)
+        events = await drain_events(sink)
+
+    applied = [e for e in events if isinstance(e, VotingStrategyApplied)]
+    assert len(applied) == 1
+    assert applied[0].is_tie is False
+    assert applied[0].verdict == "Guilty"

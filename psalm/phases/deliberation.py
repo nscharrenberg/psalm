@@ -10,6 +10,14 @@ from langgraph.graph import END, StateGraph
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
 from psalm.dimensions.base import _IMPORTANCE_MULTIPLIERS, _SCORE_VALUES, Dimension
+from psalm.events import (
+    DeliberationRoundStarted,
+    JurorVoteCast,
+    JuryConsensusChecked,
+    JuryDiscussionMessage,
+    VotingStrategyApplied,
+    emit,
+)
 from psalm.models.config import DebateConfig
 from psalm.models.result import (
     ArgumentationLog,
@@ -88,17 +96,24 @@ class DeliberationPhase:
         return {"discussion_messages": [], "current_round_votes": []}
 
     async def _jury_vote(self, state: DeliberationState) -> dict[str, Any]:
+        round_num = state.current_round + 1
+        await emit(DeliberationRoundStarted(round=round_num))
         vote_tasks = [
             juror.vote(
                 argumentation_log=state.argumentation_log,
                 previous_rounds=state.vote_history,
                 discussion_messages=state.discussion_messages,
-                round=state.current_round + 1,
+                round=round_num,
                 dimension=state.current_dimension,
             )
             for juror in self._jury
         ]
         votes: list[JurorVote] = await asyncio.gather(*vote_tasks)
+        for v in votes:
+            await emit(JurorVoteCast(
+                round=round_num, juror_id=v.juror_id, vote=v.vote, rationale=v.rationale,
+                dimension_scores=v.dimension_scores,
+            ))
         return {"current_round_votes": [v.model_dump() for v in votes]}
 
     async def _aggregate_votes(self, state: DeliberationState) -> dict[str, Any]:
@@ -123,26 +138,37 @@ class DeliberationPhase:
     async def _check_consensus(self, state: DeliberationState) -> dict[str, Any]:
         last_round = state.vote_history[-1] if state.vote_history else {}
         is_unanimous = last_round.get("is_unanimous", False)
+        top_verdict = last_round.get("top_verdict")
+        await emit(JuryConsensusChecked(
+            round=state.current_round, is_unanimous=is_unanimous, top_verdict=top_verdict,
+        ))
         if is_unanimous:
             return {"consensus_reached": True, "final_verdict": last_round["top_verdict"]}
         return {"consensus_reached": False}
 
     async def _jury_discussion(self, state: DeliberationState) -> dict[str, Any]:
+        round_num = state.current_round + 1
         discussion: list[dict[str, str]] = []
         for juror in self._jury:
             message = await juror.discuss(
                 argumentation_log=state.argumentation_log,
                 previous_rounds=state.vote_history,
                 current_discussion=discussion,
-                round=state.current_round + 1,
+                round=round_num,
             )
             discussion.append({"juror_id": juror.juror_id, "message": message})
+            await emit(
+                JuryDiscussionMessage(round=round_num, juror_id=juror.juror_id, message=message)
+            )
         return {"discussion_messages": discussion}
 
     async def _apply_voting_strategy(self, state: DeliberationState) -> dict[str, Any]:
         latest_votes = [JurorVote(**v) for v in state.vote_history[-1]["votes"]]
         for strategy in self._voting_strategies:
             result = await strategy.apply(latest_votes, self._judge, state.argumentation_log)
+            await emit(VotingStrategyApplied(
+                strategy_name=type(strategy).__name__, is_tie=result.is_tie, verdict=result.verdict,
+            ))
             if not result.is_tie:
                 return {
                     "final_verdict": result.verdict,
