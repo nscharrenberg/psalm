@@ -232,6 +232,7 @@ async def test_check_consensus_emits_jury_consensus_checked(deliberation_phase, 
     assert len(checked) == 1
     assert checked[0].is_unanimous is True
     assert checked[0].top_verdict == "Guilty"
+    assert checked[0].round == 1
 
 
 async def test_jury_discussion_emits_discussion_message(deliberation_phase, minimal_argumentation_log):
