@@ -90,23 +90,15 @@ async def test_build_raises_on_llm_ping_failure():
     assert "PSALM-C006" in str(exc_info.value)
 
 
-def test_evaluate_raises_on_empty_source():
-    # Deliberately synchronous (not `async def`): `.evaluate()` now delegates
-    # fully to `asyncio.run(self.aevaluate(...))` (see _BuiltPSALM.evaluate), so
-    # calling it while a pytest-asyncio event loop is already running would raise
-    # "asyncio.run() cannot be called from a running event loop" regardless of
-    # the validation error under test. Building the courtroom via asyncio.run
-    # here keeps this test exercising `.evaluate()` the way real sync callers do.
-    import asyncio
-    courtroom = asyncio.run(_build_psalm())
+async def test_evaluate_raises_on_empty_source():
+    courtroom = await _build_psalm()
     with pytest.raises(PSALMValidationError) as exc_info:
         courtroom.evaluate(source_text="", target_text="some text")
     assert "PSALM-V001" in str(exc_info.value)
 
 
-def test_evaluate_raises_on_empty_target():
-    import asyncio
-    courtroom = asyncio.run(_build_psalm())
+async def test_evaluate_raises_on_empty_target():
+    courtroom = await _build_psalm()
     with pytest.raises(PSALMValidationError) as exc_info:
         courtroom.evaluate(source_text="some text", target_text="")
     assert "PSALM-V002" in str(exc_info.value)

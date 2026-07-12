@@ -212,6 +212,10 @@ class _BuiltPSALM:
         self._event_listeners = event_listeners or []
 
     def evaluate(self, source_text: str, target_text: str) -> PSALMResult:
+        if not self._event_listeners:
+            self._validate_inputs(source_text, target_text)
+            if source_text.strip() == target_text.strip():
+                return self._identical_texts_result(source_text)
         return asyncio.run(self.aevaluate(source_text, target_text))
 
     async def aevaluate(self, source_text: str, target_text: str) -> PSALMResult:
