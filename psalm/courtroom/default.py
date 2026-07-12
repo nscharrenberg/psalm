@@ -6,6 +6,8 @@ from typing import Literal
 
 from psalm.courtroom.base import CourtroomSetup
 from psalm.dimensions.base import _IMPORTANCE_MULTIPLIERS, Dimension, Importance
+from psalm.events import DimensionStarted, DimensionVerdictReached, FinalVerdictReached, emit
+from psalm.events.context import _current_dimension
 from psalm.models.config import CaseInput, DebateConfig, EvaluationStrategy
 from psalm.models.result import (
     ArgumentationLog,
@@ -64,12 +66,14 @@ class DefaultCourtroom(CourtroomSetup):
             deliberation_rounds_used=total_delib_rounds,
             voting_strategy_applied=strategy_applied,
         )
-        return PSALMResult(
+        result = PSALMResult(
             verdict=verdict,
             rationale=rationale,
             dimension_verdicts=dimension_verdicts,
             metadata=metadata,
         )
+        await emit(FinalVerdictReached(result=result))
+        return result
 
     async def _run_fully_separate(self, case_input: CaseInput) -> list[DimensionVerdict]:
         tasks = [
@@ -86,6 +90,10 @@ class DefaultCourtroom(CourtroomSetup):
         delib_phase: DeliberationPhase,
         case_input: CaseInput,
     ) -> DimensionVerdict:
+        _current_dimension.set(dimension.name)
+        await emit(DimensionStarted(
+            dimension_type=dimension.dimension_type, importance=dimension.importance.value,
+        ))
         if dimension.dimension_type == "infringement":
             exception_dims = [d for d in case_input.dimensions if d.dimension_type == "exception"]
             scoped_dims = [dimension] + exception_dims
@@ -94,6 +102,10 @@ class DefaultCourtroom(CourtroomSetup):
         scoped_input = case_input.model_copy(update={"dimensions": scoped_dims})
         arg_log = await self._argumentation_phase.run(scoped_input)
         verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
+        await emit(DimensionVerdictReached(
+            dimension_type=dimension.dimension_type, importance=dimension.importance.value,
+            verdict=verdict, weighted_score=weighted_score,
+        ))
         return DimensionVerdict(
             dimension=dimension.name,
             dimension_type=dimension.dimension_type,
@@ -120,7 +132,15 @@ class DefaultCourtroom(CourtroomSetup):
         delib_phase: DeliberationPhase,
         arg_log: ArgumentationLog,
     ) -> DimensionVerdict:
+        _current_dimension.set(dimension.name)
+        await emit(DimensionStarted(
+            dimension_type=dimension.dimension_type, importance=dimension.importance.value,
+        ))
         verdict, debate_log, weighted_score = await delib_phase.run(arg_log, dimension)
+        await emit(DimensionVerdictReached(
+            dimension_type=dimension.dimension_type, importance=dimension.importance.value,
+            verdict=verdict, weighted_score=weighted_score,
+        ))
         return DimensionVerdict(
             dimension=dimension.name,
             dimension_type=dimension.dimension_type,
