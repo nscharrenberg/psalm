@@ -1,8 +1,8 @@
 from psalm.dimensions.base import Dimension, Importance
-from psalm.dimensions.character import CHARACTER
-from psalm.dimensions.plot import PLOT
-from psalm.dimensions.scenes_a_faire import SCENES_A_FAIRE
-from psalm.dimensions.world_building import WORLD_BUILDING
+from psalm.dimensions.literature.narrative.character import CHARACTER
+from psalm.dimensions.literature.narrative.plot import PLOT
+from psalm.dimensions.literature.exceptions.scenes_a_faire import SCENES_A_FAIRE
+from psalm.dimensions.literature.narrative.world_building import WORLD_BUILDING
 
 
 def test_character_is_valid_dimension():
