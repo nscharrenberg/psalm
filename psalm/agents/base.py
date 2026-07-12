@@ -7,6 +7,7 @@ from typing import Any
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
+from psalm.events import AgentCallFailed, AgentCallRetrying, emit
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 
@@ -41,6 +42,9 @@ class BaseAgent(ABC):
                 return await self._llm.ainvoke(messages)
             except Exception as exc:
                 if attempt == _RETRY_ATTEMPTS - 1:
+                    await emit(AgentCallFailed(
+                        role=self.role, attempts=_RETRY_ATTEMPTS, code="PSALM-A003", error=str(exc),
+                    ))
                     raise PSALMAgentError(
                         code="PSALM-A003",
                         message=f"LLM retry limit reached after {_RETRY_ATTEMPTS} attempts.",
@@ -52,7 +56,12 @@ class BaseAgent(ABC):
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc
-                await asyncio.sleep(_BACKOFF_FACTOR**attempt)
+                backoff = _BACKOFF_FACTOR**attempt
+                await emit(AgentCallRetrying(
+                    role=self.role, attempt=attempt + 1, max_attempts=_RETRY_ATTEMPTS,
+                    backoff_seconds=backoff, error=str(exc),
+                ))
+                await asyncio.sleep(backoff)
         raise RuntimeError("unreachable")
 
     async def _call_structured(self, structured_llm: Any, messages: list[Any]) -> Any:
@@ -61,6 +70,9 @@ class BaseAgent(ABC):
                 return await structured_llm.ainvoke(messages)
             except Exception as exc:
                 if attempt == _RETRY_ATTEMPTS - 1:
+                    await emit(AgentCallFailed(
+                        role=self.role, attempts=_RETRY_ATTEMPTS, code="PSALM-A003", error=str(exc),
+                    ))
                     raise PSALMAgentError(
                         code="PSALM-A003",
                         message=(
@@ -74,5 +86,10 @@ class BaseAgent(ABC):
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc
-                await asyncio.sleep(_BACKOFF_FACTOR**attempt)
+                backoff = _BACKOFF_FACTOR**attempt
+                await emit(AgentCallRetrying(
+                    role=self.role, attempt=attempt + 1, max_attempts=_RETRY_ATTEMPTS,
+                    backoff_seconds=backoff, error=str(exc),
+                ))
+                await asyncio.sleep(backoff)
         raise RuntimeError("unreachable")
