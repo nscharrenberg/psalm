@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+import inspect
+from typing import Any, AsyncIterator, Callable
+from uuid import uuid4
 
 from pydantic import SecretStr
 
@@ -11,6 +13,8 @@ from psalm.agents.juror import Juror
 from psalm.agents.prosecutor import Prosecutor
 from psalm.courtroom.default import DefaultCourtroom
 from psalm.dimensions.base import Dimension
+from psalm.events import EventSink, FinalVerdictReached, PSALMEvent, RunFailed, RunStarted, emit
+from psalm.events.context import _current_sink
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
 from psalm.models.config import AgentConfig, CaseInput, DebateConfig, EvaluationStrategy
 from psalm.models.result import PSALMResult
@@ -34,6 +38,7 @@ class PSALM:
         self._judge_config: AgentConfig | None = None
         self._jury_configs: list[AgentConfig] = []
         self._debate_config = DebateConfig()
+        self._event_listeners: list[Callable[[PSALMEvent], Any]] = []
 
     def with_prosecutor(self, base_url: str, api_key: str, model: str, **kwargs: Any) -> PSALM:
         self._prosecutor_config = AgentConfig(
@@ -87,6 +92,10 @@ class PSALM:
         self._debate_config = self._debate_config.model_copy(
             update={"evaluation_strategy": strategy}
         )
+        return self
+
+    def with_event_listener(self, listener: Callable[[PSALMEvent], Any]) -> PSALM:
+        self._event_listeners.append(listener)
         return self
 
     async def build(self) -> _BuiltPSALM:
@@ -184,30 +193,93 @@ class PSALM:
                 for _ in self._debate_config.dimensions
             ]
         courtroom = DefaultCourtroom(arg_phase, deliberation_phases, self._debate_config)
-        return _BuiltPSALM(courtroom=courtroom, debate_config=self._debate_config)
+        return _BuiltPSALM(
+            courtroom=courtroom,
+            debate_config=self._debate_config,
+            event_listeners=self._event_listeners,
+        )
 
 
 class _BuiltPSALM:
-    def __init__(self, courtroom: DefaultCourtroom, debate_config: DebateConfig) -> None:
+    def __init__(
+        self,
+        courtroom: DefaultCourtroom,
+        debate_config: DebateConfig,
+        event_listeners: list[Callable[[PSALMEvent], Any]] | None = None,
+    ) -> None:
         self._courtroom = courtroom
         self._debate_config = debate_config
+        self._event_listeners = event_listeners or []
 
     def evaluate(self, source_text: str, target_text: str) -> PSALMResult:
-        self._validate_inputs(source_text, target_text)
-        if source_text.strip() == target_text.strip():
-            return self._identical_texts_result(source_text)
         return asyncio.run(self.aevaluate(source_text, target_text))
 
     async def aevaluate(self, source_text: str, target_text: str) -> PSALMResult:
+        if not self._event_listeners:
+            self._validate_inputs(source_text, target_text)
+            if source_text.strip() == target_text.strip():
+                return self._identical_texts_result(source_text)
+            case_input = CaseInput(
+                source_text=source_text,
+                target_text=target_text,
+                dimensions=self._debate_config.dimensions,
+            )
+            return await self._courtroom.run(case_input)
+
+        result: PSALMResult | None = None
+        async for event in self.astream_evaluate(source_text, target_text):
+            for listener in self._event_listeners:
+                outcome = listener(event)
+                if inspect.isawaitable(outcome):
+                    await outcome
+            if isinstance(event, FinalVerdictReached):
+                result = event.result
+        assert result is not None
+        return result
+
+    async def astream_evaluate(
+        self, source_text: str, target_text: str
+    ) -> AsyncIterator[PSALMEvent]:
         self._validate_inputs(source_text, target_text)
-        if source_text.strip() == target_text.strip():
-            return self._identical_texts_result(source_text)
-        case_input = CaseInput(
-            source_text=source_text,
-            target_text=target_text,
-            dimensions=self._debate_config.dimensions,
-        )
-        return await self._courtroom.run(case_input)
+        run_id = str(uuid4())
+        sink = EventSink(run_id)
+
+        async def _run() -> PSALMResult:
+            _current_sink.set(sink)
+            await emit(RunStarted(
+                dimensions=[d.name for d in self._debate_config.dimensions],
+                evaluation_strategy=self._debate_config.evaluation_strategy.value,
+                source_length=len(source_text),
+                target_length=len(target_text),
+            ))
+            if source_text.strip() == target_text.strip():
+                return await self._aidentical_texts_result(source_text)
+            case_input = CaseInput(
+                source_text=source_text,
+                target_text=target_text,
+                dimensions=self._debate_config.dimensions,
+            )
+            return await self._courtroom.run(case_input)
+
+        task = asyncio.create_task(_run())
+        try:
+            while not task.done() or not sink.empty():
+                get_task = asyncio.ensure_future(sink.get())
+                done, _pending = await asyncio.wait(
+                    {task, get_task}, return_when=asyncio.FIRST_COMPLETED
+                )
+                if get_task in done:
+                    yield get_task.result()
+                else:
+                    get_task.cancel()
+            await task
+        except Exception as exc:
+            code = getattr(exc, "code", "PSALM-UNKNOWN")
+            context = getattr(exc, "context", {})
+            await sink.put(RunFailed(code=code, message=str(exc), context=context))
+            while not sink.empty():
+                yield await sink.get()
+            raise
 
     def _validate_inputs(self, source_text: str, target_text: str) -> None:
         if not source_text or not source_text.strip():
@@ -258,3 +330,15 @@ class _BuiltPSALM:
                 voting_strategy_applied="none",
             ),
         )
+
+    async def _aidentical_texts_result(self, text: str) -> PSALMResult:
+        from psalm.events import DimensionVerdictReached
+
+        result = self._identical_texts_result(text)
+        for dv in result.dimension_verdicts:
+            await emit(DimensionVerdictReached(
+                dimension_type=dv.dimension_type, importance=dv.importance.value,
+                verdict=dv.verdict, weighted_score=dv.weighted_score,
+            ))
+        await emit(FinalVerdictReached(result=result))
+        return result

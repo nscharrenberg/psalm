@@ -90,15 +90,23 @@ async def test_build_raises_on_llm_ping_failure():
     assert "PSALM-C006" in str(exc_info.value)
 
 
-async def test_evaluate_raises_on_empty_source():
-    courtroom = await _build_psalm()
+def test_evaluate_raises_on_empty_source():
+    # Deliberately synchronous (not `async def`): `.evaluate()` now delegates
+    # fully to `asyncio.run(self.aevaluate(...))` (see _BuiltPSALM.evaluate), so
+    # calling it while a pytest-asyncio event loop is already running would raise
+    # "asyncio.run() cannot be called from a running event loop" regardless of
+    # the validation error under test. Building the courtroom via asyncio.run
+    # here keeps this test exercising `.evaluate()` the way real sync callers do.
+    import asyncio
+    courtroom = asyncio.run(_build_psalm())
     with pytest.raises(PSALMValidationError) as exc_info:
         courtroom.evaluate(source_text="", target_text="some text")
     assert "PSALM-V001" in str(exc_info.value)
 
 
-async def test_evaluate_raises_on_empty_target():
-    courtroom = await _build_psalm()
+def test_evaluate_raises_on_empty_target():
+    import asyncio
+    courtroom = asyncio.run(_build_psalm())
     with pytest.raises(PSALMValidationError) as exc_info:
         courtroom.evaluate(source_text="some text", target_text="")
     assert "PSALM-V002" in str(exc_info.value)
@@ -202,3 +210,98 @@ async def test_identical_texts_result_sets_dimension_type():
     courtroom = await _build_psalm()
     result = courtroom._identical_texts_result("some text")
     assert result.dimension_verdicts[0].dimension_type == "infringement"
+
+
+async def test_with_event_listener_registers_callback():
+    builder = PSALM().with_event_listener(lambda e: None)
+    assert len(builder._event_listeners) == 1
+
+
+async def test_evaluate_and_aevaluate_unaffected_when_no_listeners_registered():
+    courtroom = await _build_psalm()
+    assert courtroom._event_listeners == []
+
+
+async def test_aevaluate_forwards_events_to_registered_listener():
+    from psalm.events.types import FinalVerdictReached
+    from psalm.models.result import ArgumentationLog, DebateLog, RoundArguments
+
+    received = []
+    builder = (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_dimensions([CHARACTER])
+        .with_event_listener(received.append)
+    )
+    with patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)):
+        courtroom = await builder.build()
+
+    arg_log = ArgumentationLog(rounds=[
+        RoundArguments(
+            round=1, prosecution_arguments=[], defense_counters=[],
+            defense_arguments=[], prosecution_counters=[],
+        )
+    ])
+    debate_log = DebateLog(rounds=[], final_voting_strategy_applied="unanimous")
+
+    with patch.object(courtroom._courtroom._argumentation_phase, "run", AsyncMock(return_value=arg_log)):
+        with patch.object(courtroom._courtroom._deliberation_phases[0], "run",
+                          AsyncMock(return_value=("Not Guilty", debate_log, 0.1))):
+            result = await courtroom.aevaluate("source text here", "target text here")
+
+    assert isinstance(result, PSALMResult)
+    assert len(received) > 0
+    final_events = [e for e in received if isinstance(e, FinalVerdictReached)]
+    assert len(final_events) == 1
+    assert final_events[0].result == result
+
+
+async def test_astream_evaluate_yields_final_verdict_reached_with_result():
+    from psalm.events.types import FinalVerdictReached
+    from psalm.models.result import ArgumentationLog, DebateLog, RoundArguments
+
+    courtroom = await _build_psalm()
+    arg_log = ArgumentationLog(rounds=[
+        RoundArguments(
+            round=1, prosecution_arguments=[], defense_counters=[],
+            defense_arguments=[], prosecution_counters=[],
+        )
+    ])
+    debate_log = DebateLog(rounds=[], final_voting_strategy_applied="unanimous")
+
+    collected = []
+    with patch.object(courtroom._courtroom._argumentation_phase, "run", AsyncMock(return_value=arg_log)):
+        with patch.object(courtroom._courtroom._deliberation_phases[0], "run",
+                          AsyncMock(return_value=("Not Guilty", debate_log, 0.1))):
+            async for event in courtroom.astream_evaluate("source text here", "target text here"):
+                collected.append(event)
+
+    final_events = [e for e in collected if isinstance(e, FinalVerdictReached)]
+    assert len(final_events) == 1
+    assert final_events[0].result.verdict == "Not Guilty"
+
+
+async def test_astream_evaluate_identical_texts_emits_full_event_sequence():
+    from psalm.events.types import DimensionVerdictReached, FinalVerdictReached, RunStarted
+
+    courtroom = await _build_psalm()
+    text = "The wizard had blue eyes."
+    collected = []
+    async for event in courtroom.astream_evaluate(text, text):
+        collected.append(event)
+
+    assert any(isinstance(e, RunStarted) for e in collected)
+    assert any(isinstance(e, DimensionVerdictReached) for e in collected)
+    final_events = [e for e in collected if isinstance(e, FinalVerdictReached)]
+    assert len(final_events) == 1
+    assert final_events[0].result.verdict == "Guilty"
+
+
+async def test_astream_evaluate_raises_on_empty_source():
+    courtroom = await _build_psalm()
+    with pytest.raises(PSALMValidationError):
+        async for _event in courtroom.astream_evaluate("", "target"):
+            pass
