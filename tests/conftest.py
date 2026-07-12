@@ -101,7 +101,6 @@ def minimal_debate_log() -> DebateLog:
 @pytest.fixture
 def minimal_psalm_result(minimal_argumentation_log, minimal_debate_log) -> PSALMResult:
     from psalm.dimensions.base import Importance
-    from psalm.models.result import DimensionVerdict
     dv = DimensionVerdict(
         dimension="character",
         importance=Importance.HIGH,

@@ -164,7 +164,11 @@ class Prosecutor(BaseAgent):
             raise PSALMAgentError(
                 code="PSALM-A002",
                 message="Prosecutor failed to return valid structured arguments.",
-                context={"role": self.role, "round": round, "dimensions": [d.name for d in dimensions]},
+                context={
+                    "role": self.role,
+                    "round": round,
+                    "dimensions": [d.name for d in dimensions],
+                },
                 suggestion=(
                     "Check the LLM model supports structured output and the prompt is not too "
                     "long."
@@ -221,7 +225,11 @@ class Prosecutor(BaseAgent):
             raise PSALMAgentError(
                 code="PSALM-A002",
                 message="Prosecutor failed to counter defense arguments.",
-                context={"role": self.role, "round": round, "dimensions": [d.name for d in dimensions]},
+                context={
+                    "role": self.role,
+                    "round": round,
+                    "dimensions": [d.name for d in dimensions],
+                },
                 suggestion="Check the LLM model supports structured output.",
                 cause=exc,
             ) from exc

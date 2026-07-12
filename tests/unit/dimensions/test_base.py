@@ -1,10 +1,10 @@
 from psalm.dimensions.base import (
+    _IMPORTANCE_MULTIPLIERS,
+    _SCORE_VALUES,
     Dimension,
     Importance,
     SimilarityScore,
     SubDimension,
-    _IMPORTANCE_MULTIPLIERS,
-    _SCORE_VALUES,
 )
 
 

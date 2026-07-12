@@ -1,9 +1,9 @@
 import pytest
 
-from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
+from psalm.dimensions import CHARACTER
 from psalm.dimensions.base import Dimension, SubDimension
 from psalm.exceptions import PSALMConfigError
-from psalm.models.config import AgentConfig, DebateConfig, CaseInput
+from psalm.models.config import AgentConfig, CaseInput, DebateConfig
 
 
 def test_agent_config_minimal():

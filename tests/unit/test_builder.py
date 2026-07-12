@@ -122,8 +122,9 @@ async def test_default_evaluation_strategy_is_fully_separate():
 
 
 async def test_evaluate_returns_psalm_result_with_dimension_verdicts():
-    from unittest.mock import AsyncMock, MagicMock, patch
-    from psalm.models.result import DebateLog, ArgumentationLog, RoundArguments
+    from unittest.mock import AsyncMock, patch
+
+    from psalm.models.result import ArgumentationLog, DebateLog, RoundArguments
 
     courtroom = await _build_psalm()
 
@@ -154,7 +155,8 @@ async def test_shared_all_argumentation_rounds_not_multiplied_per_dimension():
     argumentation_rounds_used must count that shared log once, not once per
     dimension."""
     from unittest.mock import AsyncMock, patch
-    from psalm.models.result import DebateLog, ArgumentationLog, RoundArguments
+
+    from psalm.models.result import ArgumentationLog, DebateLog, RoundArguments
 
     builder = (
         PSALM()

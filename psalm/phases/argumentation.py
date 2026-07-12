@@ -55,7 +55,9 @@ class ArgumentationPhase(BasePhase):
         graph.add_node("defense_argue", self._defense_argue)
         graph.add_node("judge_validate_defense", self._judge_validate_defense)
         graph.add_node("prosecution_counter", self._prosecution_counter)
-        graph.add_node("judge_validate_prosecution_counter", self._judge_validate_prosecution_counter)
+        graph.add_node(
+            "judge_validate_prosecution_counter", self._judge_validate_prosecution_counter
+        )
         graph.add_node("check_next_round", self._check_next_round)
         graph.add_node("prosecution_closing_argument", self._prosecution_closing_argument)
         graph.add_node("defense_closing_argument", self._defense_closing_argument)
@@ -107,7 +109,10 @@ class ArgumentationPhase(BasePhase):
             hint = _COMPLETENESS_RETRY_HINT
         raise PSALMAgentError(
             code="PSALM-A004",
-            message="Agent failed to provide arguments or declare no_further_arguments after retries.",
+            message=(
+                "Agent failed to provide arguments or declare no_further_arguments "
+                "after retries."
+            ),
             context={"attempts": _COMPLETENESS_RETRY_ATTEMPTS + 1},
             suggestion="Check the LLM model's instruction-following reliability.",
         )
@@ -174,7 +179,9 @@ class ArgumentationPhase(BasePhase):
         )
         return {
             "pending_defense_counters": [a.model_dump() for a in batch.arguments],
-            "defense_counter_closing_statements": state.defense_counter_closing_statements + closing,
+            "defense_counter_closing_statements": (
+                state.defense_counter_closing_statements + closing
+            ),
         }
 
     async def _judge_validate_defense_counter(self, state: ArgumentationState) -> dict[str, Any]:
@@ -192,7 +199,9 @@ class ArgumentationPhase(BasePhase):
         existing = [a.model_dump() for a in state.defense_counters]
         return {
             "defense_counters": existing + valid,
-            "defense_counter_rejected_arguments": state.defense_counter_rejected_arguments + rejected,
+            "defense_counter_rejected_arguments": (
+                state.defense_counter_rejected_arguments + rejected
+            ),
         }
 
     # --- Step 3: Defense affirmative arguments ---
@@ -257,10 +266,14 @@ class ArgumentationPhase(BasePhase):
         )
         return {
             "pending_prosecution_counters": [a.model_dump() for a in batch.arguments],
-            "prosecution_counter_closing_statements": state.prosecution_counter_closing_statements + closing,
+            "prosecution_counter_closing_statements": (
+                state.prosecution_counter_closing_statements + closing
+            ),
         }
 
-    async def _judge_validate_prosecution_counter(self, state: ArgumentationState) -> dict[str, Any]:
+    async def _judge_validate_prosecution_counter(
+        self, state: ArgumentationState
+    ) -> dict[str, Any]:
         pending = [Argument(**a) for a in state.pending_prosecution_counters]
         valid = []
         rejected = []
@@ -273,7 +286,9 @@ class ArgumentationPhase(BasePhase):
         existing = [a.model_dump() for a in state.prosecution_counters]
         return {
             "prosecution_counters": existing + valid,
-            "prosecution_counter_rejected_arguments": state.prosecution_counter_rejected_arguments + rejected,
+            "prosecution_counter_rejected_arguments": (
+                state.prosecution_counter_rejected_arguments + rejected
+            ),
         }
 
     # --- Dedicated closing arguments (delivered once, after the round loop ends) ---
@@ -328,7 +343,10 @@ class ArgumentationPhase(BasePhase):
 
         def _rejected_for(entries: list[dict[str, Any]], r: int) -> list[RejectedArgument]:
             return [
-                RejectedArgument(argument=Argument(**e["argument"]), rejection_reason=e["rejection_reason"])
+                RejectedArgument(
+                    argument=Argument(**e["argument"]),
+                    rejection_reason=e["rejection_reason"],
+                )
                 for e in entries
                 if e["round"] == r
             ]

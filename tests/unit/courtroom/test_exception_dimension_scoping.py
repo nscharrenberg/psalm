@@ -5,7 +5,7 @@ import pytest
 from psalm.courtroom.default import DefaultCourtroom
 from psalm.dimensions import CHARACTER, SCENES_A_FAIRE
 from psalm.models.config import CaseInput, DebateConfig, EvaluationStrategy
-from psalm.models.result import DebateLog, ArgumentationLog
+from psalm.models.result import ArgumentationLog, DebateLog
 
 
 @pytest.fixture

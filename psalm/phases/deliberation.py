@@ -9,12 +9,11 @@ from langgraph.graph import END, StateGraph
 
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
-from psalm.dimensions.base import Dimension, _IMPORTANCE_MULTIPLIERS, _SCORE_VALUES
+from psalm.dimensions.base import _IMPORTANCE_MULTIPLIERS, _SCORE_VALUES, Dimension
 from psalm.models.config import DebateConfig
 from psalm.models.result import (
     ArgumentationLog,
     DebateLog,
-    DimensionScore,
     JurorVote,
     RoundDeliberation,
 )

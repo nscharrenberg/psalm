@@ -5,11 +5,10 @@ import time
 from typing import Literal
 
 from psalm.courtroom.base import CourtroomSetup
-from psalm.dimensions.base import Dimension, Importance, _IMPORTANCE_MULTIPLIERS
+from psalm.dimensions.base import _IMPORTANCE_MULTIPLIERS, Dimension, Importance
 from psalm.models.config import CaseInput, DebateConfig, EvaluationStrategy
 from psalm.models.result import (
     ArgumentationLog,
-    DebateLog,
     DimensionVerdict,
     PSALMResult,
     ResultMetadata,
@@ -48,10 +47,16 @@ class DefaultCourtroom(CourtroomSetup):
         # SHARED_ARG_PER_DIM_DELIBERATION / SHARED_ALL, one argumentation phase run is
         # reused across all dimensions). Dedup by object identity before summing rounds
         # so shared logs are not counted once per dimension.
-        distinct_arg_logs = {id(dv.argumentation_log): dv.argumentation_log for dv in dimension_verdicts}
+        distinct_arg_logs = {
+            id(dv.argumentation_log): dv.argumentation_log for dv in dimension_verdicts
+        }
         total_arg_rounds = sum(len(log.rounds) for log in distinct_arg_logs.values())
         total_delib_rounds = sum(len(dv.debate_log.rounds) for dv in dimension_verdicts)
-        strategy_applied = dimension_verdicts[0].debate_log.final_voting_strategy_applied if dimension_verdicts else "none"
+        strategy_applied = (
+            dimension_verdicts[0].debate_log.final_voting_strategy_applied
+            if dimension_verdicts
+            else "none"
+        )
 
         metadata = ResultMetadata(
             duration_seconds=round(duration, 3),
@@ -69,7 +74,9 @@ class DefaultCourtroom(CourtroomSetup):
     async def _run_fully_separate(self, case_input: CaseInput) -> list[DimensionVerdict]:
         tasks = [
             self._run_single_dimension(dim, delib_phase, case_input)
-            for dim, delib_phase in zip(case_input.dimensions, self._deliberation_phases, strict=True)
+            for dim, delib_phase in zip(
+                case_input.dimensions, self._deliberation_phases, strict=True
+            )
         ]
         return list(await asyncio.gather(*tasks))
 
@@ -101,7 +108,9 @@ class DefaultCourtroom(CourtroomSetup):
         arg_log = await self._argumentation_phase.run(case_input)
         tasks = [
             self._deliberate_single(dim, delib_phase, arg_log)
-            for dim, delib_phase in zip(case_input.dimensions, self._deliberation_phases, strict=True)
+            for dim, delib_phase in zip(
+                case_input.dimensions, self._deliberation_phases, strict=True
+            )
         ]
         return list(await asyncio.gather(*tasks))
 
@@ -168,7 +177,9 @@ def _synthesize_rationale(
 ) -> str:
     lines = [f"Verdict: {verdict}."]
     for dv in dimension_verdicts:
-        suffix = "" if dv.dimension_type == "infringement" else " [exception, excluded from verdict]"
+        suffix = (
+            "" if dv.dimension_type == "infringement" else " [exception, excluded from verdict]"
+        )
         lines.append(
             f"  {dv.dimension} [{dv.importance.value}]{suffix}: {dv.verdict} "
             f"(weighted score: {dv.weighted_score:.2f})"

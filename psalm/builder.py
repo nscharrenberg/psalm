@@ -226,7 +226,6 @@ class _BuiltPSALM:
             )
 
     def _identical_texts_result(self, text: str) -> PSALMResult:
-        from psalm.dimensions.base import Importance
         from psalm.models.result import (
             ArgumentationLog,
             DebateLog,

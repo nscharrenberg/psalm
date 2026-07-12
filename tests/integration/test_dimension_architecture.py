@@ -7,13 +7,11 @@ Verifies that:
 2. PSALMBuilder.with_dimensions([SCENES_A_FAIRE]) correctly overrides
 3. Dimension objects flow through to ArgumentationState without mutation
 """
-from unittest.mock import AsyncMock
 
-import pytest
 
 from psalm.builder import PSALM
-from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING, SCENES_A_FAIRE
-from psalm.models.config import DebateConfig, CaseInput
+from psalm.dimensions import CHARACTER, PLOT, SCENES_A_FAIRE, WORLD_BUILDING
+from psalm.models.config import CaseInput, DebateConfig
 from psalm.models.state import ArgumentationState
 
 
@@ -123,7 +121,6 @@ class TestDimensionFlowThroughState:
         assert state.dimensions == original_dims
         assert len(state.dimensions) == 2
         # Verify mutation of state dimensions doesn't affect original (if they were copied)
-        state_dims_before = state.dimensions.copy()
         state.dimensions.append(WORLD_BUILDING)
         # State should have mutated (it's a list), but verify it's at least consistent
         assert len(state.dimensions) == 3

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.juror import Juror, _format_argumentation_log, _format_prior_rounds
-from psalm.dimensions import CHARACTER
+from psalm.dimensions import CHARACTER, PLOT
 from psalm.dimensions.base import SimilarityScore
 from psalm.models.result import DimensionScore, JurorVote
 
@@ -286,8 +286,9 @@ async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation
 # --- Tests for dimension-aware vote() and rubric prompt ---
 
 async def test_juror_vote_accepts_dimension_parameter(agent_config, minimal_argumentation_log):
-    from psalm.agents.juror import Juror
     from unittest.mock import AsyncMock, MagicMock, patch
+
+    from psalm.agents.juror import Juror
 
     juror = Juror(config=agent_config, juror_id="juror-0")
     mock_vote = JurorVote(
@@ -318,8 +319,9 @@ async def test_juror_vote_accepts_dimension_parameter(agent_config, minimal_argu
 
 
 async def test_juror_vote_prompt_includes_rubric_and_sub_dimensions(agent_config, minimal_argumentation_log):
+    from unittest.mock import MagicMock, patch
+
     from psalm.agents.juror import Juror
-    from unittest.mock import AsyncMock, MagicMock, patch
 
     juror = Juror(config=agent_config, juror_id="juror-0")
     captured: list = []
@@ -372,13 +374,11 @@ def test_vote_prompt_says_single_differing_detail_does_not_launder_whole_passage
     assert "clear" in prompt
 
 
-from psalm.dimensions import CHARACTER, PLOT
-
-
 async def test_juror_vote_all_dimensions_returns_list(agent_config, minimal_argumentation_log):
+    from unittest.mock import AsyncMock, MagicMock, patch
+
     from psalm.agents.juror import Juror
     from psalm.models.result import JurorVote
-    from unittest.mock import AsyncMock, MagicMock, patch
 
     juror = Juror(config=agent_config, juror_id="juror-0")
     mock_vote = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension_scores=[], dimension="character")

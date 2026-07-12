@@ -6,32 +6,61 @@ SCENES_A_FAIRE = Dimension(
     sub_dimensions=[
         SubDimension(
             name="Creative Elaboration (INVERSE)",
-            description="Distinctive voice/style (unique authorial tone, specific creative expression patterns), original descriptive detail (particular sensory richness, unique observational depth), psychological depth (complex character interiority, specific emotional nuance), unique dialogue (particular speech patterns, specific conversational styles), innovative structure (unique narrative architectures, specific formal experiments), creative worldbuilding (particular imaginative constructions, unique setting details). Note: HIGH originality reduces scènes à faire score, indicating more protectable content.",
+            description=(
+                "Distinctive voice/style (unique authorial tone, specific creative expression "
+                "patterns), original descriptive detail (particular sensory richness, unique "
+                "observational depth), psychological depth (complex character interiority, "
+                "specific emotional nuance), unique dialogue (particular speech patterns, specific "
+                "conversational styles), innovative structure (unique narrative architectures, "
+                "specific formal experiments), creative worldbuilding (particular imaginative "
+                "constructions, unique setting details). Note: HIGH originality reduces scènes à "
+                "faire score, indicating more protectable content."
+            ),
             importance=Importance.HIGH,
         ),
         SubDimension(
             name="Genre Conventions & Setting",
-            description="Genre-specific plot elements (particular narrative tropes typical of the genre, unique structural expectations) and standard settings & worldbuilding (specific environmental clichés, particular background elements common to the genre).",
+            description=(
+                "Genre-specific plot elements (particular narrative tropes typical of the genre, "
+                "unique structural expectations) and standard settings & worldbuilding (specific "
+                "environmental clichés, particular background elements common to the genre)."
+            ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
             name="Thematic Commonplaces",
-            description="Standard themes (particular recurring ideas, unique universal concepts) and conventional conflicts (specific typical struggles, particular archetypal tensions).",
+            description=(
+                "Standard themes (particular recurring ideas, unique universal concepts) and "
+                "conventional conflicts (specific typical struggles, particular archetypal "
+                "tensions)."
+            ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
             name="Standard Plot Devices & Tropes",
-            description="Common plot devices (particular narrative shortcuts, unique storytelling conventions) and narrative tropes (specific recurring motifs, particular genre staples).",
+            description=(
+                "Common plot devices (particular narrative shortcuts, unique storytelling "
+                "conventions) and narrative tropes (specific recurring motifs, particular genre "
+                "staples)."
+            ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
             name="Stock Characters & Archetypes",
-            description="Character archetypes (particular standard character types, unique role templates) and standard relationships (specific typical character dynamics, particular conventional pairings).",
+            description=(
+                "Character archetypes (particular standard character types, unique role templates) "
+                "and standard relationships (specific typical character dynamics, particular "
+                "conventional pairings)."
+            ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
             name="Necessary Technical Elements",
-            description="Genre-required elements (particular mandatory components, unique structural necessities) and functional elements (specific practical requirements, particular mechanical necessities).",
+            description=(
+                "Genre-required elements (particular mandatory components, unique structural "
+                "necessities) and functional elements (specific practical requirements, particular "
+                "mechanical necessities)."
+            ),
             importance=Importance.LOW,
         ),
     ],

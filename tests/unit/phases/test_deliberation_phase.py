@@ -95,7 +95,7 @@ async def test_route_consensus_reached(deliberation_phase, minimal_argumentation
 
 @pytest.fixture
 def mock_juror_with_scores():
-    from psalm.models.result import DimensionScore, JurorVote
+    from psalm.models.result import JurorVote
     juror = MagicMock()
     juror.juror_id = "juror-0"
     juror.discuss = AsyncMock(return_value="I think the evidence supports infringement.")

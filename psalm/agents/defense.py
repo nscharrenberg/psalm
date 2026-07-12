@@ -198,7 +198,8 @@ class Defense(BaseAgent):
         round: int,
         retry_hint: str | None = None,
     ) -> ArgumentBatch:
-        """Step 3: Defense makes independent affirmative arguments (no prosecution args to counter)."""
+        """Step 3: Defense makes independent affirmative arguments (no prosecution args to
+        counter)."""
         structured_llm = self._llm.with_structured_output(ArgumentBatch)
         sub_dim_block = _format_sub_dimensions(dimensions)
         retry_section = f"\n\n{retry_hint}" if retry_hint else ""

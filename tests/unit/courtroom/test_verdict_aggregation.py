@@ -1,4 +1,3 @@
-import pytest
 
 from psalm.courtroom.default import _aggregate_verdict, _synthesize_rationale
 from psalm.dimensions.base import Importance

@@ -6,12 +6,13 @@ from psalm.agents.base import BaseAgent
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
-from psalm.models.result import ArgumentationLog, DimensionScore, JurorVote
+from psalm.models.result import ArgumentationLog, JurorVote
 
 _VOTE_SYSTEM_PROMPT = """\
 You are a juror in a copyright infringement case governed by EU copyright law.
 Evaluate the arguments and counter-arguments presented by the prosecution and defense attorneys.
-You are a lay evaluator — the attorneys handle legal doctrine; your job is to weigh argument quality.
+You are a lay evaluator — the attorneys handle legal doctrine; your job is to weigh argument
+quality.
 
 The prosecution carries the burden of proof. Ask:
 - Did the prosecution present concrete, specific textual similarities?
@@ -40,13 +41,16 @@ For each sub-dimension you evaluate, apply this RUBRIC:
 |--------|----------|---------|
 | none   | No similarity | No meaningful similarity found |
 | generic | Generic only | Similarity exists but is generic / unprotectable (scenes à faire) |
-| possible | Possible infringement | The wording itself differs substantially; independent creation is genuinely plausible |
-| clear  | Clear infringement | Near-verbatim or identical wording in a substantial passage; the defense could not credibly rebut with evidence of genuine independent creation |
+| possible | Possible infringement | The wording itself differs substantially; independent
+creation is genuinely plausible |
+| clear  | Clear infringement | Near-verbatim or identical wording in a substantial passage;
+the defense could not credibly rebut with evidence of genuine independent creation |
 
 You MUST fill in a DimensionScore for every sub-dimension you are asked to evaluate.
 
 If you have voted in a prior deliberation round, maintain your position unless a fellow juror
-made a specific, compelling argument that changes your view — and explain exactly what persuaded you.
+made a specific, compelling argument that changes your view — and explain exactly what
+persuaded you.
 Vote options: "Guilty", "Not Guilty", or "Undecided".
 """
 
@@ -75,7 +79,9 @@ class _DiscussionMessage(BaseModel):
     message: str
 
 
-def _format_argument_section(parts: list[str], header: str, arguments: list, closing_statement: str | None) -> None:
+def _format_argument_section(
+    parts: list[str], header: str, arguments: list, closing_statement: str | None
+) -> None:
     parts.append(header)
     for i, arg in enumerate(arguments, 1):
         parts.append(f"  {i}. [{arg.dimension}] {arg.claim}")
@@ -93,23 +99,39 @@ def _format_argumentation_log(argumentation_log: ArgumentationLog) -> str:
     for r in argumentation_log.rounds:
         parts.append(f"=== Argumentation Round {r.round} ===")
         _format_argument_section(
-            parts, "PROSECUTION ARGUMENTS:", r.prosecution_arguments, r.prosecution_closing_statement
+            parts,
+            "PROSECUTION ARGUMENTS:",
+            r.prosecution_arguments,
+            r.prosecution_closing_statement,
         )
         _format_argument_section(
-            parts, "DEFENSE COUNTERS TO PROSECUTION:", r.defense_counters, r.defense_counter_closing_statement
+            parts,
+            "DEFENSE COUNTERS TO PROSECUTION:",
+            r.defense_counters,
+            r.defense_counter_closing_statement,
         )
         _format_argument_section(
-            parts, "DEFENSE AFFIRMATIVE ARGUMENTS:", r.defense_arguments, r.defense_closing_statement
+            parts,
+            "DEFENSE AFFIRMATIVE ARGUMENTS:",
+            r.defense_arguments,
+            r.defense_closing_statement,
         )
         _format_argument_section(
-            parts, "PROSECUTION COUNTERS TO DEFENSE:", r.prosecution_counters, r.prosecution_counter_closing_statement
+            parts,
+            "PROSECUTION COUNTERS TO DEFENSE:",
+            r.prosecution_counters,
+            r.prosecution_counter_closing_statement,
         )
     if argumentation_log.prosecution_closing_argument or argumentation_log.defense_closing_argument:
         parts.append("=== Closing Arguments ===")
         if argumentation_log.prosecution_closing_argument:
-            parts.append(f"PROSECUTION CLOSING ARGUMENT: {argumentation_log.prosecution_closing_argument}")
+            parts.append(
+                f"PROSECUTION CLOSING ARGUMENT: {argumentation_log.prosecution_closing_argument}"
+            )
         if argumentation_log.defense_closing_argument:
-            parts.append(f"DEFENSE CLOSING ARGUMENT: {argumentation_log.defense_closing_argument}")
+            parts.append(
+                f"DEFENSE CLOSING ARGUMENT: {argumentation_log.defense_closing_argument}"
+            )
     return "\n".join(parts)
 
 
@@ -264,7 +286,8 @@ class Juror(BaseAgent):
                     f"DIMENSION TO EVALUATE:\n{sub_dim_block}\n\n"
                     f"You are juror {self._juror_id}. Cast your vote and fill in a DimensionScore "
                     f"for every sub-dimension listed above. Ground your rationale in the specific "
-                    f"arguments and proofs. If changing your prior vote, explain what persuaded you."
+                    f"arguments and proofs. If changing your prior vote, explain what "
+                    f"persuaded you."
                 ),
             },
         ]
