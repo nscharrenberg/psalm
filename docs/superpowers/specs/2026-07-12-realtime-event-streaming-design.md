@@ -190,7 +190,9 @@ A dimension's completion is signaled by `DimensionVerdictReached` (§3, `verdict
 | `JurorVoteCast` | `round: int`, `juror_id: str`, `vote: str`, `rationale: str`, `dimension_scores: list[DimensionScore]` | `_jury_vote`, per juror as votes resolve |
 | `JuryConsensusChecked` | `round: int`, `is_unanimous: bool`, `top_verdict: str \| None` | `_check_consensus` |
 | `JuryDiscussionMessage` | `round: int`, `juror_id: str`, `message: str` | `_jury_discussion`, per juror |
-| `VotingStrategyApplied` | `strategy_name: str`, `is_tie: bool`, `verdict: str` | `_apply_voting_strategy` |
+| `VotingStrategyApplied` | `strategy_name: str`, `is_tie: bool`, `verdict: str \| None` | `_apply_voting_strategy` |
+
+`verdict` is `None` when `is_tie` is true — a tied strategy genuinely produced no verdict (it just signals "try the next strategy"), so the field must not fabricate a placeholder value on ties.
 
 ### `verdict`
 | Type | Fields | Fires in |

@@ -292,7 +292,7 @@ git commit -m "feat: add event envelope, context-bound sink, and emit() primitiv
 
 **Interfaces:**
 - Consumes: `psalm.events.base.PSALMEvent` (Task 1)
-- Produces: all 19 concrete event classes (listed below) importable from `psalm.events` and `psalm.events.types`; `psalm.events.types.Event` (discriminated union type, discriminator `"type"`); `psalm.events.types.EventAdapter` (`TypeAdapter[Event]`, for round-trip validation).
+- Produces: all 20 concrete event classes (listed below) importable from `psalm.events` and `psalm.events.types`; `psalm.events.types.Event` (discriminated union type, discriminator `"type"`); `psalm.events.types.EventAdapter` (`TypeAdapter[Event]`, for round-trip validation).
 
 - [ ] **Step 1: Write failing tests for the event types**
 
@@ -2732,7 +2732,7 @@ git commit -m "test: add concurrency and astream_evaluate/aevaluate parity cover
 - §2.5 dimension `None` under shared strategies → naturally true since Task 6 only sets `_current_dimension` in `_run_single_dimension`/`_deliberate_single`, never around the shared `_argumentation_phase.run()` call in `_run_shared_arg`/`_run_shared_all` — no extra task needed, verified by existing courtroom tests continuing to pass with `SHARED_ALL`/`SHARED_ARG` config in Task 6/7's regression runs.
 - §2.6 identical-texts shortcut → Task 7 (`_aidentical_texts_result`). ✓
 - §2.7 abandoned streams → satisfied by construction in Task 7 (`task` is never cancelled by the generator); no dedicated test added since it requires simulating consumer abandonment, which is lower-value than the concurrency/parity tests already covering the stream's correctness — noted here as intentionally out of scope for automated testing, consistent with spec's "best-effort" framing.
-- §3 all 19 event types → Task 2 (types) + Tasks 3–7 (emission sites), one test per type across those tasks.
+- §3 all 20 event types → Task 2 (types) + Tasks 3–7 (emission sites), one test per type across those tasks.
 - §4.1 `astream_evaluate()` → Task 7.
 - §4.2 `with_event_listener()` → Task 7.
 - §4.3 unchanged `.evaluate()`/`.aevaluate()` → Task 7 (regression tests + full suite run in Step 7).
