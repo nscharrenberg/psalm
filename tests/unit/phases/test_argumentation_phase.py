@@ -8,6 +8,7 @@ from psalm.models.config import CaseInput, DebateConfig
 from psalm.models.evidence import Argument, ArgumentBatch, Proof
 from psalm.models.result import ArgumentationLog
 from psalm.phases.argumentation import ArgumentationPhase
+from tests.conftest import bound_event_sink, drain_events
 
 
 def _make_arg(dimension: str = "character", round: int = 1, role: str = "prosecutor") -> Argument:
@@ -325,3 +326,126 @@ async def test_closing_arguments_delivered_even_when_round_loop_stops_immediatel
     mock_defense.deliver_closing_argument.assert_called_once()
     assert result.prosecution_closing_argument == "Prosecution closing argument."
     assert result.defense_closing_argument == "Defense closing argument."
+
+
+async def test_prosecution_argue_emits_round_started_and_argument_submitted(argumentation_phase, case_input):
+    from psalm.events.types import ArgumentationRoundStarted, ArgumentSubmitted
+
+    with bound_event_sink() as sink:
+        await argumentation_phase.run(case_input)
+        events = await drain_events(sink)
+
+    round_started = [e for e in events if isinstance(e, ArgumentationRoundStarted)]
+    submitted = [e for e in events if isinstance(e, ArgumentSubmitted)]
+    assert len(round_started) >= 1
+    assert round_started[0].round == 1
+    assert any(e.role == "prosecution" and e.kind == "argument" for e in submitted)
+    assert any(e.role == "defense" and e.kind == "counter" for e in submitted)
+    assert any(e.role == "defense" and e.kind == "argument" for e in submitted)
+    assert any(e.role == "prosecution" and e.kind == "counter" for e in submitted)
+
+
+async def test_judge_validate_emits_argument_validated(argumentation_phase, case_input):
+    from psalm.events.types import ArgumentValidated
+
+    with bound_event_sink() as sink:
+        await argumentation_phase.run(case_input)
+        events = await drain_events(sink)
+
+    validated = [e for e in events if isinstance(e, ArgumentValidated)]
+    assert any(e.role == "prosecution" for e in validated)
+    assert any(e.role == "defense" for e in validated)
+
+
+async def test_judge_validate_emits_argument_rejected(mock_prosecutor, mock_defense, mock_judge, case_input):
+    from psalm.events.types import ArgumentRejected
+
+    mock_judge.validate_argument = AsyncMock(
+        return_value=MagicMock(is_valid=False, rejection_reason="No excerpts.")
+    )
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=1, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+
+    with bound_event_sink() as sink:
+        await phase.run(case_input)
+        events = await drain_events(sink)
+
+    rejected = [e for e in events if isinstance(e, ArgumentRejected)]
+    assert len(rejected) >= 1
+    assert rejected[0].reason == "No excerpts."
+    assert rejected[0].role in {"prosecution", "defense"}
+
+
+async def test_check_next_round_emits_stability_checked(mock_prosecutor, mock_defense, mock_judge, case_input):
+    from psalm.events.types import ArgumentationStabilityChecked
+
+    mock_judge.detect_stability = AsyncMock(return_value=True)
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=5, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+
+    with bound_event_sink() as sink:
+        await phase.run(case_input)
+        events = await drain_events(sink)
+
+    checked = [e for e in events if isinstance(e, ArgumentationStabilityChecked)]
+    assert len(checked) == 1
+    assert checked[0].round == 1
+    assert checked[0].stability_detected is True
+
+
+async def test_closing_arguments_emit_closing_argument_delivered(argumentation_phase, case_input):
+    from psalm.events.types import ClosingArgumentDelivered
+
+    with bound_event_sink() as sink:
+        await argumentation_phase.run(case_input)
+        events = await drain_events(sink)
+
+    delivered = [e for e in events if isinstance(e, ClosingArgumentDelivered)]
+    assert any(e.role == "prosecution" and e.statement == "Prosecution closing argument." for e in delivered)
+    assert any(e.role == "defense" and e.statement == "Defense closing argument." for e in delivered)
+
+
+async def test_completeness_retry_emits_argument_batch_completeness_retry(mock_judge):
+    from psalm.events.types import ArgumentBatchCompletenessRetry
+
+    call_count = 0
+
+    async def ambiguous_then_valid(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return ArgumentBatch()
+        return _make_batch([_make_arg(role="prosecutor")])
+
+    completeness_calls = 0
+
+    async def completeness_side_effect(batch):
+        nonlocal completeness_calls
+        completeness_calls += 1
+        return completeness_calls > 1
+
+    mock_prosecutor = MagicMock()
+    mock_prosecutor.gather_arguments = AsyncMock(side_effect=ambiguous_then_valid)
+    mock_prosecutor.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_prosecutor.deliver_closing_argument = AsyncMock(return_value="Prosecution closing argument.")
+    mock_defense = MagicMock()
+    mock_defense.gather_counter_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.gather_arguments = AsyncMock(return_value=_make_batch())
+    mock_defense.deliver_closing_argument = AsyncMock(return_value="Defense closing argument.")
+    mock_judge.validate_argument = AsyncMock(return_value=MagicMock(is_valid=True))
+    mock_judge.detect_stability = AsyncMock(return_value=False)
+    mock_judge.validate_batch_completeness = AsyncMock(side_effect=completeness_side_effect)
+
+    config = DebateConfig(dimensions=[CHARACTER], argumentation_rounds=1, deliberation_rounds=1)
+    phase = ArgumentationPhase(mock_prosecutor, mock_defense, mock_judge, config)
+    case_input = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
+
+    with bound_event_sink() as sink:
+        await phase.run(case_input)
+        events = await drain_events(sink)
+
+    retries = [e for e in events if isinstance(e, ArgumentBatchCompletenessRetry)]
+    assert len(retries) == 1
+    assert retries[0].role == "prosecution"
+    assert retries[0].attempt == 1
+    assert retries[0].max_attempts == 3

@@ -7,6 +7,17 @@ from langgraph.graph import END, StateGraph
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.prosecutor import Prosecutor
+from psalm.events import (
+    ArgumentationRoundStarted,
+    ArgumentationStabilityChecked,
+    ArgumentBatchCompletenessRetry,
+    ArgumentRejected,
+    ArgumentSubmitted,
+    ArgumentValidated,
+    ClosingArgumentDelivered,
+    ClosingStatementDelivered,
+    emit,
+)
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import CaseInput, DebateConfig
 from psalm.models.evidence import Argument, ArgumentBatch, ClosingStatement
@@ -99,13 +110,21 @@ class ArgumentationPhase(BasePhase):
     # --- Completeness-gated agent call wrapper ---
 
     async def _call_with_completeness_retry(
-        self, call: Callable[[str | None], Awaitable[ArgumentBatch]]
+        self,
+        call: Callable[[str | None], Awaitable[ArgumentBatch]],
+        *,
+        role: str,
+        round: int,
     ) -> ArgumentBatch:
         hint: str | None = None
-        for _attempt in range(_COMPLETENESS_RETRY_ATTEMPTS + 1):
+        max_attempts = _COMPLETENESS_RETRY_ATTEMPTS + 1
+        for attempt in range(max_attempts):
             batch = await call(hint)
             if await self._judge.validate_batch_completeness(batch):
                 return batch
+            await emit(ArgumentBatchCompletenessRetry(
+                round=round, role=role, attempt=attempt + 1, max_attempts=max_attempts,
+            ))
             hint = _COMPLETENESS_RETRY_HINT
         raise PSALMAgentError(
             code="PSALM-A004",
@@ -113,7 +132,7 @@ class ArgumentationPhase(BasePhase):
                 "Agent failed to provide arguments or declare no_further_arguments "
                 "after retries."
             ),
-            context={"attempts": _COMPLETENESS_RETRY_ATTEMPTS + 1},
+            context={"attempts": max_attempts},
             suggestion="Check the LLM model's instruction-following reliability.",
         )
 
@@ -121,6 +140,7 @@ class ArgumentationPhase(BasePhase):
 
     async def _prosecution_argue(self, state: ArgumentationState) -> dict[str, Any]:
         round_num = state.current_round + 1
+        await emit(ArgumentationRoundStarted(round=round_num))
         prior_defense = list(state.defense_arguments) or None
         batch = await self._call_with_completeness_retry(
             lambda hint: self._prosecutor.gather_arguments(
@@ -130,8 +150,18 @@ class ArgumentationPhase(BasePhase):
                 round=round_num,
                 prior_defense_arguments=prior_defense,
                 retry_hint=hint,
-            )
+            ),
+            role="prosecution",
+            round=round_num,
         )
+        for arg in batch.arguments:
+            await emit(ArgumentSubmitted(
+                round=round_num, role="prosecution", kind="argument", argument=arg
+            ))
+        if batch.closing_statement:
+            await emit(ClosingStatementDelivered(
+                round=round_num, role="prosecution", statement=batch.closing_statement
+            ))
         closing = (
             [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
             if batch.closing_statement else []
@@ -149,8 +179,13 @@ class ArgumentationPhase(BasePhase):
             result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
             if result.is_valid:
                 valid.append(arg.model_dump())
+                await emit(ArgumentValidated(round=arg.round, role="prosecution", argument=arg))
             else:
                 rejected.append(_rejected_entry(arg, result.rejection_reason))
+                await emit(ArgumentRejected(
+                    round=arg.round, role="prosecution", argument=arg,
+                    reason=result.rejection_reason or "No reason provided.",
+                ))
         existing = [a.model_dump() for a in state.prosecution_arguments]
         return {
             "validated_prosecution_arguments": valid,
@@ -171,8 +206,18 @@ class ArgumentationPhase(BasePhase):
                 prosecutor_arguments=prosecution_args,
                 round=round_num,
                 retry_hint=hint,
-            )
+            ),
+            role="defense",
+            round=round_num,
         )
+        for arg in batch.arguments:
+            await emit(ArgumentSubmitted(
+                round=round_num, role="defense", kind="counter", argument=arg
+            ))
+        if batch.closing_statement:
+            await emit(ClosingStatementDelivered(
+                round=round_num, role="defense", statement=batch.closing_statement
+            ))
         closing = (
             [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
             if batch.closing_statement else []
@@ -194,8 +239,13 @@ class ArgumentationPhase(BasePhase):
             )
             if result.is_valid:
                 valid.append(arg.model_dump())
+                await emit(ArgumentValidated(round=arg.round, role="defense", argument=arg))
             else:
                 rejected.append(_rejected_entry(arg, result.rejection_reason))
+                await emit(ArgumentRejected(
+                    round=arg.round, role="defense", argument=arg,
+                    reason=result.rejection_reason or "No reason provided.",
+                ))
         existing = [a.model_dump() for a in state.defense_counters]
         return {
             "defense_counters": existing + valid,
@@ -215,8 +265,18 @@ class ArgumentationPhase(BasePhase):
                 dimensions=state.dimensions,
                 round=round_num,
                 retry_hint=hint,
-            )
+            ),
+            role="defense",
+            round=round_num,
         )
+        for arg in batch.arguments:
+            await emit(ArgumentSubmitted(
+                round=round_num, role="defense", kind="argument", argument=arg
+            ))
+        if batch.closing_statement:
+            await emit(ClosingStatementDelivered(
+                round=round_num, role="defense", statement=batch.closing_statement
+            ))
         closing = (
             [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
             if batch.closing_statement else []
@@ -236,8 +296,13 @@ class ArgumentationPhase(BasePhase):
             )
             if result.is_valid:
                 valid.append(arg.model_dump())
+                await emit(ArgumentValidated(round=arg.round, role="defense", argument=arg))
             else:
                 rejected.append(_rejected_entry(arg, result.rejection_reason))
+                await emit(ArgumentRejected(
+                    round=arg.round, role="defense", argument=arg,
+                    reason=result.rejection_reason or "No reason provided.",
+                ))
         existing = [a.model_dump() for a in state.defense_arguments]
         return {
             "validated_defense_arguments": valid,
@@ -258,8 +323,18 @@ class ArgumentationPhase(BasePhase):
                 defense_arguments=defense_args,
                 round=round_num,
                 retry_hint=hint,
-            )
+            ),
+            role="prosecution",
+            round=round_num,
         )
+        for arg in batch.arguments:
+            await emit(ArgumentSubmitted(
+                round=round_num, role="prosecution", kind="counter", argument=arg
+            ))
+        if batch.closing_statement:
+            await emit(ClosingStatementDelivered(
+                round=round_num, role="prosecution", statement=batch.closing_statement
+            ))
         closing = (
             [ClosingStatement(round=round_num, statement=batch.closing_statement).model_dump()]
             if batch.closing_statement else []
@@ -281,8 +356,13 @@ class ArgumentationPhase(BasePhase):
             result = await self._judge.validate_argument(arg, state.source_text, state.target_text)
             if result.is_valid:
                 valid.append(arg.model_dump())
+                await emit(ArgumentValidated(round=arg.round, role="prosecution", argument=arg))
             else:
                 rejected.append(_rejected_entry(arg, result.rejection_reason))
+                await emit(ArgumentRejected(
+                    round=arg.round, role="prosecution", argument=arg,
+                    reason=result.rejection_reason or "No reason provided.",
+                ))
         existing = [a.model_dump() for a in state.prosecution_counters]
         return {
             "prosecution_counters": existing + valid,
@@ -301,6 +381,7 @@ class ArgumentationPhase(BasePhase):
             defense_counters=state.defense_counters,
             defense_arguments=state.defense_arguments,
         )
+        await emit(ClosingArgumentDelivered(role="prosecution", statement=statement))
         return {"prosecution_closing_argument": statement}
 
     async def _defense_closing_argument(self, state: ArgumentationState) -> dict[str, Any]:
@@ -311,6 +392,7 @@ class ArgumentationPhase(BasePhase):
             prosecution_arguments=state.prosecution_arguments,
             prosecution_counters=state.prosecution_counters,
         )
+        await emit(ClosingArgumentDelivered(role="defense", statement=statement))
         return {"defense_closing_argument": statement}
 
     # --- Round control ---
@@ -331,9 +413,11 @@ class ArgumentationPhase(BasePhase):
             [Argument(**a) for a in state.validated_prosecution_arguments],
             [a for a in state.prosecution_arguments if a.round == state.current_round],
         )
+        decision = stability or both_empty
+        await emit(ArgumentationStabilityChecked(round=round_num, stability_detected=decision))
         return {
             "current_round": state.current_round + 1,
-            "stability_detected": stability or both_empty,
+            "stability_detected": decision,
         }
 
     async def _finalize_arguments(self, state: ArgumentationState) -> dict[str, Any]:
