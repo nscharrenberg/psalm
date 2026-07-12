@@ -98,7 +98,7 @@ examples/web/
 }
 ```
 
-`presets` reuses the existing `COPYRIGHT_TEXT`/`INFRINGING_TEXT`/`NOT_INFRINGING_TEXT` constants already defined in `examples/cli/main.py` (imported, not duplicated). The setup form always also allows free-text entry regardless of preset selection.
+`presets` reuses the same `COPYRIGHT_TEXT`/`INFRINGING_TEXT`/`NOT_INFRINGING_TEXT` content already defined in `examples/cli/main.py`, copied verbatim into `examples/web/backend/presets.py` rather than imported — same rationale as `config_resolution.py` in §3.3: `examples/` has no package machinery for cross-script imports, so duplicating a few string constants is simpler and more robust than a `sys.path` workaround. The setup form always also allows free-text entry regardless of preset selection.
 
 Voting strategy is **not** user-configurable in this version — the SDK enforces `judge_tiebreaker` must be last (`PSALM-C005`), and the demo always uses the SDK's default chain (`simple_majority` → `trust_weighted` → `judge_tiebreaker`). This is shown as read-only info in the advanced settings section, not an editable list.
 
@@ -222,6 +222,7 @@ None. Nothing in the `psalm` package or `examples/cli/main.py` is modified — t
 |---|---|
 | `examples/web/backend/main.py` | New — FastAPI app, static file mounting for demo mode |
 | `examples/web/backend/catalog.py` | New — `/api/catalog` data assembly |
+| `examples/web/backend/presets.py` | New — preset text pairs, copied verbatim from `examples/cli/main.py`'s constants (§3.2) |
 | `examples/web/backend/config_resolution.py` | New — env-var fallback chain (independent reimplementation of the same logic `examples/cli/main.py` already has, per §3.3) |
 | `examples/web/backend/trials.py` | New — trial store, background execution, SSE adapter |
 | `examples/web/backend/schemas.py` | New — request/response pydantic models |
