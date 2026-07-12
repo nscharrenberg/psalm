@@ -1,6 +1,7 @@
 # tests/e2e/test_full_evaluation.py
 import json
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -8,6 +9,7 @@ import pytest
 
 from psalm import PSALM, PSALMResult
 from psalm.dimensions import CHARACTER, PLOT, WORLD_BUILDING
+from psalm.models.evidence import Argument, ArgumentBatch, Proof
 from psalm.models.result import JurorVote, ValidationResult
 
 CASES_PATH = Path(__file__).parent / "fixtures" / "cases.json"
@@ -34,31 +36,8 @@ def _jury_configs():
     ]
 
 
-@pytest.mark.skipif(
-    os.getenv("PSALM_E2E") != "true",
-    reason="Set PSALM_E2E=true to run real LLM tests",
-)
-async def test_e2e_real_llm(cases):
-    psalm = await (
-        PSALM()
-        .with_prosecutor(**_agent_kwargs())
-        .with_defense(**_agent_kwargs())
-        .with_judge(**_agent_kwargs())
-        .with_jury(_jury_configs())
-        .with_dimensions([CHARACTER, PLOT, WORLD_BUILDING])
-        .with_debate(argumentation_rounds=2, deliberation_rounds=2, time_limit_seconds=120)
-        .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
-        .build()
-    )
-    for case in cases:
-        result = await psalm.aevaluate(source_text=case["source"], target_text=case["target"])
-        assert isinstance(result, PSALMResult)
-        assert result.verdict in {"Guilty", "Not Guilty", "Undecided"}
-
-
-async def test_e2e_mock_full_pipeline(cases):
-    from psalm.models.evidence import Argument, ArgumentBatch, Proof
-
+@contextmanager
+def _mock_agents():
     sample_proof = Proof(
         source_excerpt="silver hair that shimmered like moonlight",
         target_excerpt="shimmering silver locks",
@@ -131,6 +110,33 @@ async def test_e2e_mock_full_pipeline(cases):
         ),
         patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)),
     ):
+        yield
+
+
+@pytest.mark.skipif(
+    os.getenv("PSALM_E2E") != "true",
+    reason="Set PSALM_E2E=true to run real LLM tests",
+)
+async def test_e2e_real_llm(cases):
+    psalm = await (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_dimensions([CHARACTER, PLOT, WORLD_BUILDING])
+        .with_debate(argumentation_rounds=2, deliberation_rounds=2, time_limit_seconds=120)
+        .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
+        .build()
+    )
+    for case in cases:
+        result = await psalm.aevaluate(source_text=case["source"], target_text=case["target"])
+        assert isinstance(result, PSALMResult)
+        assert result.verdict in {"Guilty", "Not Guilty", "Undecided"}
+
+
+async def test_e2e_mock_full_pipeline(cases):
+    with _mock_agents():
         psalm = await (
             PSALM()
             .with_prosecutor(**_agent_kwargs())
@@ -154,6 +160,55 @@ async def test_e2e_mock_full_pipeline(cases):
     assert len(result.dimension_verdicts[0].argumentation_log.rounds) > 0
     assert len(result.dimension_verdicts[0].debate_log.rounds) > 0
     assert result.metadata.duration_seconds >= 0
+
+
+async def test_astream_evaluate_matches_aevaluate_result(cases):
+    from psalm.events.types import FinalVerdictReached
+
+    with _mock_agents():
+        psalm_a = await (
+            PSALM()
+            .with_prosecutor(**_agent_kwargs())
+            .with_defense(**_agent_kwargs())
+            .with_judge(**_agent_kwargs())
+            .with_jury(_jury_configs())
+            .with_dimensions([CHARACTER])
+            .with_debate(argumentation_rounds=1, deliberation_rounds=1, time_limit_seconds=60)
+            .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
+            .build()
+        )
+        result_a = await psalm_a.aevaluate(
+            source_text=cases[0]["source"], target_text=cases[0]["target"],
+        )
+
+        psalm_b = await (
+            PSALM()
+            .with_prosecutor(**_agent_kwargs())
+            .with_defense(**_agent_kwargs())
+            .with_judge(**_agent_kwargs())
+            .with_jury(_jury_configs())
+            .with_dimensions([CHARACTER])
+            .with_debate(argumentation_rounds=1, deliberation_rounds=1, time_limit_seconds=60)
+            .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
+            .build()
+        )
+        events = [
+            e async for e in psalm_b.astream_evaluate(
+                source_text=cases[0]["source"], target_text=cases[0]["target"],
+            )
+        ]
+
+    final = [e for e in events if isinstance(e, FinalVerdictReached)]
+    assert len(final) == 1
+    result_b = final[0].result
+
+    assert result_a.verdict == result_b.verdict
+    assert result_a.rationale == result_b.rationale
+    assert len(result_a.dimension_verdicts) == len(result_b.dimension_verdicts)
+    for dv_a, dv_b in zip(result_a.dimension_verdicts, result_b.dimension_verdicts):
+        assert dv_a.dimension == dv_b.dimension
+        assert dv_a.verdict == dv_b.verdict
+        assert dv_a.weighted_score == dv_b.weighted_score
 
 
 async def test_identical_texts_returns_guilty_immediately():
