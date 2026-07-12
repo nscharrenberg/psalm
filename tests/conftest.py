@@ -120,3 +120,27 @@ def minimal_psalm_result(minimal_argumentation_log, minimal_debate_log) -> PSALM
             voting_strategy_applied="simple_majority",
         ),
     )
+
+
+from contextlib import contextmanager
+
+from psalm.events.base import EventSink
+from psalm.events.context import _current_sink
+
+
+@contextmanager
+def bound_event_sink():
+    """Bind a fresh EventSink to the ambient context for the duration of the block."""
+    sink = EventSink(run_id="test-run")
+    token = _current_sink.set(sink)
+    try:
+        yield sink
+    finally:
+        _current_sink.reset(token)
+
+
+async def drain_events(sink: EventSink) -> list:
+    events = []
+    while not sink.empty():
+        events.append(await sink.get())
+    return events
