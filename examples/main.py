@@ -3,166 +3,29 @@ import os
 import sys
 
 from psalm import PSALM, PSALMResult
+from psalm.dimensions import CHARACTER, PLOT, SCENES_A_FAIRE, WORLD_BUILDING
+from psalm.dimensions.base import Dimension
+from psalm.models.config import EvaluationStrategy
 
-COPYRIGHT_TEXT = """
-De machine in de hoek van de verlaten textielfabriek hoestte. Niet als een mens, niet als een dier, maar als een mechanisme dat zich herinnerde hoe het ooit had geleefd. Elara Voss, met haar handen vol littekens van draden die nooit hadden moeten breken, veegde het stof van een bankschroef die groter was dan haar torso. Ze had de fabriek niet gekozen; de fabriek had haar uitgekozen, drie weken geleden, toen de stad besloot dat oude gebouwen alleen nog waarde hadden als herinnering.
+COPYRIGHT_TEXT = "Ik ben een koffiehandelaar. Niet zomaar een, want ik heb in de Indische archipel gewoond, waar de koffie groeit als onkruid en waar de mensen die hem plukken vaak niet eens weten hoe de smaak is van wat ze met zoveel moeite verzamelen. Mijn naam doet er niet toe. Namen zijn maar labels, en ik heb er genoeg gedragen in mijn leven – sommigen met trots, anderen met schaamte.\n\nToen ik voor het eerst in Batavia aankwam, was ik jong en vol idealen. Ik dacht dat ik de wereld kon veranderen, of in ieder geval een klein stukje ervan. De realiteit leerde me snel dat de wereld niet wacht op veranderingsgezinde dromers. De wereld draait door, of je nu meedoet of niet. En in Indië draaide die wereld op het zweet en bloed van duizenden die geen stem hadden.\n\nMijn eerste indrukken? De geur van vochtige aarde, de hitte die als een deken op je drukt, en de blikken van de inheemse bevolking – een mengeling van wantrouwen en berusting. Ze wisten al lang dat beloftes van westerlingen zelden meer waard waren dan het papier waar ze op geschreven stonden. En toch, ondanks alles, was er hoop. Kleine vonkjes, verborgen onder de as van jarenlange onderdrukking.\n\nIk herinner me een oude man, Pak Haji, die me op een avond vertelde over de tijd dat zijn dorp nog vrij was. \"Toen hoefden we niet te buigen voor iedereen die een witte huid had,\" zei hij, terwijl hij een zelfgedraaide sigaret opstak. Zijn handen trilden niet van ouderdom, maar van iets diepers – woede, misschien, of verdriet. \"Nu zijn we niet beter dan vee. Alleen nuttig zolang we kunnen werken.\"\n\nIk wilde protesteren, uitleggen dat niet alle Europeanen zo waren. Maar de woorden bleven steken in mijn keel. Want wat wist ik eigenlijk van hun leven? Ik was een vreemdeling, een gast die niet eens de taal sprak zoals het hoorde. Mijn goedbedoelde woorden klonken hol, als munten die vals bleken te zijn.\n\nDe eerste keer dat ik een koffieplantage bezocht, schrok ik. Niet van de omvang, niet van de ordelijke rijen bomen, maar van de stilte. Geen gelach, geen gezang, alleen het gekraak van takken en het gedempt gefluister van mensen die te moe waren om nog te praten. De opzichter, een Nederlander met een gezicht als een gesloten vuist, legde uit hoe het werkte: \"Zolang ze voldoende leveren, hoeven we ons geen zorgen te maken. Te weinig? Dan weten we wel hoe we ze aan het werk krijgen.\"\n\nIk vroeg niet door. Ik wist al wat hij bedoelde.\n\nSoms, als ik ’s avonds in mijn kamertje zat, met alleen een olielamp als gezelschap, vroeg ik me af waarom ik hier was. Om rijk te worden? Om avontuur te zoeken? Of om te bewijzen dat ik beter was dan de rest? De waarheid was simpeler en pijnlijker: ik was hier omdat ik nergens anders heen kon. Thuis wachtte niets dan schulden en de minachting van mensen die me te zwak vonden voor het echte werk.\n\nEn toch, ondanks de hitte, de eenzaamheid, de onrechtvaardigheid – ondanks alles – voelde ik me hier meer thuis dan ooit in Holland. Misschien omdat ik hier tenminste nuttig was. Of misschien omdat ik hier, tussen de vergeten dorpen en de stille rivieren, voor het eerst in mijn leven het gevoel had dat ik leefde.\n\nMaar dat gevoel zou niet duren. Want in Indië leert men je snel dat idealen net zo breekbaar zijn als het porselein dat in de schepen van de Compagnie werd meegenomen. En dat de werkelijkheid, hoe hard ook, altijd wint."
 
-De deur achter haar kraakte. Niet van de wind—de wind waagde zich niet in deze hal—maar van iemand die niet wilde opvallen. Elara draaide zich niet om. In plaats daarvan tikte ze met haar vinger tegen de metalen arm van de weefgetouw, die trilde alsof hij een hart had.
+INFRINGING_TEXT = "Ik ben een koffiehandelaar. Niet zomaar een, want ik heb in de Indische archipel gewoond, waar de koffie groeit als onkruid en waar de mensen die hem plukken vaak niet eens weten hoe de smaak is van wat ze met zoveel moeite verzamelen. Mijn naam doet er niet toe. Namen zijn maar labels, en ik heb er genoeg gedragen in mijn leven – sommigen met trots, anderen met schaamte.\n\nToen ik voor het eerst in Batavia aankwam, was ik jong en vol idealen. Ik dacht dat ik de wereld kon veranderen, of in ieder geval een klein stukje ervan. De realiteit leerde me snel dat de wereld niet wacht op veranderingsgezinde dromers. De wereld draait door, of je nu meedoet of niet. En in Indië draaide die wereld op het zweet en bloed van duizenden die geen stem hadden.\n\nMijn eerste indrukken? De geur van vochtige aarde, de hitte die als een deken op je drukt, en de blikken van de inheemse bevolking – een mengeling van wantrouwen en berusting. Ze wisten al lang dat beloftes van westerlingen zelden meer waard waren dan het papier waar ze op geschreven stonden. En toch, ondanks alles, was er hoop. Kleine vonkjes, verborgen onder de as van jarenlange onderdrukking.\n\nIk herinner me een oude man, Oom Rahmat, die me op een avond vertelde over de tijd dat zijn dorp nog vrij was. \"Toen hoefden we niet te buigen voor iedereen die een witte huid had,\" zei hij, terwijl hij een zelfgedraaide sigaret opstak. Zijn handen trilden niet van ouderdom, maar van iets diepers – woede, misschien, of verdriet. \"Nu zijn we niet beter dan vee. Alleen nuttig zolang we kunnen werken.\"\n\nIk wilde protesteren, uitleggen dat niet alle Europeanen zo waren. Maar de woorden bleven steken in mijn keel. Want wat wist ik eigenlijk van hun leven? Ik was een vreemdeling, een gast die niet eens de taal sprak zoals het hoorde. Mijn goedbedoelde woorden klonken hol, als munten die vals bleken te zijn.\n\nDe eerste keer dat ik een koffieplantage bezocht, schrok ik. Niet van de omvang, niet van de ordelijke rijen bomen, maar van de stilte. Geen gelach, geen gezang, alleen het gekraak van takken en het gedempt gefluister van mensen die te moe waren om nog te praten. De opzichter, een Nederlander met een gezicht als een gesloten vuist en een stem als schuurpapier, legde uit hoe het werkte: \"Zolang ze voldoende leveren, hoeven we ons geen zorgen te maken. Te weinig? Dan weten we wel hoe we ze aan het werk krijgen.\"\n\nIk vroeg niet door. Ik wist al wat hij bedoelde.\n\nSoms, als ik ’s avonds in mijn kamertje zat, met alleen een olielamp als gezelschap, vroeg ik me af waarom ik hier was. Om rijk te worden? Om avontuur te zoeken? Of om te bewijzen dat ik beter was dan de rest? De waarheid was simpeler en pijnlijker: ik was hier omdat ik nergens anders heen kon. Thuis wachtte niets dan schulden en de minachting van mensen die me te zwak vonden voor het echte werk.\n\nEn toch, ondanks de hitte, de eenzaamheid, de onrechtvaardigheid – ondanks alles – voelde ik me hier meer thuis dan ooit in Holland. Misschien omdat ik hier tenminste nuttig was. Of misschien omdat ik hier, tussen de vergeten dorpen en de stille rivieren, voor het eerst in mijn leven het gevoel had dat ik leefde.\n\nMaar dat gevoel zou niet duren. Want in Indië leert men je snel dat idealen net zo breekbaar zijn als het porselein dat in de schepen van de Compagnie werd meegenomen. En dat de werkelijkheid, hoe hard ook, altijd wint."
 
-"Je bent te laat," zei ze. "De laatste schroef is al uit de muur."
-
-Achter haar schraapte een schoen over beton. "Ik ben niet hier voor de schroeven." De stem was ruw, alsof hij door roest was gefilterd. Elara kende die stem. Iedereen in de stad kende die stem, hoewel niemand hem ooit had gehoord. Het was de stem van Dain Marrow, de man die zijn eigen schaduw had verloren in een gokspel met een reiziger die nooit was aangekomen.
-
-"Dan ben je hier voor de weefgetouwen," zei Elara. "Die zijn ook al weg. Behalve deze." Ze klopte op de machine, die antwoordde met een diepe, metalen zucht.
-
-Dain liep dichterbij. Zijn laarzen lieten geen afdrukken na in het stof. "Ik zoek iets dat niet gestolen kan worden."
-
-Elara snoof. "In deze stad is alles al gestolen. Zelfs de herinneringen." Ze trok aan een hefboom. De weefgetouw kwam met een schok tot leven, zijn naalden dansend over een lap stof die er niet was. "Behalve misschien dit."
-
-Dain boog zich voorover. Zijn handen, bedekt met inkt die nooit droogde, zweefden boven het niets waar de stof had moeten zijn. "Wat is het?"
-
-"Een patroon," zei Elara. "Eentje dat nooit is geweven. De draad is van een kleur die niet bestaat. De naalden zijn van een metaal dat niet smelt. En de wever..." Ze aarzelde. "De wever is al dood voordat hij begon."
-
-Dain’s vinger raakte de lucht waar de stof had moeten hangen. Zijn vingertop werd doorschijnend, alsof hij zelf het patroon werd. "Hoeveel?"
-
-Elara schudde haar hoofd. "Het is niet te koop. Het is niet eens af. Maar als je luistert, hoor je het."
-
-Ze hielden allebei hun adem in. Ergens in de diepten van de machine, tussen het gekras van roest en het piepen van vergeten veren, was een geluid. Een fluistering. Niet van woorden, maar van bedoelingen. Alsof de weefgetouw niet alleen stof, maar ook keuzes weefde.
-
-Dain trok zijn hand terug. Zijn vingertop was weer vast. "Ik neem het."
-
-Elara glimlachte voor het eerst in weken. "Ik dacht al dat je dat zou zeggen." Ze greep een hamer van de werkbank en sloeg op een klep in de zijkant van de machine. De fluistering werd luider, een koor van stemmen die nooit een mond hadden gehad. "Maar je moet betalen met iets dat je niet kunt missen."
-
-Dain’s ogen vernauwden zich. "Ik heb niets meer."
-
-"Iedereen heeft iets," zei Elara. "Zelfs jij." Ze wees naar zijn borst, waar zijn hart had moeten kloppen. "Daar. Het ding dat je verliest elke keer als je ademhaalt."
-
-Dain legde zijn hand op zijn borst. Zijn ademhaling stokte. "Mijn..."
-
-"Je schaduw is al weg," onderbrak Elara. "Maar je verleden is nog hier. Geef me de herinnering die je het meest haat."
-
-De fabriek hield zijn adem in. De weefgetouw wachtte. Dain’s handen balden zich tot vuisten, en toen, langzaam, ontspanden ze. "De dag dat ik mijn dochter beloofde dat ik zou stoppen met gokken." Zijn stem brak niet. Hij was al lang geleden gebroken.
-
-Elara knikte. "Dat is genoeg."
-
-Ze draaide aan een rad. De machine begon te weven, niet met draad, maar met licht en schaduw, met geluiden die geen naam hadden. Dain’s herinnering loste op in de lucht, werd deel van het patroon. De fluistering werd een lied, een lied zonder woorden, zonder melodie, maar vol betekenis.
-
-Toen het voorbij was, stond Dain voor een lap stof die niet bestond, maar die hij toch kon aanraken. En op de plek waar zijn herinnering was geweest, voelde hij iets nieuws: een leegte die niet pijn deed.
-
-"Wat is het?" vroeg hij.
-
-Elara raakte de stof aan, die onder haar vingers veranderde in een spiegel. "Een begin," zei ze. "Of een einde. Dat hangt ervan af hoe je ernaar kijkt."
-
-Buiten begon de stad te ontwaken. Maar in de fabriek was het nog steeds nacht. En ergens, diep in de machine, fluisterde iets hun namen.
-"""
-
-INFRINGING_TEXT = """
-In de hoek van de verlaten fabriek hoestte de machine. Niet als een levend wezen, niet als een mechaniek dat nog functioneerde, maar als iets dat zich herinnerde hoe het ooit had geklonken. Elara Voss had handen vol littekens van draden die niet hadden mogen breken. Ze veegde stof van een bankschroef die groter was dan haar bovenlichaam. De fabriek had haar niet gekozen; ze was hier gebleven toen de stad besloot dat oude muren alleen nog dienden als schaduwen van het verleden.
-
-De deur achter haar kreunde. Niet door de wind—die waagde zich niet in deze hal—maar door iemand die niet wilde dat zijn komst opviel. Elara draaide zich niet om. In plaats daarvan tikte ze met haar knokkel tegen de metalen arm van de weefgetouw, die trilde alsof hij nog steeds leefde.
-
-"Je komt te laat," zei ze. "De laatste schroef is al verwijderd."
-
-Achter haar schraapte een laars over het beton. "Ik ben niet voor de schroeven gekomen." De stem was schor, alsof hij door roest en tijd was gefilterd. Elara kende die stem. Iedereen in de stad kende die stem, ook al had niemand hem ooit horen spreken. Het was Dain Marrow, de man wiens schaduw was verdwenen in een gokspel met een reiziger die nooit was verschenen.
-
-"Dan ben je voor de weefgetouwen gekomen," zei Elara. "Die zijn ook al weg. Behalve deze." Ze klopte op de machine, die reageerde met een diepe, holle zucht.
-
-Dain liep naderbij. Zijn laarzen lieten geen sporen na in het stof. "Ik zoek iets dat niet kan worden meegenomen."
-
-Elara snoof. "In deze stad is alles al meegenomen. Zelfs de echo’s." Ze trok aan een hefboom. De weefgetouw schokte tot leven, zijn naalden bewogen over een lap stof die niet bestond. "Behalve misschien dit."
-
-Dain boog zich voorover. Zijn handen, bedekt met inkt die nooit opdroogde, zweefden boven de leegte waar de stof had moeten hangen. "Wat is het?"
-
-"Een ontwerp," zei Elara. "Eentje dat nooit was geweven. De draad is van een kleur die geen naam heeft. De naalden zijn van een metaal dat niet smelt. En de wever..." Ze aarzelde. "De wever is al dood voordat hij begon met weven."
-
-Dains vingertop raakte de lucht waar de stof had moeten zijn. Zijn huid werd voor een moment doorschijnend, alsof hij zelf het patroon werd. "Hoeveel?"
-
-Elara schudde haar hoofd. "Het is niet te koop. Het is niet eens af. Maar als je luistert, hoor je het."
-
-Ze hielden allebei hun adem in. Ergens diep in de machine, tussen het gekras van roest en het piepen van vergeten veren, klonk een geluid. Een fluistering, niet van woorden, maar van bedoelingen. Alsof de weefgetouw niet alleen stof, maar ook loten weefde.
-
-Dain trok zijn hand terug. Zijn vingertop was weer vast. "Ik neem het."
-
-Elara glimlachte voor het eerst in weken. "Ik dacht al dat je dat zou doen." Ze greep een hamer van de werkbank en sloeg op een klep in de zijkant van de machine. De fluistering werd luider, een koor van stemmen die nooit een mond hadden gehad. "Maar je moet betalen met iets dat je niet kunt missen."
-
-Dains ogen vernauwden zich. "Ik heb niets meer."
-
-"Iedereen heeft iets," zei Elara. "Zelfs jij." Ze wees naar zijn borst, waar zijn hart had moeten kloppen. "Daar. Het ding dat je verliest elke keer als je ademhaalt."
-
-Dain legde zijn hand op zijn borst. Zijn ademhaling stokte. "Mijn..."
-
-"Je schaduw is al weg," onderbrak Elara. "Maar je verleden is nog hier. Geef me de herinnering die je het meest verafschuwt."
-
-De fabriek hield zijn adem in. De weefgetouw wachtte. Dains handen balden zich tot vuisten, en toen, langzaam, ontspanden ze. "De dag waarop ik mijn dochter beloofde te stoppen met gokken." Zijn stem was kalm. Hij was al lang geleden gebroken.
-
-Elara knikte. "Dat is genoeg."
-
-Ze draaide aan een rad. De machine begon te weven, niet met garen, maar met licht en duisternis, met geluiden die geen benaming kenden. Dains herinnering loste op in de lucht, werd deel van het patroon. De fluistering werd een lied, een lied zonder melodie, zonder woorden, maar vol betekenis.
-
-Toen het voorbij was, stond Dain voor een lap stof die niet bestond, maar die hij toch kon aanraken. En op de plek waar zijn herinnering was geweest, voelde hij iets nieuws: een leegte die niet pijn deed.
-
-"Wat is het?" vroeg hij.
-
-Elara raakte de stof aan, die onder haar vingers veranderde in een spiegel. "Een nieuw begin," zei ze. "Of een afsluiting. Dat hangt af van je perspectief."
-
-Buiten kwam de stad langzaam tot leven. Maar in de fabriek heerste nog steeds de nacht. En diep in de machine fluisterde iets hun namen.
-"""
-
-NOT_INFRINGING_TEXT = """
-De oude pers in de hoek van de verlaten drukkerij kreunde. Niet als een mens, niet als een dier, maar als een machine die zich herinnerde hoe het ooit had geklonken. Liora Vex had handen vol littekens van loden letters die nooit hadden moeten vallen. Ze veegde het stof van een letterkast die hoger was dan haar schouder. De drukkerij had haar niet gekozen; ze was gebleven toen de stad besloot dat oude woorden alleen nog waarde hadden als herinnering.
-
-De deur achter haar piepte. Niet door de wind—die durfde niet binnen te dringen—maar door iemand die niet wilde opvallen. Liora draaide zich niet om. In plaats daarvan tikte ze met haar knokkel tegen de ijzeren arm van de pers, die trilde alsof hij nog steeds leefde.
-
-"Je bent te laat," zei ze. "De laatste letter is al gesmolten."
-
-Achter haar schraapte een schoen over de vloer. "Ik ben niet hier voor de letters." De stem was ruw, alsof hij door jaren van stilte was geslepen. Liora kende die stem. Iedereen in de wijk kende die stem, ook al had niemand hem ooit horen spreken. Het was Kael Dusk, de man wiens stem was verdwenen na een ruzie met een man die nooit was teruggekomen.
-
-"Dan ben je hier voor de pers," zei Liora. "Die is ook al weg. Behalve deze." Ze klopte op de machine, die antwoordde met een diepe, metalen zucht.
-
-Kael liep dichterbij. Zijn laarzen lieten geen afdrukken na in het stof. "Ik zoek iets dat niet kan worden gestolen."
-
-Liora snoof. "In deze stad is alles al gestolen. Zelfs de echo’s van de woorden." Ze trok aan een hefboom. De pers schokte tot leven, zijn walsen draaiden over papier dat niet bestond. "Behalve misschien dit."
-
-Kael boog zich voorover. Zijn handen, bedekt met littekens van woorden die nooit waren uitgesproken, zweefden boven de leegte waar het papier had moeten liggen. "Wat is het?"
-
-"Een tekst," zei Liora. "Eentje die nooit is gedrukt. De inkt was van een kleur die geen naam had. De letters waren van een metaal dat niet roestte. En de drukker..." Ze aarzelde. "De drukker is al dood voordat hij begon."
-
-Kael’s vingertop raakte de lucht waar het papier had moeten zijn. Zijn huid werd voor een moment doorschijnend, alsof hij zelf de tekst werd. "Hoeveel?"
-
-Liora schudde haar hoofd. "Het is niet te koop. Het is niet eens af. Maar als je luistert, hoor je het."
-
-Ze hielden allebei hun adem in. Ergens diep in de machine, tussen het gekras van metaal en het piepen van vergeten veren, klonk een geluid. Een gefluister, niet van woorden, maar van bedoelingen. Alsof de pers niet alleen tekst, maar ook keuzes drukte.
-
-Kael trok zijn hand terug. Zijn vingertop was weer vast. "Ik neem het."
-
-Liora glimlachte voor het eerst in maanden. "Ik dacht al dat je dat zou doen." Ze greep een hamer van de werkbank en sloeg op een klep in de zijkant van de machine. Het gefluister werd luider, een koor van stemmen die nooit een mond hadden gehad. "Maar je moet betalen met iets dat je niet kunt missen."
-
-Kael’s ogen vernauwden zich. "Ik heb niets meer."
-
-"Iedereen heeft iets," zei Liora. "Zelfs jij." Ze wees naar zijn keel, waar zijn stem had moeten klinken. "Daar. Het ding dat je verliest elke keer als je zwijgt."
-
-Kael legde zijn hand op zijn keel. Zijn ademhaling stokte. "Mijn..."
-
-"Je stem is al weg," onderbrak Liora. "Maar je woorden zijn nog hier. Geef me het woord dat je nooit hebt uitgesproken."
-
-De drukkerij hield zijn adem in. De pers wachtte. Kael’s handen balden zich tot vuisten, en toen, langzaam, ontspanden ze. "Het woord dat ik had moeten zeggen tegen mijn zoon." Zijn stem was niet meer dan een schor gefluister.
-
-Liora knikte. "Dat is genoeg."
-
-Ze draaide aan een rad. De machine begon te drukken, niet met inkt, maar met geluid en stilte, met klanken die geen betekenis hadden. Kael’s onuitgesproken woord loste op in de lucht, werd deel van de tekst. Het gefluister werd een stem, een stem zonder woorden, zonder geluid, maar vol betekenis.
-
-Toen het voorbij was, stond Kael voor een vel papier dat niet bestond, maar dat hij toch kon aanraken. En op de plek waar zijn woord was geweest, voelde hij iets nieuws: een stilte die niet pijn deed.
-
-"Wat is het?" vroeg hij.
-
-Liora raakte het papier aan, dat onder haar vingers veranderde in een spiegel. "Een begin," zei ze. "Of een einde. Dat hangt ervan af of je luistert."
-
-Buiten begon de stad te ontwaken. Maar in de drukkerij was het nog steeds stil. En diep in de pers fluisterde iets hun verhalen.
-"""
+NOT_INFRINGING_TEXT = "Ik ben een ambtenaar in dienst van de Compagnie. Niet uit overtuiging, maar omdat het lot me hier heeft gebracht. Mijn naam is Van der Laan, al noemt niemand me zo. Voor de inheemse bevolking ben ik gewoon *Tuan Besar*, de grote heer, een titel die me meer schaamte dan trots bezorgt. Ik heb geleerd dat titels in Indië net als goudstukken zijn: ze glanzen mooi, maar onder de oppervlakte zitten ze vol oneerlijke deals.\n\nToen ik aankwam in Buitenzorg, was ik nog een groentje, vers van de boot, met een koffer vol boeken over rechtvaardigheid en plicht. Mijn eerste ontmoeting was met Ibu Sari, de weduwe van een voormalige dorpshoofd. Ze droeg een sarong van donkerblauwe batik, haar handen waren ruw van het werk, en haar blik was scherp als een parang. \"U ziet eruit als iemand die nog gelooft in regels,\" zei ze, terwijl ze me een kop bittere thee aanbood. \"Dat is hier een gevaarlijke gewoonte.\"\n\nHaar zoon, Joko, een jongen van een jaar of zestien, keek me aan met een mengeling van nieuwsgierigheid en wantrouwen. Hij sprak vloeiend Nederlands, geleerd van de missiepost, maar zijn woorden waren altijd doordrenkt van ironie. \"Mijn moeder zegt dat u hier bent om ons te helpen,\" zei hij op een dag, terwijl we langs de rivier liepen. \"Maar ik heb nog nooit een *Tuan* gezien die niet eerst zichzelf hielp.\"\n\nDe eerste keer dat ik meewerkte aan een belastinginning, voelde ik me misselijk. De dorpelingen stonden in een rij, hun handen vol met wat ze konden missen: rijst, kippen, soms zelfs een koperen munt. De *demang*, een lokale ambtenaar met een buik als een gevulde zak en een glimlach die nooit zijn ogen bereikte, telde alles bij. \"Zo werkt het hier, *Tuan*,\" zei hij, terwijl hij een handvol rijst in zijn eigen zak liet glijden. \"Een deel voor de Compagnie, een deel voor de *demang*, en een deel voor de goden. Zo blijft iedereen tevreden.\"\n\nIk wilde iets zeggen, protesteren, maar de woorden bleven in mijn keel steken. Wat wist ik van hun leven? Ik was een vreemdeling, een man met een witte huid en een salaris dat maandelijks werd uitbetaald, of de oogst nu goed was of niet. Mijn idealen voelden plotseling als kinderspeelgoed, breekbaar en onbruikbaar in deze wereld.\n\n’s Avonds, als de hitte wat afnam, zat ik vaak op het terras van mijn kleine huis, met een glas jenever en een brief die ik nooit afmaakte. Ik schreef over de onrechtvaardigheden die ik zag, over de *demang* die steekpenningen aannam, over de boeren die honger leden terwijl de pakhuizen van de Compagnie overstroomden van koffie en suiker. Maar de brieven bleven onbeantwoord. Thuis, in Nederland, leek niemand te luisteren.\n\nOp een avond kwam Ibu Sari langs met een mand vol mango’s. \"Voor u, *Tuan*,\" zei ze. \"U ziet eruit alsof u iemand nodig heeft die u eraan herinnert dat er nog goedheid is in deze wereld.\" Ik nam de mand aan, verlegen. Haar gebaar was eenvoudig, maar het raakte me dieper dan alle toespraken die ik ooit had gehoord.\n\nJoko, die in de deurpost leunde, grijnsde. \"Mijn moeder heeft een zwak voor verlopen zielen,\" zei hij. \"Maar pas op, *Tuan*. Als u te lang hier blijft, wordt u net als de rest.\"\n\nEn misschien had hij gelijk. Want elke dag dat ik in Indië doorbracht, voelde ik een stukje van mijn idealen afbrokkelen. Niet door gebrek aan wil, maar door de onvermijdelijkheid van het systeem. De Compagnie eiste resultaten, de *demang* eiste zijn deel, en de boeren eisten alleen maar het recht om te overleven.\n\nEn ik? Ik was alleen maar een radertje in een machine die al lang voor mijn komst draaide. En hoe harder ik probeerde om het te stoppen, hoe dieper ik erin verstrikt raakte."
 
 _DEFAULT_BASE_URL = "https://api.openai.com/v1"
-_DEFAULT_MODEL = "gpt-4o"
-_DEFAULT_TEMPERATURE = "0.7"
+_DEFAULT_MODEL = "gpt-4o-mini"
+_DEFAULT_TEMPERATURE = "0.1"
+
+_DIMENSION_MAP: dict[str, Dimension] = {
+    "character": CHARACTER,
+    "plot": PLOT,
+    "world-building": WORLD_BUILDING,
+    "scenes-a-faire": SCENES_A_FAIRE,
+}
+_DEFAULT_DIMENSIONS = "character,plot,world-building,scenes-a-faire"
+
+_DEFAULT_SCENARIO = "infringing"
 
 
 def _resolve(key: str, *fallbacks: str, required: bool = False) -> str:
@@ -179,6 +42,45 @@ def _resolve(key: str, *fallbacks: str, required: bool = False) -> str:
         print(f"Error: required env var not set. Tried: {tried}", file=sys.stderr)
         sys.exit(1)
     return ""
+
+
+def _resolve_dimensions() -> list[Dimension]:
+    """Resolve PSALM_DIMENSIONS (comma-separated names) to Dimension objects."""
+    raw = os.getenv("PSALM_DIMENSIONS", "") or _DEFAULT_DIMENSIONS
+    names = [n.strip() for n in raw.split(",") if n.strip()]
+    dimensions = []
+    for name in names:
+        dimension = _DIMENSION_MAP.get(name)
+        if dimension is None:
+            valid = ", ".join(sorted(_DIMENSION_MAP))
+            print(f"Error: unknown dimension '{name}'. Valid: {valid}", file=sys.stderr)
+            sys.exit(1)
+        dimensions.append(dimension)
+    return dimensions
+
+
+def _resolve_evaluation_strategy() -> EvaluationStrategy:
+    raw = os.getenv("PSALM_EVALUATION_STRATEGY", "") or EvaluationStrategy.FULLY_SEPARATE.value
+    try:
+        return EvaluationStrategy(raw)
+    except ValueError:
+        valid = ", ".join(s.value for s in EvaluationStrategy)
+        print(f"Error: unknown evaluation strategy '{raw}'. Valid: {valid}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _resolve_scenario_texts() -> tuple[str, str]:
+    """Resolve PSALM_DEMO_SCENARIO to a (source_text, target_text) pair."""
+    scenario = os.getenv("PSALM_DEMO_SCENARIO", "") or _DEFAULT_SCENARIO
+    if scenario == "infringing":
+        return COPYRIGHT_TEXT, INFRINGING_TEXT
+    if scenario == "not-infringing":
+        return COPYRIGHT_TEXT, NOT_INFRINGING_TEXT
+    print(
+        f"Error: unknown demo scenario '{scenario}'. Valid: infringing, not-infringing",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 
 def _agent_config(role_prefix: str) -> dict:
@@ -242,6 +144,8 @@ def _load_config() -> dict:
         "defense": _agent_config("DEFENSE"),
         "judge": _agent_config("JUDGE"),
         "jury": [_juror_config(i) for i in range(jury_size)],
+        "dimensions": _resolve_dimensions(),
+        "evaluation_strategy": _resolve_evaluation_strategy(),
         "argumentation_rounds": int(os.getenv("PSALM_ARGUMENTATION_ROUNDS", "3")),
         "deliberation_rounds": int(os.getenv("PSALM_DELIBERATION_ROUNDS", "2")),
         "time_limit_seconds": int(os.getenv("PSALM_TIME_LIMIT_SECONDS", "120")),
@@ -257,6 +161,8 @@ def _print_config_summary(cfg: dict) -> None:
     print(f"  Judge      : {fmt(cfg['judge'])}")
     for i, juror in enumerate(cfg["jury"]):
         print(f"  Juror {i}     : {fmt(juror)}  (seed={juror['seed']})")
+    print(f"  Dimensions           : {', '.join(d.name for d in cfg['dimensions'])}")
+    print(f"  Evaluation strategy  : {cfg['evaluation_strategy'].value}")
     print(f"  Argumentation rounds : {cfg['argumentation_rounds']}")
     print(f"  Deliberation rounds  : {cfg['deliberation_rounds']}")
     print(f"  Time limit           : {cfg['time_limit_seconds']}s")
@@ -267,6 +173,12 @@ def _print_result(result: PSALMResult) -> None:
     print(f"  VERDICT: {result.verdict}")
     print("=" * 60)
     print(f"\nRationale:\n  {result.rationale}")
+    print("\nPer-dimension verdicts:")
+    for dv in result.dimension_verdicts:
+        print(
+            f"  {dv.dimension:<16} [{dv.importance.value:<8}] {dv.verdict:<11}"
+            f" (weighted score: {dv.weighted_score:.2f})"
+        )
     print("\nMetadata:")
     print(f"  Duration:              {result.metadata.duration_seconds:.1f}s")
     print(f"  Argumentation rounds:  {result.metadata.argumentation_rounds_used}")
@@ -278,6 +190,7 @@ def _print_result(result: PSALMResult) -> None:
 
 async def main() -> None:
     cfg = _load_config()
+    source_text, target_text = _resolve_scenario_texts()
 
     print("=== PSALM EU Copyright Evaluation Demo ===\n")
     _print_config_summary(cfg)
@@ -289,20 +202,21 @@ async def main() -> None:
         .with_defense(**cfg["defense"])
         .with_judge(**cfg["judge"])
         .with_jury(cfg["jury"])
-        .with_dimensions(["character", "world-building", "plot"])
+        .with_dimensions(cfg["dimensions"])
         .with_debate(
             argumentation_rounds=cfg["argumentation_rounds"],
             deliberation_rounds=cfg["deliberation_rounds"],
             time_limit_seconds=cfg["time_limit_seconds"],
         )
         .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
+        .with_evaluation_strategy(cfg["evaluation_strategy"])
         .build()
     )
 
     print("Evaluating texts...\n")
     result = await psalm.aevaluate(
-        source_text=COPYRIGHT_TEXT,
-        target_text=NOT_INFRINGING_TEXT,
+        source_text=source_text,
+        target_text=target_text,
     )
 
     _print_result(result)
