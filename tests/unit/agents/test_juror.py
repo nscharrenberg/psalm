@@ -343,7 +343,7 @@ async def test_juror_vote_prompt_includes_rubric_and_sub_dimensions(agent_config
 
     full_text = " ".join(m.get("content", "") for m in captured)
     assert "rubric" in full_text.lower() or "score" in full_text.lower()
-    assert "Identity & Properties" in full_text
+    assert "Character Identity & Traits" in full_text
     assert "none" in full_text.lower() or "generic" in full_text.lower()
 
 
@@ -393,8 +393,8 @@ async def test_juror_vote_all_dimensions_returns_list(agent_config, minimal_argu
             dimensions=[CHARACTER, PLOT],
         )
     assert len(results) == 2
-    assert results[0].dimension == "character"
-    assert results[1].dimension == "plot"
+    assert results[0].dimension == "Character"
+    assert results[1].dimension == "Plot"
 
 
 def test_juror_vote_has_optional_dimension_field():

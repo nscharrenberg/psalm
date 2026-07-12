@@ -1,66 +1,66 @@
 from psalm.dimensions.base import Dimension, Importance, SubDimension
 
 PLOT = Dimension(
-    name="Character",
-    description="How characters are developed and expressed.",
+    name="Plot",
+    description="The construction and progression of the story.",
     sub_dimensions=[
         SubDimension(
-            name="Character Identity & Traits",
+            name="Plot Event Sequence & Causality",
             description=(
-                "Distinctive personality traits (unique quirks, contradictions, creative "
-                "elaborations beyond archetypes), physical & behavioral specificity (unique "
-                "features, mannerisms, gestures, idiosyncratic behaviors), and psychological "
-                "complexity (multi-layered internal conflicts, contradictory emotions, nuanced "
-                "psychological states, specific defense mechanisms)."
+                "Ordering of narrative events (particular chronological or non-chronological "
+                "arrangement, unique sequencing choices, specific placement of key beats) and "
+                "causal linkage (detailed cause-effect chains between events, particular "
+                "triggering mechanisms, specific consequences flowing from earlier events)."
+            ),
+            importance=Importance.CRITICAL,
+        ),
+        SubDimension(
+            name="Plot Story Architecture",
+            description=(
+                "Act and structural organisation (particular division into acts or movements, "
+                "unique structural frameworks, specific narrative arcs) and subplot integration "
+                "(detailed interweaving of secondary storylines, unique subplot-mainplot "
+                "relationships, particular structural balance)."
             ),
             importance=Importance.HIGH,
         ),
         SubDimension(
-            name="Character Arc & Development",
+            name="Plot Conflict Structure",
             description=(
-                "Transformation pattern (specific catalysts, unique stages, internal shifts, "
-                "detailed trajectory of change) and internal conflict structure (particular "
-                "manifestations, unique opposing forces, detailed psychological stakes, specific "
-                "triggers and resolutions)."
+                "Tension escalation pattern (particular build-up of stakes, unique pacing of "
+                "rising action, specific obstacle sequencing) and conflict resolution mechanics "
+                "(detailed methods by which obstacles are overcome, unique climactic "
+                "confrontations, particular resolution strategies)."
             ),
             importance=Importance.HIGH,
         ),
         SubDimension(
-            name="Character Relationships & Dynamics",
+            name="Plot Turning Points & Reversals",
             description=(
-                "Relationship constellation (network structure, particular dynamics, unique power "
-                "balances, detailed emotional textures) and interaction patterns (specific "
-                "communication styles, unique behavioral patterns in social contexts, detailed "
-                "conflict/cooperation methods)."
-            ),
-            importance=Importance.HIGH,
-        ),
-        SubDimension(
-            name="Character Background & Motivation",
-            description=(
-                "Backstory specificity (detailed personal history, particular events, unique "
-                "formative experiences, specific causal connections to present) and motivational "
-                "structure (detailed goal hierarchies, particular value systems, unique desire "
-                "configurations, specific origins and manifestations)."
+                "Twist construction (particular unexpected reveals, unique reversal mechanics, "
+                "specific misdirection techniques) and stakes shifts (detailed changes in "
+                "narrative direction, unique consequences of reversals, particular "
+                "recontextualisation of prior events)."
             ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
-            name="Character Expression & Behavior",
+            name="Plot Temporal Structure",
             description=(
-                "Behavioral signatures (specific action patterns, decision-making processes, "
-                "unique habits, distinctive rituals) and emotional response patterns (particular "
-                "triggers, unique coping mechanisms, specific emotional sequences, detailed "
-                "manifestations)."
+                "Time-handling techniques (particular use of flashbacks or flashforwards, unique "
+                "non-linear arrangements, specific temporal framing devices) and pacing control "
+                "(detailed variation in scene duration and event density, unique rhythm of "
+                "revelation, particular management of narrative time)."
             ),
             importance=Importance.MEDIUM,
         ),
         SubDimension(
-            name="Character Function & Role",
+            name="Plot Functions & Convergence",
             description=(
-                "Narrative function (specific plot roles, unique responsibilities, particular "
-                "narrative mechanisms) and agency & autonomy level (patterns of character agency, "
-                "constraints, evolution)."
+                "Storyline convergence (particular ways separate plot threads intersect or "
+                "merge, unique consolidation of narrative strands) and resolution function "
+                "(detailed narrative purpose served by the plot's conclusion, unique thematic "
+                "payoff, particular closure mechanisms)."
             ),
             importance=Importance.LOW,
         ),

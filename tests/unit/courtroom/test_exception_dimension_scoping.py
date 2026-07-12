@@ -38,8 +38,8 @@ async def test_infringement_dimension_gets_exception_dims_injected(mock_argument
     await courtroom.run(case_input)
 
     scoped_inputs = [call.args[0] for call in mock_argumentation_phase.run.call_args_list]
-    character_call = next(ci for ci in scoped_inputs if ci.dimensions[0].name == "character")
-    assert {d.name for d in character_call.dimensions} == {"character", "scenes-a-faire"}
+    character_call = next(ci for ci in scoped_inputs if ci.dimensions[0].name == "Character")
+    assert {d.name for d in character_call.dimensions} == {"Character", "Scènes à Faire"}
 
 
 async def test_exception_dimension_runs_standalone(mock_argumentation_phase, mock_deliberation_phases):
@@ -53,8 +53,8 @@ async def test_exception_dimension_runs_standalone(mock_argumentation_phase, moc
     await courtroom.run(case_input)
 
     scoped_inputs = [call.args[0] for call in mock_argumentation_phase.run.call_args_list]
-    exception_call = next(ci for ci in scoped_inputs if ci.dimensions[0].name == "scenes-a-faire")
-    assert [d.name for d in exception_call.dimensions] == ["scenes-a-faire"]
+    exception_call = next(ci for ci in scoped_inputs if ci.dimensions[0].name == "Scènes à Faire")
+    assert [d.name for d in exception_call.dimensions] == ["Scènes à Faire"]
 
 
 async def test_dimension_verdicts_carry_dimension_type(mock_argumentation_phase, mock_deliberation_phases):
@@ -68,5 +68,5 @@ async def test_dimension_verdicts_carry_dimension_type(mock_argumentation_phase,
     result = await courtroom.run(case_input)
 
     by_name = {dv.dimension: dv.dimension_type for dv in result.dimension_verdicts}
-    assert by_name["character"] == "infringement"
-    assert by_name["scenes-a-faire"] == "exception"
+    assert by_name["Character"] == "infringement"
+    assert by_name["Scènes à Faire"] == "exception"

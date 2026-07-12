@@ -146,7 +146,7 @@ async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, sa
         await prosecutor.gather_arguments("src", "tgt", [CHARACTER], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    assert "Identity & Properties" in user_content
+    assert "Character Identity & Traits" in user_content
     assert "CRITICAL" in user_content or "HIGH" in user_content
 
 
@@ -179,9 +179,9 @@ async def test_prosecutor_prompt_separates_infringement_and_exception_dimensions
         await prosecutor.gather_arguments("src", "tgt", [CHARACTER, SCENES_A_FAIRE], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    assert "PRIMARY DIMENSION (must argue): character" in user_content
+    assert "PRIMARY DIMENSION (must argue): Character" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" in user_content
-    assert "scenes-a-faire" in user_content
+    assert "Scènes à Faire" in user_content
 
 
 async def test_prosecutor_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
@@ -201,7 +201,7 @@ async def test_prosecutor_prompt_standalone_exception_dimension_is_mandatory(age
         await prosecutor.gather_arguments("src", "tgt", [SCENES_A_FAIRE], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    assert "PRIMARY DIMENSION (must argue): scenes-a-faire" in user_content
+    assert "PRIMARY DIMENSION (must argue): Scènes à Faire" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" not in user_content
 
 

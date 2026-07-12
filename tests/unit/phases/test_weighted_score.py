@@ -38,14 +38,15 @@ def test_no_votes_gives_zero():
 
 
 def test_score_between_zero_and_one():
+    sub_names = [sd.name for sd in CHARACTER.sub_dimensions]
     votes = [
         _vote([
-            ("Identity & Properties", SimilarityScore.CLEAR),
-            ("Character Development", SimilarityScore.POSSIBLE),
-            ("Relationships & Dynamics", SimilarityScore.GENERIC),
-            ("Background & Motivation", SimilarityScore.NONE),
-            ("Expression & Behaviour", SimilarityScore.NONE),
-            ("Function & Role", SimilarityScore.NONE),
+            (sub_names[0], SimilarityScore.CLEAR),
+            (sub_names[1], SimilarityScore.POSSIBLE),
+            (sub_names[2], SimilarityScore.GENERIC),
+            (sub_names[3], SimilarityScore.NONE),
+            (sub_names[4], SimilarityScore.NONE),
+            (sub_names[5], SimilarityScore.NONE),
         ])
     ]
     score = _compute_weighted_score(votes, CHARACTER)
@@ -53,10 +54,11 @@ def test_score_between_zero_and_one():
 
 
 def test_multiple_jurors_averaged():
+    identity_name = CHARACTER.sub_dimensions[0].name
     votes = [
-        _vote([("Identity & Properties", SimilarityScore.CLEAR)] +
+        _vote([(identity_name, SimilarityScore.CLEAR)] +
               [(sd.name, SimilarityScore.NONE) for sd in CHARACTER.sub_dimensions[1:]]),
-        _vote([("Identity & Properties", SimilarityScore.NONE)] +
+        _vote([(identity_name, SimilarityScore.NONE)] +
               [(sd.name, SimilarityScore.NONE) for sd in CHARACTER.sub_dimensions[1:]]),
     ]
     score = _compute_weighted_score(votes, CHARACTER)

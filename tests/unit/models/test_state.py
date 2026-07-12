@@ -64,7 +64,7 @@ def test_argumentation_state_accepts_dimension_objects():
         max_rounds=3,
     )
     assert len(state.dimensions) == 1
-    assert state.dimensions[0].name == "character"
+    assert state.dimensions[0].name == "Character"
 
 
 def test_argumentation_state_has_four_step_fields():
@@ -102,7 +102,7 @@ def test_deliberation_state_has_current_dimension(minimal_argumentation_log):
         max_rounds=2,
         current_dimension=CHARACTER,
     )
-    assert state.current_dimension.name == "character"
+    assert state.current_dimension.name == "Character"
 
 
 def test_deliberation_state_weighted_score_defaults_to_zero(minimal_argumentation_log):

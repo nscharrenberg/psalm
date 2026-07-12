@@ -49,7 +49,7 @@ def test_debate_config_defaults():
     assert config.deliberation_rounds == 2
     assert config.time_limit_seconds == 180
     dim_names = {d.name for d in config.dimensions}
-    assert "character" in dim_names
+    assert "Character" in dim_names
     assert config.voting_strategies[-1] == "judge_tiebreaker"
 
 
@@ -70,7 +70,7 @@ def test_debate_config_default_dimensions_are_dimension_objects():
     assert len(config.dimensions) == 3
     assert all(isinstance(d, Dimension) for d in config.dimensions)
     names = {d.name for d in config.dimensions}
-    assert names == {"character", "world-building", "plot"}
+    assert names == {"Character", "World Building", "Plot"}
 
 
 def test_debate_config_accepts_any_dimension_object():
@@ -97,7 +97,7 @@ def test_case_input_default_dimensions_are_dimension_objects():
 
 def test_case_input_accepts_dimension_objects():
     ci = CaseInput(source_text="src", target_text="tgt", dimensions=[CHARACTER])
-    assert ci.dimensions[0].name == "character"
+    assert ci.dimensions[0].name == "Character"
 
 
 def test_debate_config_default_evaluation_strategy():
