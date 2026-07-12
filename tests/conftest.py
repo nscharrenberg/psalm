@@ -1,6 +1,10 @@
 # tests/conftest.py
+from contextlib import contextmanager
+
 import pytest
 
+from psalm.events.base import EventSink
+from psalm.events.context import _current_sink
 from psalm.models.config import AgentConfig, DebateConfig
 from psalm.models.evidence import Argument, Proof
 from psalm.models.result import (
@@ -120,12 +124,6 @@ def minimal_psalm_result(minimal_argumentation_log, minimal_debate_log) -> PSALM
             voting_strategy_applied="simple_majority",
         ),
     )
-
-
-from contextlib import contextmanager
-
-from psalm.events.base import EventSink
-from psalm.events.context import _current_sink
 
 
 @contextmanager
