@@ -80,12 +80,17 @@ async def astream_evaluate(self, source_text: str, target_text: str) -> AsyncIte
 
     async def _run() -> PSALMResult:
         _current_sink.set(sink)
-        await emit(RunStarted(dimensions=[d.name for d in self._debate_config.dimensions], ...))
+        await emit(RunStarted(
+            dimensions=[d.name for d in self._debate_config.dimensions],
+            evaluation_strategy=self._debate_config.evaluation_strategy.value,
+            source_length=len(source_text),
+            target_length=len(target_text),
+        ))
         if source_text.strip() == target_text.strip():
-            return self._identical_texts_result(source_text)  # still emits via the shortcut, see §4
+            return await self._aidentical_texts_result(source_text)  # §2.6 — emits its own shortcut sequence
         case_input = CaseInput(source_text=source_text, target_text=target_text,
                                 dimensions=self._debate_config.dimensions)
-        return await self._courtroom.run(case_input)
+        return await self._courtroom.run(case_input)  # emits DimensionVerdictReached / FinalVerdictReached itself
 
     task = asyncio.create_task(_run())
     try:
@@ -125,7 +130,29 @@ Because `_run_fully_separate` schedules these via `asyncio.gather`, each becomes
 
 There is no separate `RunCompleted` event. `DefaultCourtroom.run()` emits `FinalVerdictReached` (carrying the full `PSALMResult`) as the last thing it does before returning — that event, drained from the queue like every other, is the stream's natural terminal item. `RunFailed` is the terminal item on the error path instead.
 
-### 2.5 Abandoned streams
+### 2.5 Dimension tag is `None` under shared-argumentation strategies
+
+Under `SHARED_ARG_PER_DIM_DELIBERATION` and `SHARED_ALL`, `_argumentation_phase.run(case_input)` runs once for *all* dimensions together, outside any dimension-scoped task — `_current_dimension` is never set at that point, so every `argumentation`-category event from that shared run carries `dimension=None`. This is correct, not a gap: under those strategies an argument genuinely isn't scoped to one dimension. `deliberation`- and `verdict`-category events are still correctly per-dimension in all three strategies, since `_deliberate_single` (or `_run_single_dimension` under `FULLY_SEPARATE`) always sets `_current_dimension` before running.
+
+### 2.6 Identical-texts shortcut
+
+`_BuiltPSALM._identical_texts_result` (the `source == target` fast path) bypasses `DefaultCourtroom` entirely, so it's the one place outside the courtroom that must emit `DimensionVerdictReached`/`FinalVerdictReached` itself. It gains an async sibling, `_aidentical_texts_result`, used only by `astream_evaluate()`:
+
+```python
+async def _aidentical_texts_result(self, text: str) -> PSALMResult:
+    result = self._identical_texts_result(text)  # unchanged, still used by plain .evaluate()/.aevaluate()
+    for dv in result.dimension_verdicts:
+        await emit(DimensionVerdictReached(
+            dimension_type=dv.dimension_type, importance=dv.importance.value,
+            verdict=dv.verdict, weighted_score=dv.weighted_score,
+        ))
+    await emit(FinalVerdictReached(result=result))
+    return result
+```
+
+`_identical_texts_result` itself is untouched — plain `.evaluate()`/`.aevaluate()` keep calling it directly with no emission (§4.3).
+
+### 2.7 Abandoned streams
 
 If a consumer stops iterating early (e.g. a disconnected websocket breaks out of the `async for` loop), the generator's `finally` does **not** cancel `task` — the underlying run keeps executing to completion, same as it would under plain `.evaluate()`. Watching is a side observation, not a control mechanism (§1 scope).
 
@@ -141,7 +168,8 @@ All events subclass `PSALMEvent` (§2.1). Grouped by `category`:
 | `RunStarted` | `dimensions: list[str]`, `evaluation_strategy: str`, `source_length: int`, `target_length: int` | `astream_evaluate()`, before dispatch |
 | `RunFailed` | `code: str`, `message: str`, `context: dict` | `astream_evaluate()`, on unhandled exception |
 | `DimensionStarted` | `dimension_type: str`, `importance: str` | `_run_single_dimension` / `_deliberate_single` (top) |
-| `DimensionCompleted` | `dimension_type: str` | `_run_single_dimension` / `_deliberate_single` (bottom, before return) |
+
+A dimension's completion is signaled by `DimensionVerdictReached` (§3, `verdict` category) — no separate `DimensionCompleted` event, since it would fire at the same point with no additional information.
 
 ### `argumentation` (`ArgumentationPhase`)
 | Type | Fields | Fires in |
@@ -250,7 +278,7 @@ None. This is a purely additive feature — no existing method signature, return
 | `psalm/phases/deliberation.py` | Add `emit(...)` calls in `_jury_vote`, `_check_consensus`, `_jury_discussion`, `_apply_voting_strategy` |
 | `psalm/agents/base.py` | Add `emit(...)` calls in `_call_llm` / `_call_structured` retry and failure paths |
 | `psalm/courtroom/default.py` | Add `_current_dimension.set(...)` + `emit(...)` calls in `_run_single_dimension`, `_deliberate_single`, `run()` |
-| `psalm/builder.py` | Add `PSALM.with_event_listener()`, `_BuiltPSALM.astream_evaluate()`; `aevaluate()` branches to the listener-forwarding path when listeners are registered; `_identical_texts_result` emits its shortcut event sequence |
+| `psalm/builder.py` | Add `PSALM.with_event_listener()`, `_BuiltPSALM.astream_evaluate()`, `_aidentical_texts_result()` (§2.6); `aevaluate()` branches to the listener-forwarding path when listeners are registered; `_identical_texts_result` itself is unchanged |
 | `tests/unit/events/` | New test directory (§5) |
 | `tests/integration/test_event_concurrency.py` | New (§5) |
 | `tests/e2e/test_full_evaluation.py` | Extended (§5) |
