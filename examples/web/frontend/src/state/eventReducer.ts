@@ -286,3 +286,10 @@ export function applyEvent(state: TrialState, event: PSALMEvent): TrialState {
     }
   }
 }
+
+export function mergeTranscript(
+  sharedTranscript: TranscriptEntry[], dimension: DimensionState | null,
+): TranscriptEntry[] {
+  const combined = [...sharedTranscript, ...(dimension?.transcript ?? [])];
+  return combined.sort((a, b) => a.raw.sequence - b.raw.sequence);
+}
