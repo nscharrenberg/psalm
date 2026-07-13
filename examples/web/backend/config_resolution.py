@@ -37,7 +37,7 @@ def resolve_agent_config(role_prefix: str, posted: dict) -> dict:
             default=_DEFAULT_MODEL,
         ),
         "temperature": float(resolve_value(
-            posted.get("temperature") and str(posted["temperature"]),
+            str(posted["temperature"]) if posted.get("temperature") is not None else None,
             f"PSALM_{role_prefix}_TEMPERATURE", "PSALM_TEMPERATURE",
             default=str(_DEFAULT_TEMPERATURE),
         )),
@@ -67,7 +67,7 @@ def resolve_juror_config(index: int, posted: dict) -> dict:
             default=_DEFAULT_MODEL,
         ),
         "temperature": float(resolve_value(
-            posted.get("temperature") and str(posted["temperature"]),
+            str(posted["temperature"]) if posted.get("temperature") is not None else None,
             f"{juror_prefix}_TEMPERATURE", "PSALM_JURY_TEMPERATURE", "PSALM_TEMPERATURE",
             default=str(_DEFAULT_TEMPERATURE),
         )),

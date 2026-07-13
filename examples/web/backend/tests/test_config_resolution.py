@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from config_resolution import resolve_agent_config, resolve_juror_config, resolve_value
 
 
@@ -100,3 +99,13 @@ def test_resolve_juror_config_falls_back_to_global_env_var(monkeypatch):
 def test_resolve_juror_config_raises_when_no_key_available():
     with pytest.raises(ValueError, match="juror 0"):
         resolve_juror_config(0, {})
+
+
+def test_resolve_agent_config_preserves_explicit_zero_temperature():
+    cfg = resolve_agent_config("PROSECUTOR", {"api_key": "sk-p", "temperature": 0.0})
+    assert cfg["temperature"] == 0.0
+
+
+def test_resolve_juror_config_preserves_explicit_zero_temperature():
+    cfg = resolve_juror_config(0, {"api_key": "sk-j", "temperature": 0.0})
+    assert cfg["temperature"] == 0.0
