@@ -168,3 +168,24 @@ def test_post_trials_returns_400_when_api_key_missing(monkeypatch):
     response = client.post("/api/trials", json=_valid_payload(prosecutor={}))
     assert response.status_code == 400
     assert response.json()["detail"]["code"] == "PSALM-WEB-001"
+
+
+def test_get_trial_events_endpoint_streams_backlog_for_done_trial():
+    store._trials.clear()
+    store._current_id = None
+    record = store.create("s", "t", {})
+    asyncio.run(store.append_event(record.id, {"type": "run_started"}))
+    asyncio.run(store.mark_done(record.id, {"verdict": "Guilty"}))
+
+    client = TestClient(app)
+    with client.stream("GET", f"/api/trials/{record.id}/events") as response:
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("text/event-stream")
+        body = "".join(response.iter_text())
+    assert "run_started" in body
+
+
+def test_get_trial_events_endpoint_404s_for_unknown_trial():
+    client = TestClient(app)
+    response = client.get("/api/trials/nonexistent/events")
+    assert response.status_code == 404

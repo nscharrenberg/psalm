@@ -3,7 +3,9 @@ from __future__ import annotations
 from catalog import build_catalog
 from execution import TrialStartError, build_psalm, resolve_config, run_trial
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi.responses import StreamingResponse
 from schemas import CatalogResponse, TrialConfigRequest
+from sse import stream_trial_events
 from trials import store
 
 api_router = APIRouter(prefix="/api")
@@ -40,3 +42,10 @@ async def start_trial(config: TrialConfigRequest, background_tasks: BackgroundTa
     record = store.create(config.source_text, config.target_text, config_summary)
     background_tasks.add_task(run_trial, store, record.id, psalm, config.source_text, config.target_text)
     return {"trial_id": record.id}
+
+
+@api_router.get("/trials/{trial_id}/events")
+async def stream_events(trial_id: str):
+    if store.get(trial_id) is None:
+        raise HTTPException(status_code=404, detail="Trial not found.")
+    return StreamingResponse(stream_trial_events(store, trial_id), media_type="text/event-stream")
