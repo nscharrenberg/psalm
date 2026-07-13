@@ -26,6 +26,10 @@ dev = [
     "ruff>=0.15.18",
     "ty>=0.0.51",
 ]
+web = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
