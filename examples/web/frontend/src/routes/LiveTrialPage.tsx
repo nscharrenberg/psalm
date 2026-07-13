@@ -24,7 +24,8 @@ export default function LiveTrialPage() {
   }, [trialId, startLive]);
 
   useEffect(() => {
-    if ((trialState.status === "done" || trialState.status === "error") && trialId) {
+    const currentStatus = useTrialStore.getState().state.status;
+    if ((currentStatus === "done" || currentStatus === "error") && trialId) {
       navigate(`/trial/${trialId}/result`);
     }
   }, [trialState.status, trialId, navigate]);

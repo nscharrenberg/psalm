@@ -95,4 +95,16 @@ describe("LiveTrialPage", () => {
 
     expect(await screen.findByText("RESULT PAGE")).toBeInTheDocument();
   });
+
+  it("does not immediately navigate using stale status left over from a previous trial", () => {
+    vi.spyOn(client, "openTrialEventStream").mockReturnValue(() => {});
+    // Simulate a store that still holds "done" status from a just-finished previous trial.
+    useTrialStore.setState((s) => ({
+      ...s,
+      state: { ...s.state, status: "done" },
+    }));
+    renderAtTrial("newTrialId");
+    expect(screen.getByText("Stage")).toHaveClass("active");
+    expect(screen.queryByText("RESULT PAGE")).not.toBeInTheDocument();
+  });
 });
