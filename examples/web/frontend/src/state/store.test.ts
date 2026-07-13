@@ -111,6 +111,29 @@ describe("useTrialStore", () => {
     expect(useTrialStore.getState().isPlaying).toBe(false);
   });
 
+  it("loadForReplay closes a still-open live stream so it cannot corrupt replay state", () => {
+    const close = vi.fn();
+    let capturedOnEvent: ((event: PSALMEvent) => void) | undefined;
+    vi.spyOn(client, "openTrialEventStream").mockImplementation((_id, onEvent) => {
+      capturedOnEvent = onEvent;
+      return close;
+    });
+
+    useTrialStore.getState().startLive("trial-1");
+    // Do NOT call stopLive()/reset() here — this is the scenario the bug covers:
+    // entering replay mode while a live stream is technically still open.
+    useTrialStore.getState().loadForReplay([makeRunStarted(), makeFinalVerdict()]);
+
+    expect(close).toHaveBeenCalled();
+
+    // Simulate the (now-closed, but still-referenced-by-old-closure) stream firing anyway
+    // — this must NOT corrupt the replay snapshot.
+    const stateBeforeStaleEvent = useTrialStore.getState().state;
+    capturedOnEvent?.(makeRunStarted({ event_id: "stale" }));
+    expect(useTrialStore.getState().state).toBe(stateBeforeStaleEvent);
+    expect(useTrialStore.getState().mode).toBe("replay");
+  });
+
   it("reset clears everything back to idle", () => {
     useTrialStore.getState().loadForReplay([makeRunStarted()]);
     useTrialStore.getState().scrubTo(0);

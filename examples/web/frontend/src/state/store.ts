@@ -54,20 +54,32 @@ export const useTrialStore = create<TrialStoreState>((set, get) => ({
     closeLiveStream?.();
     stopReplayTimer();
     set({ mode: "live", state: createInitialState(), allEvents: [], isPlaying: false, replayIndex: -1 });
-    closeLiveStream = openTrialEventStream(
+    // Track staleness per-stream so that closing the stream (via closeLiveStream)
+    // immediately silences its onEvent callback, even if an in-flight event still
+    // fires after close() is requested (e.g. the underlying transport isn't
+    // perfectly synchronous). Without this, a leftover live stream could mutate
+    // `state`/`allEvents` after loadForReplay/startLive/reset has moved on.
+    let isStale = false;
+    const unsubscribe = openTrialEventStream(
       trialId,
       (event) => {
+        if (isStale) return;
         set((s) => ({ state: applyEvent(s.state, event), allEvents: [...s.allEvents, event] }));
       },
       () => {
         closeLiveStream = null;
       },
     );
+    closeLiveStream = () => {
+      isStale = true;
+      unsubscribe();
+    };
   },
 
   stopLive: () => {
     closeLiveStream?.();
     closeLiveStream = null;
+    stopReplayTimer();
   },
 
   reset: () => {
@@ -78,6 +90,8 @@ export const useTrialStore = create<TrialStoreState>((set, get) => ({
   },
 
   loadForReplay: (events: PSALMEvent[]) => {
+    closeLiveStream?.();
+    closeLiveStream = null;
     stopReplayTimer();
     set({ mode: "replay", allEvents: events, replayIndex: -1, state: createInitialState(), isPlaying: false });
   },
