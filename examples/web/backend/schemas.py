@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -42,3 +44,45 @@ class CatalogResponse(BaseModel):
     evaluation_strategies: list[EvaluationStrategyPayload]
     provider_presets: list[ProviderPresetPayload]
     env_status: dict[str, bool]
+
+
+class AgentConfigRequest(BaseModel):
+    base_url: str | None = None
+    api_key: str | None = None
+    model: str | None = None
+    temperature: float | None = None
+
+
+class JurorConfigRequest(AgentConfigRequest):
+    seed: int | None = None
+
+
+class TrialConfigRequest(BaseModel):
+    source_text: str
+    target_text: str
+    dimensions: list[str]
+    evaluation_strategy: str = "fully_separate"
+    argumentation_rounds: int = 3
+    deliberation_rounds: int = 2
+    time_limit_seconds: int = 120
+    prosecutor: AgentConfigRequest = AgentConfigRequest()
+    defense: AgentConfigRequest = AgentConfigRequest()
+    judge: AgentConfigRequest = AgentConfigRequest()
+    jury: list[JurorConfigRequest] = [
+        JurorConfigRequest(), JurorConfigRequest(), JurorConfigRequest(),
+    ]
+
+
+class TrialSummary(BaseModel):
+    id: str
+    created_at: str
+    status: str
+    source_text_preview: str
+    target_text_preview: str
+    verdict: str | None = None
+    error_message: str | None = None
+
+
+class TrialDetail(TrialSummary):
+    config_summary: dict[str, Any]
+    result: dict[str, Any] | None = None
