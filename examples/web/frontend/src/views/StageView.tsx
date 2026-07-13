@@ -4,7 +4,7 @@ interface StageViewProps {
   dimension: DimensionState | null;
 }
 
-function phaseLabel(dimension: DimensionState): string {
+export function phaseLabel(dimension: DimensionState): string {
   if (dimension.phase === "verdict") return `Verdict: ${dimension.verdict}`;
   if (dimension.phase === "deliberation") return `Deliberation — round ${dimension.currentRound}`;
   return `Argumentation — round ${dimension.currentRound}`;
@@ -19,6 +19,10 @@ export default function StageView({ dimension }: StageViewProps) {
     acc[v.vote] = (acc[v.vote] ?? 0) + 1;
     return acc;
   }, {});
+
+  const isJurorSpeaking = dimension.speakingRole !== null
+    && dimension.speakingRole !== "prosecution"
+    && dimension.speakingRole !== "defense";
 
   return (
     <div className="stage-view">
@@ -59,6 +63,9 @@ export default function StageView({ dimension }: StageViewProps) {
             <span key={vote} className="stage-jury-vote">{count} × {vote}</span>
           ))}
         </div>
+        {isJurorSpeaking && dimension.latestSpeech && (
+          <p className="stage-speech">{dimension.speakingRole}: &quot;{dimension.latestSpeech}&quot;</p>
+        )}
       </div>
     </div>
   );

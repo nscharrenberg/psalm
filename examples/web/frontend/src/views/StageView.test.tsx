@@ -21,6 +21,14 @@ describe("StageView", () => {
     expect(screen.getByText('"The scar matches."')).toBeInTheDocument();
   });
 
+  it("shows a juror's speech bubble in the jury area when they are speaking", () => {
+    render(
+      <StageView dimension={makeDimensionState({ speakingRole: "juror-1", latestSpeech: "I believe the evidence is clear." })} />,
+    );
+    const jury = screen.getByTestId("stage-jury");
+    expect(jury.textContent).toContain("I believe the evidence is clear.");
+  });
+
   it("does not show a speech bubble for the side that is not currently speaking", () => {
     render(
       <StageView dimension={makeDimensionState({ speakingRole: "prosecution", latestSpeech: "The scar matches." })} />,

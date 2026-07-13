@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTrialStore } from "../state/store";
-import StageView from "../views/StageView";
+import StageView, { phaseLabel } from "../views/StageView";
 import TimelineView from "../views/TimelineView";
 import TranscriptView from "../views/TranscriptView";
 
@@ -54,6 +54,19 @@ export default function LiveTrialPage() {
               {name}
             </button>
           ))}
+        </div>
+      )}
+
+      {trialState.dimensionOrder.length > 1 && (
+        <div className="dimension-status-strip" data-testid="dimension-status-strip">
+          {trialState.dimensionOrder
+            .filter((name) => name !== selectedDimension)
+            .map((name, index) => (
+              <span key={name} className="dimension-status-item">
+                {index > 0 && " · "}
+                {name}: {phaseLabel(trialState.dimensions[name])}
+              </span>
+            ))}
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getTrial } from "../api/client";
+import { fetchTrialEvents, getTrial } from "../api/client";
 import type { TrialDetail } from "../api/types";
 import { useTrialStore } from "../state/store";
 import StageView from "../views/StageView";
@@ -11,6 +11,7 @@ export default function ResultsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showReplay, setShowReplay] = useState(false);
   const [replayDimension, setReplayDimension] = useState<string | null>(null);
+  const [isLoadingReplay, setIsLoadingReplay] = useState(false);
 
   const liveEvents = useTrialStore((s) => s.allEvents);
   const liveTrialId = useTrialStore((s) => s.liveTrialId);
@@ -42,8 +43,20 @@ export default function ResultsPage() {
   }, [replayState.dimensionOrder, replayDimension]);
 
   function startReplay() {
-    loadForReplay(liveEvents);
-    setShowReplay(true);
+    if (liveTrialId === trialId && liveEvents.length > 0) {
+      // Fast path: the trial we just watched live is still buffered — no need
+      // to round-trip to the server for events we already have.
+      loadForReplay(liveEvents);
+      setShowReplay(true);
+      return;
+    }
+    if (!trialId) return;
+    setIsLoadingReplay(true);
+    fetchTrialEvents(trialId).then((events) => {
+      loadForReplay(events);
+      setShowReplay(true);
+      setIsLoadingReplay(false);
+    });
   }
 
   if (error) return <p role="alert">Failed to load trial: {error}</p>;
@@ -136,8 +149,10 @@ export default function ResultsPage() {
         </>
       )}
 
-      {liveTrialId === trialId && liveEvents.length > 0 && !showReplay && (
-        <button type="button" onClick={startReplay}>Replay this trial</button>
+      {detail.status !== "running" && !showReplay && (
+        <button type="button" onClick={startReplay} disabled={isLoadingReplay}>
+          {isLoadingReplay ? "Loading replay..." : "Replay this trial"}
+        </button>
       )}
 
       {showReplay && replayMode === "replay" && (

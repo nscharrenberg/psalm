@@ -95,3 +95,21 @@ export function openTrialEventStream(
 
   return () => source.close();
 }
+
+// For an already-finished trial, GET /api/trials/{id}/events immediately replays
+// its full backlog and then closes (stream_trial_events returns once the trial is
+// no longer running — see examples/web/backend/sse.py). This wraps that one-shot
+// replay as a promise: accumulate every event, resolve once the stream closes.
+// No explicit error path is needed since onClose fires unconditionally once the
+// connection ends, whether cleanly or not.
+export function fetchTrialEvents(trialId: string): Promise<PSALMEvent[]> {
+  return new Promise((resolve) => {
+    const events: PSALMEvent[] = [];
+    const close = openTrialEventStream(
+      trialId,
+      (event) => { events.push(event); },
+      () => { resolve(events); },
+    );
+    void close;
+  });
+}

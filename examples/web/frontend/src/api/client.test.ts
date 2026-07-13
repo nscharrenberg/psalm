@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   TrialConfigError,
   TrialConflictError,
+  fetchTrialEvents,
   getCatalog,
   getTrial,
   listTrials,
@@ -125,5 +126,22 @@ describe("openTrialEventStream", () => {
     close();
 
     expect(FakeEventSource.instances[0].readyState).toBe(FakeEventSource.CLOSED);
+  });
+
+  describe("fetchTrialEvents", () => {
+    it("accumulates every streamed event and resolves once the stream closes", async () => {
+      FakeEventSource.instances = [];
+      vi.stubGlobal("EventSource", FakeEventSource as unknown as typeof EventSource);
+
+      const resultPromise = fetchTrialEvents("abc");
+
+      const source = FakeEventSource.instances[0];
+      expect(source.url).toBe("/api/trials/abc/events");
+      source.onmessage?.({ data: JSON.stringify({ type: "run_started" }) });
+      source.onmessage?.({ data: JSON.stringify({ type: "final_verdict_reached" }) });
+
+      const result = await resultPromise;
+      expect(result).toEqual([{ type: "run_started" }, { type: "final_verdict_reached" }]);
+    });
   });
 });

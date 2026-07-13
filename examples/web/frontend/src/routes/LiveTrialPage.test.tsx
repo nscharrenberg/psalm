@@ -71,6 +71,37 @@ describe("LiveTrialPage", () => {
     expect(screen.getByRole("button", { name: "Plot" })).toBeInTheDocument();
   });
 
+  it("shows a status strip with the OTHER dimensions' phase/round while one is selected", () => {
+    let onEvent: ((event: PSALMEvent) => void) | undefined;
+    vi.spyOn(client, "openTrialEventStream").mockImplementation((_id, cb) => {
+      onEvent = cb;
+      return () => {};
+    });
+    renderAtTrial("abc123");
+
+    act(() => {
+      onEvent?.({
+        event_id: "1", sequence: 1, timestamp: "t", run_id: "r", dimension: "Character",
+        category: "lifecycle", type: "dimension_started", dimension_type: "infringement", importance: "high",
+      } as PSALMEvent);
+      onEvent?.({
+        event_id: "2", sequence: 2, timestamp: "t", run_id: "r", dimension: "Plot",
+        category: "lifecycle", type: "dimension_started", dimension_type: "infringement", importance: "high",
+      } as PSALMEvent);
+      onEvent?.({
+        event_id: "3", sequence: 3, timestamp: "t", run_id: "r", dimension: "Plot",
+        category: "argumentation", type: "argumentation_round_started", round: 2,
+      } as PSALMEvent);
+    });
+
+    // "Character" is the first dimension seen, so it's auto-selected; the status strip
+    // should surface the OTHER (non-selected) dimension, "Plot", and its phase/round.
+    const strip = screen.getByTestId("dimension-status-strip");
+    expect(strip.textContent).toContain("Plot");
+    expect(strip.textContent).toContain("round 2");
+    expect(strip.textContent).not.toContain("Character:");
+  });
+
   it("navigates to the results page once the trial is done", async () => {
     let onEvent: ((event: PSALMEvent) => void) | undefined;
     vi.spyOn(client, "openTrialEventStream").mockImplementation((_id, cb) => {

@@ -70,6 +70,7 @@ describe("ResultsPage", () => {
 
   it("shows a Replay button only when live events were buffered, and starts replay mode on click", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
+    const fetchSpy = vi.spyOn(client, "fetchTrialEvents");
     useTrialStore.setState({ allEvents: [{ type: "run_started" } as PSALMEvent], liveTrialId: "abc" });
     renderAtResult("abc");
     await screen.findByText("Verdict: Guilty");
@@ -79,20 +80,45 @@ describe("ResultsPage", () => {
       replayButton.click();
     });
     expect(screen.getByText("Replay")).toBeInTheDocument();
+    // Fast path: the buffered live events already belong to this trial, so no
+    // network fetch should have been needed.
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("does not show a Replay button when no live events were buffered (e.g. loaded from history)", async () => {
+  it("shows a working Replay button that fetches the trial's events when none are buffered (e.g. loaded from history)", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
+    const fetchedEvents = [{ type: "run_started" } as PSALMEvent];
+    const fetchSpy = vi.spyOn(client, "fetchTrialEvents").mockResolvedValue(fetchedEvents);
     renderAtResult("abc");
     await screen.findByText("Verdict: Guilty");
-    expect(screen.queryByText("Replay this trial")).not.toBeInTheDocument();
+
+    const replayButton = screen.getByText("Replay this trial");
+    await act(async () => {
+      replayButton.click();
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith("abc");
+    expect(useTrialStore.getState().allEvents).toEqual(fetchedEvents);
+    expect(screen.getByText("Replay")).toBeInTheDocument();
   });
 
-  it("does not show Replay when buffered live events belong to a different trial", async () => {
+  it("shows Replay for a finished trial even when buffered live events belong to a different trial, and fetches the correct trial's events on click", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
-    useTrialStore.setState({ allEvents: [{ type: "run_started" } as PSALMEvent], liveTrialId: "some-other-trial" });
+    const staleEvents = [{ type: "run_started" } as PSALMEvent];
+    const fetchedEvents = [{ type: "final_verdict_reached" } as PSALMEvent];
+    const fetchSpy = vi.spyOn(client, "fetchTrialEvents").mockResolvedValue(fetchedEvents);
+    useTrialStore.setState({ allEvents: staleEvents, liveTrialId: "some-other-trial" });
     renderAtResult("abc");
     await screen.findByText("Verdict: Guilty");
-    expect(screen.queryByText("Replay this trial")).not.toBeInTheDocument();
+
+    const replayButton = screen.getByText("Replay this trial");
+    expect(replayButton).toBeInTheDocument();
+    await act(async () => {
+      replayButton.click();
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith("abc");
+    expect(useTrialStore.getState().allEvents).toEqual(fetchedEvents);
+    expect(useTrialStore.getState().allEvents).not.toEqual(staleEvents);
   });
 });
