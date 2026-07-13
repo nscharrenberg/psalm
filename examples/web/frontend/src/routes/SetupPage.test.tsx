@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
@@ -79,6 +79,20 @@ describe("SetupPage", () => {
     fireEvent.click(screen.getByText("Start Trial"));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No API key provided.");
+  });
+
+  it("falls back to the generic env var when a role-specific env var is unset", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue({
+      ...fakeCatalog,
+      env_status: { PSALM_API_KEY: true, PSALM_PROSECUTOR_API_KEY: false },
+    });
+    renderSetupPage();
+    await screen.findByLabelText("Character");
+
+    const prosecutorPanel = screen.getByRole("group", { name: "Prosecutor" });
+    expect(within(prosecutorPanel).getByLabelText("API key")).toHaveAttribute(
+      "placeholder", "✓ using environment variable",
+    );
   });
 
   it("adds and removes jurors, never going below 3", async () => {

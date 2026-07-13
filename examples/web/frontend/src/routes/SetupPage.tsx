@@ -178,17 +178,17 @@ export default function SetupPage() {
         <h2>Agents</h2>
         <AgentConfigPanel
           label="Prosecutor" config={prosecutor} onChange={setProsecutor}
-          envAvailable={catalog.env_status.PSALM_PROSECUTOR_API_KEY ?? catalog.env_status.PSALM_API_KEY}
+          envAvailable={catalog.env_status.PSALM_PROSECUTOR_API_KEY || catalog.env_status.PSALM_API_KEY}
           providerPresets={catalog.provider_presets}
         />
         <AgentConfigPanel
           label="Defense" config={defense} onChange={setDefense}
-          envAvailable={catalog.env_status.PSALM_DEFENSE_API_KEY ?? catalog.env_status.PSALM_API_KEY}
+          envAvailable={catalog.env_status.PSALM_DEFENSE_API_KEY || catalog.env_status.PSALM_API_KEY}
           providerPresets={catalog.provider_presets}
         />
         <AgentConfigPanel
           label="Judge" config={judge} onChange={setJudge}
-          envAvailable={catalog.env_status.PSALM_JUDGE_API_KEY ?? catalog.env_status.PSALM_API_KEY}
+          envAvailable={catalog.env_status.PSALM_JUDGE_API_KEY || catalog.env_status.PSALM_API_KEY}
           providerPresets={catalog.provider_presets}
         />
 
@@ -200,7 +200,7 @@ export default function SetupPage() {
               onChange={(updated) => setJury((current) => (
                 current.map((j, i) => (i === index ? { ...updated, seed: j.seed } : j))
               ))}
-              envAvailable={catalog.env_status.PSALM_JURY_API_KEY ?? catalog.env_status.PSALM_API_KEY}
+              envAvailable={catalog.env_status.PSALM_JURY_API_KEY || catalog.env_status.PSALM_API_KEY}
               providerPresets={catalog.provider_presets}
             />
             {jury.length > 3 && (
