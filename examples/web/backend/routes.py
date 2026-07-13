@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from catalog import build_catalog
-from fastapi import APIRouter
-from schemas import CatalogResponse
+from execution import TrialStartError, build_psalm, resolve_config, run_trial
+from fastapi import APIRouter, BackgroundTasks, HTTPException
+from schemas import CatalogResponse, TrialConfigRequest
+from trials import store
 
 api_router = APIRouter(prefix="/api")
 
@@ -10,3 +12,30 @@ api_router = APIRouter(prefix="/api")
 @api_router.get("/catalog", response_model=CatalogResponse)
 def get_catalog() -> CatalogResponse:
     return build_catalog()
+
+
+@api_router.post("/trials", status_code=202)
+async def start_trial(config: TrialConfigRequest, background_tasks: BackgroundTasks) -> dict[str, str]:
+    if store.is_running():
+        raise HTTPException(status_code=409, detail="A trial is already in progress.")
+
+    try:
+        resolved = resolve_config(config)
+        psalm = await build_psalm(config, resolved)
+    except TrialStartError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": exc.code, "message": exc.message, "context": exc.context},
+        ) from exc
+
+    config_summary = {
+        "prosecutor": {"model": resolved["prosecutor"]["model"], "base_url": resolved["prosecutor"]["base_url"]},
+        "defense": {"model": resolved["defense"]["model"], "base_url": resolved["defense"]["base_url"]},
+        "judge": {"model": resolved["judge"]["model"], "base_url": resolved["judge"]["base_url"]},
+        "jury": [{"model": j["model"], "base_url": j["base_url"]} for j in resolved["jury"]],
+        "dimensions": config.dimensions,
+        "evaluation_strategy": config.evaluation_strategy,
+    }
+    record = store.create(config.source_text, config.target_text, config_summary)
+    background_tasks.add_task(run_trial, store, record.id, psalm, config.source_text, config.target_text)
+    return {"trial_id": record.id}

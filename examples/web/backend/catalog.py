@@ -32,6 +32,19 @@ _ALL_DIMENSIONS: list[Dimension] = [
     SCENES_A_FAIRE, CITATIONS, PASTICHE, PARODY_SATIRE,
 ]
 
+_DIMENSION_BY_NAME: dict[str, Dimension] = {d.name: d for d in _ALL_DIMENSIONS}
+
+
+def resolve_dimensions(names: list[str]) -> list[Dimension]:
+    dimensions = []
+    for name in names:
+        dimension = _DIMENSION_BY_NAME.get(name)
+        if dimension is None:
+            valid = ", ".join(sorted(_DIMENSION_BY_NAME))
+            raise ValueError(f"Unknown dimension: '{name}'. Valid: {valid}")
+        dimensions.append(dimension)
+    return dimensions
+
 _EVALUATION_STRATEGY_LABELS: dict[EvaluationStrategy, tuple[str, str]] = {
     EvaluationStrategy.FULLY_SEPARATE: (
         "Fully separate (default)",
