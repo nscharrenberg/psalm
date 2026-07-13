@@ -1,7 +1,11 @@
+import asyncio
 from unittest.mock import AsyncMock, patch
 
+from fastapi import BackgroundTasks, HTTPException
 from fastapi.testclient import TestClient
 from main import app
+from routes import start_trial
+from schemas import TrialConfigRequest
 from trials import store
 
 from psalm.dimensions.base import Importance
@@ -91,6 +95,67 @@ def test_post_trials_returns_409_when_already_running():
     client = TestClient(app)
     response = client.post("/api/trials", json=_valid_payload())
     assert response.status_code == 409
+
+
+def test_post_trials_reserves_the_slot_before_the_slow_build_step():
+    """A second POST arriving while the first is still inside build_psalm() (before
+    store.create() has run) must also get 409 — proving the reservation, not just the
+    post-create() is_running() check, closes the race window."""
+    store._trials.clear()
+    store._current_id = None
+    store._reserved = False
+
+    # Reserve the slot exactly the way the route does at the very start of the handler,
+    # simulating "a first request is mid-flight inside build_psalm() right now".
+    assert store.try_reserve() is True
+
+    client = TestClient(app)
+    response = client.post("/api/trials", json=_valid_payload())
+    assert response.status_code == 409
+
+    store.release_reservation()
+
+
+async def test_two_concurrent_start_trial_calls_admit_only_one_trial():
+    """Directly drives two 'simultaneous' invocations of the start_trial() coroutine
+    via asyncio.gather, with build_psalm patched to `await asyncio.sleep(0)` before
+    returning. Because asyncio only switches coroutines at an `await`, both calls get
+    to run their synchronous reservation check before either can finish build_psalm —
+    reproducing the exact double-click / two-tabs race the finding describes. Exactly
+    one call must be admitted (returns a trial_id dict); the other must be rejected
+    with a 409 HTTPException. Two admissions would mean two trials running at once."""
+    store._trials.clear()
+    store._current_id = None
+    store._reserved = False
+
+    resolved = {
+        "prosecutor": {"model": "m", "base_url": "b"},
+        "defense": {"model": "m", "base_url": "b"},
+        "judge": {"model": "m", "base_url": "b"},
+        "jury": [{"model": "m", "base_url": "b"} for _ in range(3)],
+    }
+
+    async def slow_build_psalm(config, resolved_arg):
+        await asyncio.sleep(0.05)
+        return object()
+
+    config = TrialConfigRequest(**_valid_payload())
+
+    with (
+        patch("routes.resolve_config", return_value=resolved),
+        patch("routes.build_psalm", new=slow_build_psalm),
+    ):
+        results = await asyncio.gather(
+            start_trial(config, BackgroundTasks()),
+            start_trial(config, BackgroundTasks()),
+            return_exceptions=True,
+        )
+
+    successes = [r for r in results if isinstance(r, dict)]
+    failures = [r for r in results if isinstance(r, HTTPException)]
+    assert len(successes) == 1, f"expected exactly 1 admitted trial, got {len(successes)}: {results}"
+    assert len(failures) == 1
+    assert failures[0].status_code == 409
 
 
 def test_post_trials_returns_400_when_api_key_missing(monkeypatch):

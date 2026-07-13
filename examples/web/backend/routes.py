@@ -16,13 +16,14 @@ def get_catalog() -> CatalogResponse:
 
 @api_router.post("/trials", status_code=202)
 async def start_trial(config: TrialConfigRequest, background_tasks: BackgroundTasks) -> dict[str, str]:
-    if store.is_running():
+    if not store.try_reserve():
         raise HTTPException(status_code=409, detail="A trial is already in progress.")
 
     try:
         resolved = resolve_config(config)
         psalm = await build_psalm(config, resolved)
     except TrialStartError as exc:
+        store.release_reservation()
         raise HTTPException(
             status_code=400,
             detail={"code": exc.code, "message": exc.message, "context": exc.context},

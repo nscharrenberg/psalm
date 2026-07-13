@@ -74,6 +74,42 @@ async def test_append_event_wakes_a_waiting_consumer():
     assert woke is True
 
 
+def test_try_reserve_succeeds_when_idle():
+    store = TrialStore()
+    assert store.try_reserve() is True
+    assert store.is_running() is True
+
+
+def test_try_reserve_fails_when_already_reserved():
+    store = TrialStore()
+    assert store.try_reserve() is True
+    assert store.try_reserve() is False
+
+
+def test_try_reserve_fails_when_a_trial_is_already_running():
+    store = TrialStore()
+    store.create("s", "t", {})
+    assert store.try_reserve() is False
+
+
+def test_release_reservation_allows_a_subsequent_reserve():
+    store = TrialStore()
+    assert store.try_reserve() is True
+    store.release_reservation()
+    assert store.is_running() is False
+    assert store.try_reserve() is True
+
+
+def test_create_clears_the_reservation_flag():
+    store = TrialStore()
+    store.try_reserve()
+    store.create("s", "t", {})
+    # is_running() should now reflect the real trial record, not a stale reservation
+    assert store.is_running() is True
+    store2_check = store.try_reserve()  # should fail because a real trial is running, not because of a stale flag
+    assert store2_check is False
+
+
 def test_trial_summary_previews_texts():
     store = TrialStore()
     record = store.create("a" * 300, "b" * 300, {})

@@ -31,11 +31,29 @@ class TrialStore:
     def __init__(self) -> None:
         self._trials: dict[str, TrialRecord] = {}
         self._current_id: str | None = None
+        self._reserved: bool = False
 
     def is_running(self) -> bool:
+        if self._reserved:
+            return True
         if self._current_id is None:
             return False
         return self._trials[self._current_id].status == "running"
+
+    def try_reserve(self) -> bool:
+        """Atomically (no `await` involved) claim the "one trial at a time" slot.
+
+        Returns False if a trial is already running or already reserved. Must be
+        paired with either `create()` (on success, which implicitly consumes the
+        reservation) or `release_reservation()` (on failure).
+        """
+        if self.is_running():
+            return False
+        self._reserved = True
+        return True
+
+    def release_reservation(self) -> None:
+        self._reserved = False
 
     def create(self, source_text: str, target_text: str, config_summary: dict[str, Any]) -> TrialRecord:
         trial_id = str(uuid.uuid4())
@@ -49,6 +67,7 @@ class TrialStore:
         )
         self._trials[trial_id] = record
         self._current_id = trial_id
+        self._reserved = False
         return record
 
     def get(self, trial_id: str) -> TrialRecord | None:
