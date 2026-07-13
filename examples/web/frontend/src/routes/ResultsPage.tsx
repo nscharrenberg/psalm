@@ -13,6 +13,7 @@ export default function ResultsPage() {
   const [replayDimension, setReplayDimension] = useState<string | null>(null);
 
   const liveEvents = useTrialStore((s) => s.allEvents);
+  const liveTrialId = useTrialStore((s) => s.liveTrialId);
   const loadForReplay = useTrialStore((s) => s.loadForReplay);
   const replayState = useTrialStore((s) => s.state);
   const replayMode = useTrialStore((s) => s.mode);
@@ -135,7 +136,7 @@ export default function ResultsPage() {
         </>
       )}
 
-      {liveEvents.length > 0 && !showReplay && (
+      {liveTrialId === trialId && liveEvents.length > 0 && !showReplay && (
         <button type="button" onClick={startReplay}>Replay this trial</button>
       )}
 

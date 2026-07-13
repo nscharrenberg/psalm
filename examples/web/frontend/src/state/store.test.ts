@@ -134,6 +134,14 @@ describe("useTrialStore", () => {
     expect(useTrialStore.getState().mode).toBe("replay");
   });
 
+  it("tracks which trial id the buffered live events belong to", () => {
+    vi.spyOn(client, "openTrialEventStream").mockReturnValue(() => {});
+    useTrialStore.getState().startLive("trial-x");
+    expect(useTrialStore.getState().liveTrialId).toBe("trial-x");
+    useTrialStore.getState().reset();
+    expect(useTrialStore.getState().liveTrialId).toBeNull();
+  });
+
   it("reset clears everything back to idle", () => {
     useTrialStore.getState().loadForReplay([makeRunStarted()]);
     useTrialStore.getState().scrubTo(0);

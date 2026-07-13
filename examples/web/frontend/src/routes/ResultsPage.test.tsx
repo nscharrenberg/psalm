@@ -70,7 +70,7 @@ describe("ResultsPage", () => {
 
   it("shows a Replay button only when live events were buffered, and starts replay mode on click", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
-    useTrialStore.setState({ allEvents: [{ type: "run_started" } as PSALMEvent] });
+    useTrialStore.setState({ allEvents: [{ type: "run_started" } as PSALMEvent], liveTrialId: "abc" });
     renderAtResult("abc");
     await screen.findByText("Verdict: Guilty");
 
@@ -83,6 +83,14 @@ describe("ResultsPage", () => {
 
   it("does not show a Replay button when no live events were buffered (e.g. loaded from history)", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
+    renderAtResult("abc");
+    await screen.findByText("Verdict: Guilty");
+    expect(screen.queryByText("Replay this trial")).not.toBeInTheDocument();
+  });
+
+  it("does not show Replay when buffered live events belong to a different trial", async () => {
+    vi.spyOn(client, "getTrial").mockResolvedValue(fakeDetail);
+    useTrialStore.setState({ allEvents: [{ type: "run_started" } as PSALMEvent], liveTrialId: "some-other-trial" });
     renderAtResult("abc");
     await screen.findByText("Verdict: Guilty");
     expect(screen.queryByText("Replay this trial")).not.toBeInTheDocument();

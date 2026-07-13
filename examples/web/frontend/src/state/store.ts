@@ -10,6 +10,7 @@ interface TrialStoreState {
   mode: PlaybackMode;
   state: TrialState;
   allEvents: PSALMEvent[];
+  liveTrialId: string | null;
   isPlaying: boolean;
   replaySpeed: number;
   replayIndex: number;
@@ -46,6 +47,7 @@ export const useTrialStore = create<TrialStoreState>((set, get) => ({
   mode: "idle",
   state: createInitialState(),
   allEvents: [],
+  liveTrialId: null,
   isPlaying: false,
   replaySpeed: 1,
   replayIndex: -1,
@@ -53,7 +55,10 @@ export const useTrialStore = create<TrialStoreState>((set, get) => ({
   startLive: (trialId: string) => {
     closeLiveStream?.();
     stopReplayTimer();
-    set({ mode: "live", state: createInitialState(), allEvents: [], isPlaying: false, replayIndex: -1 });
+    set({
+      mode: "live", state: createInitialState(), allEvents: [], liveTrialId: trialId,
+      isPlaying: false, replayIndex: -1,
+    });
     // Track staleness per-stream so that closing the stream (via closeLiveStream)
     // immediately silences its onEvent callback, even if an in-flight event still
     // fires after close() is requested (e.g. the underlying transport isn't
@@ -86,7 +91,10 @@ export const useTrialStore = create<TrialStoreState>((set, get) => ({
     closeLiveStream?.();
     closeLiveStream = null;
     stopReplayTimer();
-    set({ mode: "idle", state: createInitialState(), allEvents: [], isPlaying: false, replayIndex: -1 });
+    set({
+      mode: "idle", state: createInitialState(), allEvents: [], liveTrialId: null,
+      isPlaying: false, replayIndex: -1,
+    });
   },
 
   loadForReplay: (events: PSALMEvent[]) => {

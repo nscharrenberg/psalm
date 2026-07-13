@@ -1,10 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as client from "./api/client";
 import App from "./App";
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("App", () => {
-  it("renders without crashing", () => {
+  it("renders the setup page at the root route", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue({
+      dimensions: [], presets: [], evaluation_strategies: [], provider_presets: [], env_status: {},
+    });
     render(<App />);
-    expect(screen.getByText(/psalm courtroom demo/i)).toBeInTheDocument();
+    expect(await screen.findByText("New trial")).toBeInTheDocument();
   });
 });
