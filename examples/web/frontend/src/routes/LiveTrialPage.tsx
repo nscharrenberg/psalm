@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Badge, Group, SegmentedControl, Stack, Tabs, Title } from "@mantine/core";
 import { useTrialStore } from "../state/store";
 import StageView, { phaseLabel } from "../views/StageView";
 import TimelineView from "../views/TimelineView";
@@ -39,49 +40,36 @@ export default function LiveTrialPage() {
   const dimension = selectedDimension ? trialState.dimensions[selectedDimension] ?? null : null;
 
   return (
-    <div className="live-trial-page">
-      <h1>Trial in progress</h1>
+    <Stack gap="md" className="live-trial-page">
+      <Title order={2}>Trial in progress</Title>
 
       {trialState.dimensionOrder.length > 1 && (
-        <div className="dimension-selector">
-          {trialState.dimensionOrder.map((name) => (
-            <button
-              key={name}
-              type="button"
-              className={name === selectedDimension ? "active" : ""}
-              onClick={() => setSelectedDimension(name)}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          data={trialState.dimensionOrder.map((name) => ({ label: name, value: name }))}
+          value={selectedDimension ?? ""}
+          onChange={setSelectedDimension}
+        />
       )}
 
       {trialState.dimensionOrder.length > 1 && (
-        <div className="dimension-status-strip" data-testid="dimension-status-strip">
+        <Group gap="xs" data-testid="dimension-status-strip">
           {trialState.dimensionOrder
             .filter((name) => name !== selectedDimension)
-            .map((name, index) => (
-              <span key={name} className="dimension-status-item">
-                {index > 0 && " · "}
+            .map((name) => (
+              <Badge key={name} variant="light" color="gray">
                 {name}: {phaseLabel(trialState.dimensions[name])}
-              </span>
+              </Badge>
             ))}
-        </div>
+        </Group>
       )}
 
-      <div className="view-tabs">
-        {(Object.keys(VIEW_LABELS) as ViewName[]).map((view) => (
-          <button
-            key={view}
-            type="button"
-            className={view === activeView ? "active" : ""}
-            onClick={() => setActiveView(view)}
-          >
-            {VIEW_LABELS[view]}
-          </button>
-        ))}
-      </div>
+      <Tabs value={activeView} onChange={(value) => setActiveView((value ?? "stage") as ViewName)}>
+        <Tabs.List>
+          {(Object.keys(VIEW_LABELS) as ViewName[]).map((view) => (
+            <Tabs.Tab key={view} value={view}>{VIEW_LABELS[view]}</Tabs.Tab>
+          ))}
+        </Tabs.List>
+      </Tabs>
 
       {activeView === "stage" && <StageView dimension={dimension} />}
       {activeView === "transcript" && (
@@ -90,6 +78,6 @@ export default function LiveTrialPage() {
       {activeView === "timeline" && (
         <TimelineView dimension={dimension} sharedTranscript={trialState.sharedTranscript} />
       )}
-    </div>
+    </Stack>
   );
 }

@@ -35,16 +35,16 @@ describe("LiveTrialPage", () => {
   it("defaults to the Stage view", () => {
     vi.spyOn(client, "openTrialEventStream").mockReturnValue(() => {});
     renderAtTrial("abc123");
-    expect(screen.getByText("Stage")).toHaveClass("active");
+    expect(screen.getByRole("tab", { name: "Stage" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("switching tabs changes the active view", () => {
     vi.spyOn(client, "openTrialEventStream").mockReturnValue(() => {});
     renderAtTrial("abc123");
     act(() => {
-      screen.getByText("Transcript").click();
+      screen.getByRole("tab", { name: "Transcript" }).click();
     });
-    expect(screen.getByText("Transcript")).toHaveClass("active");
+    expect(screen.getByRole("tab", { name: "Transcript" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("shows a dimension selector only once 2+ dimensions are running", () => {
@@ -54,7 +54,7 @@ describe("LiveTrialPage", () => {
       return () => {};
     });
     renderAtTrial("abc123");
-    expect(screen.queryByRole("button", { name: "Character" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("radio", { name: "Character" })).not.toBeInTheDocument();
 
     act(() => {
       onEvent?.({
@@ -67,8 +67,8 @@ describe("LiveTrialPage", () => {
       } as PSALMEvent);
     });
 
-    expect(screen.getByRole("button", { name: "Character" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Plot" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Character" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Plot" })).toBeInTheDocument();
   });
 
   it("shows a status strip with the OTHER dimensions' phase/round while one is selected", () => {
@@ -94,8 +94,6 @@ describe("LiveTrialPage", () => {
       } as PSALMEvent);
     });
 
-    // "Character" is the first dimension seen, so it's auto-selected; the status strip
-    // should surface the OTHER (non-selected) dimension, "Plot", and its phase/round.
     const strip = screen.getByTestId("dimension-status-strip");
     expect(strip.textContent).toContain("Plot");
     expect(strip.textContent).toContain("round 2");
@@ -129,13 +127,12 @@ describe("LiveTrialPage", () => {
 
   it("does not immediately navigate using stale status left over from a previous trial", () => {
     vi.spyOn(client, "openTrialEventStream").mockReturnValue(() => {});
-    // Simulate a store that still holds "done" status from a just-finished previous trial.
     useTrialStore.setState((s) => ({
       ...s,
       state: { ...s.state, status: "done" },
     }));
     renderAtTrial("newTrialId");
-    expect(screen.getByText("Stage")).toHaveClass("active");
+    expect(screen.getByRole("tab", { name: "Stage" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByText("RESULT PAGE")).not.toBeInTheDocument();
   });
 });
