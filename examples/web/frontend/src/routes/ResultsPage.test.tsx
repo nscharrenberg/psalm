@@ -1,10 +1,10 @@
-import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
 import type { PSALMEvent, TrialDetail } from "../api/types";
 import { useTrialStore } from "../state/store";
 import ResultsPage from "./ResultsPage";
+import { act, render, screen } from "../test/render";
 
 const fakeDetail: TrialDetail = {
   id: "abc", created_at: "t", status: "done", source_text_preview: "s", target_text_preview: "t",

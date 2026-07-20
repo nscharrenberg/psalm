@@ -1,10 +1,10 @@
-import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
 import type { PSALMEvent } from "../api/types";
 import { useTrialStore } from "../state/store";
 import LiveTrialPage from "./LiveTrialPage";
+import { act, render, screen } from "../test/render";
 
 function renderAtTrial(trialId: string) {
   return render(

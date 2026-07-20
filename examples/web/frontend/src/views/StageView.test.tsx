@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { makeDimensionState } from "../state/testFixtures";
 import StageView from "./StageView";
+import { render, screen } from "../test/render";
 
 describe("StageView", () => {
   it("shows a waiting message with no dimension selected", () => {
@@ -53,5 +53,12 @@ describe("StageView", () => {
   it("shows the verdict once reached", () => {
     render(<StageView dimension={makeDimensionState({ phase: "verdict", verdict: "Guilty" })} />);
     expect(screen.getByText("Verdict: Guilty")).toBeInTheDocument();
+  });
+
+  it("applies a pulse-highlight class to newly-arrived speech so updates are visually obvious", () => {
+    render(
+      <StageView dimension={makeDimensionState({ speakingRole: "prosecution", latestSpeech: "The scar matches." })} />,
+    );
+    expect(screen.getByText('"The scar matches."')).toHaveClass("stage-speech-pulse");
   });
 });

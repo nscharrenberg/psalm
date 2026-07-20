@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { Badge, Card, Group, Stack, Text, Title } from "@mantine/core";
+import { IconScale } from "@tabler/icons-react";
 import type { DimensionState } from "../state/eventReducer";
 
 interface StageViewProps {
@@ -10,63 +13,83 @@ export function phaseLabel(dimension: DimensionState): string {
   return `Argumentation — round ${dimension.currentRound}`;
 }
 
+const SPEAKING_STYLE = {
+  borderColor: "var(--mantine-color-gold-6)",
+  boxShadow: "0 0 12px var(--mantine-color-gold-6)",
+};
+
 export default function StageView({ dimension }: StageViewProps) {
   if (dimension === null) {
-    return <p className="stage-empty">Waiting for the trial to begin...</p>;
+    return <Text c="dimmed" className="stage-empty">Waiting for the trial to begin...</Text>;
   }
 
-  const voteCounts = Object.values(dimension.jurorVotes).reduce<Record<string, number>>((acc, v) => {
+  const voteCounts = useMemo(() => Object.values(dimension.jurorVotes).reduce<Record<string, number>>((acc, v) => {
     acc[v.vote] = (acc[v.vote] ?? 0) + 1;
     return acc;
-  }, {});
+  }, {}), [dimension.jurorVotes]);
 
   const isJurorSpeaking = dimension.speakingRole !== null
     && dimension.speakingRole !== "prosecution"
     && dimension.speakingRole !== "defense";
 
+  function badgeColor(vote: string): string {
+    if (vote === "Guilty") return "red";
+    if (vote === "Not Guilty") return "green";
+    return "gray";
+  }
+
   return (
-    <div className="stage-view">
-      <div className="stage-phase-indicator">{phaseLabel(dimension)}</div>
+    <Stack gap="md" className="stage-view">
+      <Title order={4} className="stage-phase-indicator">{phaseLabel(dimension)}</Title>
 
-      <div className="stage-bench" data-testid="stage-bench">
-        <span className="stage-role-label">Judge</span>
+      <Card withBorder padding="md" data-testid="stage-bench">
+        <Group gap="xs">
+          <IconScale size={18} />
+          <Text fw={600}>Judge</Text>
+        </Group>
         {dimension.rejectedArgumentCount > 0 && (
-          <p className="stage-speech">{dimension.rejectedArgumentCount} objection(s) sustained so far.</p>
+          <Text size="sm" c="dimmed">{dimension.rejectedArgumentCount} objection(s) sustained so far.</Text>
         )}
-      </div>
+      </Card>
 
-      <div className="stage-parties">
-        <div
-          data-testid="stage-podium-prosecution"
-          className={`stage-podium ${dimension.speakingRole === "prosecution" ? "stage-speaking" : ""}`}
+      <Group grow gap="md">
+        <Card
+          withBorder padding="md" data-testid="stage-podium-prosecution"
+          style={dimension.speakingRole === "prosecution" ? SPEAKING_STYLE : undefined}
         >
-          <span className="stage-role-label">Prosecutor</span>
+          <Text fw={600} size="sm" tt="uppercase" c="dimmed">Prosecutor</Text>
           {dimension.speakingRole === "prosecution" && dimension.latestSpeech && (
-            <p className="stage-speech">&quot;{dimension.latestSpeech}&quot;</p>
+            <Text key={dimension.latestSpeech} className="stage-speech stage-speech-pulse" mt="xs">
+              &quot;{dimension.latestSpeech}&quot;
+            </Text>
           )}
-        </div>
-        <div
-          data-testid="stage-podium-defense"
-          className={`stage-podium ${dimension.speakingRole === "defense" ? "stage-speaking" : ""}`}
+        </Card>
+        <Card
+          withBorder padding="md" data-testid="stage-podium-defense"
+          style={dimension.speakingRole === "defense" ? SPEAKING_STYLE : undefined}
         >
-          <span className="stage-role-label">Defense</span>
+          <Text fw={600} size="sm" tt="uppercase" c="dimmed">Defense</Text>
           {dimension.speakingRole === "defense" && dimension.latestSpeech && (
-            <p className="stage-speech">&quot;{dimension.latestSpeech}&quot;</p>
+            <Text key={dimension.latestSpeech} className="stage-speech stage-speech-pulse" mt="xs">
+              &quot;{dimension.latestSpeech}&quot;
+            </Text>
           )}
-        </div>
-      </div>
+        </Card>
+      </Group>
 
-      <div className="stage-jury" data-testid="stage-jury">
-        <span className="stage-role-label">Jury ({Object.keys(dimension.jurorVotes).length} voted)</span>
-        <div className="stage-jury-tally">
+      <Card withBorder padding="md" data-testid="stage-jury">
+        <Text fw={600} size="sm">Jury ({Object.keys(dimension.jurorVotes).length} voted)</Text>
+        <Group gap="xs" mt="xs">
           {Object.entries(voteCounts).map(([vote, count]) => (
-            <span key={vote} className="stage-jury-vote">{count} × {vote}</span>
+            <Badge key={vote} color={badgeColor(vote)} variant="light">{count} × {vote}</Badge>
           ))}
-        </div>
+        </Group>
         {isJurorSpeaking && dimension.latestSpeech && (
-          <p className="stage-speech">{dimension.speakingRole}: &quot;{dimension.latestSpeech}&quot;</p>
+          <Text key={dimension.latestSpeech} className="stage-speech stage-speech-pulse" mt="xs">
+            {dimension.speakingRole}: &quot;{dimension.latestSpeech}&quot;
+          </Text>
         )}
-      </div>
-    </div>
+      </Card>
+    </Stack>
   );
 }
