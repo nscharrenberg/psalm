@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { Text, Timeline } from "@mantine/core";
 import type { DimensionState, TranscriptEntry } from "../state/eventReducer";
 import { mergeTranscript } from "../state/eventReducer";
 
@@ -8,16 +9,16 @@ interface TranscriptViewProps {
 }
 
 const ROLE_COLORS: Record<string, string> = {
-  prosecution: "#b45309",
-  defense: "#1d4ed8",
+  prosecution: "orange",
+  defense: "blue",
 };
 
 function entryColor(entry: TranscriptEntry): string {
   if (["rejection", "validation", "consensus", "stability_check"].includes(entry.kind)) {
-    return "#6b21a8";
+    return "grape";
   }
   if (entry.role && ROLE_COLORS[entry.role]) return ROLE_COLORS[entry.role];
-  return "#4b5563";
+  return "gray";
 }
 
 export default function TranscriptView({ dimension, sharedTranscript }: TranscriptViewProps) {
@@ -25,23 +26,26 @@ export default function TranscriptView({ dimension, sharedTranscript }: Transcri
     () => mergeTranscript(sharedTranscript, dimension),
     [sharedTranscript, dimension],
   );
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [entries.length]);
 
   if (entries.length === 0) {
-    return <p className="transcript-empty">Waiting for the trial to begin...</p>;
+    return <Text c="dimmed" className="transcript-empty">Waiting for the trial to begin...</Text>;
   }
 
   return (
-    <div className="transcript-view" aria-live="polite">
-      {entries.map((entry) => (
-        <div
-          key={entry.id}
-          data-testid="transcript-entry"
-          className="transcript-entry"
-          style={{ borderLeftColor: entryColor(entry) }}
-        >
-          {entry.text}
-        </div>
-      ))}
+    <div className="transcript-view" aria-live="polite" style={{ maxHeight: 480, overflowY: "auto" }}>
+      <Timeline active={entries.length} bulletSize={14} lineWidth={2}>
+        {entries.map((entry) => (
+          <Timeline.Item key={entry.id} data-testid="transcript-entry" color={entryColor(entry)}>
+            <Text size="sm">{entry.text}</Text>
+          </Timeline.Item>
+        ))}
+      </Timeline>
+      <div ref={bottomRef} />
     </div>
   );
 }

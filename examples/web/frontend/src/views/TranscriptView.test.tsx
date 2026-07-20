@@ -1,12 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { makeDimensionState } from "../state/testFixtures";
 import type { PSALMEvent } from "../api/types";
 import TranscriptView from "./TranscriptView";
+import { render, screen } from "../test/render";
 
 function withSequence(sequence: number): PSALMEvent {
   return { sequence } as PSALMEvent;
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("TranscriptView", () => {
   it("shows a waiting message when there are no entries yet", () => {
@@ -38,5 +42,16 @@ describe("TranscriptView", () => {
     render(<TranscriptView dimension={dimension} sharedTranscript={shared} />);
     const entries = screen.getAllByTestId("transcript-entry");
     expect(entries.map((el) => el.textContent)).toEqual(["Shared first.", "Then a vote."]);
+  });
+
+  it("auto-scrolls to the newest entry when new entries arrive", () => {
+    const scrollIntoViewSpy = vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(() => {});
+    const dimension = makeDimensionState({
+      transcript: [
+        { id: "1", timestamp: "t", dimension: "Character", kind: "argument", role: "prosecution", text: "First.", raw: withSequence(1) },
+      ],
+    });
+    render(<TranscriptView dimension={dimension} sharedTranscript={[]} />);
+    expect(scrollIntoViewSpy).toHaveBeenCalled();
   });
 });
