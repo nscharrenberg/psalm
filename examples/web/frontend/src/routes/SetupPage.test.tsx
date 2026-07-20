@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { fireEvent, render, screen, waitFor, within } from "../test/render";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
 import type { CatalogResponse } from "../api/types";

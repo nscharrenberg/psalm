@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import AgentConfigPanel from "./AgentConfigPanel";
+import { fireEvent, render, screen } from "../test/render";
 
 const providerPresets = [{ id: "openai", label: "OpenAI", base_url: "https://api.openai.com/v1" }];
 
@@ -35,5 +35,21 @@ describe("AgentConfigPanel", () => {
     );
     fireEvent.change(screen.getByLabelText("Provider"), { target: { value: "openai" } });
     expect(onChange).toHaveBeenCalledWith({ base_url: "https://api.openai.com/v1" });
+  });
+
+  it("updating the temperature field parses it as a number", () => {
+    const onChange = vi.fn();
+    render(
+      <AgentConfigPanel label="Prosecutor" config={{}} onChange={onChange} envAvailable={false} providerPresets={providerPresets} />,
+    );
+    fireEvent.change(screen.getByLabelText("Temperature"), { target: { value: "0.7" } });
+    expect(onChange).toHaveBeenCalledWith({ temperature: 0.7 });
+  });
+
+  it("is reachable as an accessible group named after its label", () => {
+    render(
+      <AgentConfigPanel label="Prosecutor" config={{}} onChange={vi.fn()} envAvailable={false} providerPresets={providerPresets} />,
+    );
+    expect(screen.getByRole("group", { name: "Prosecutor" })).toBeInTheDocument();
   });
 });
