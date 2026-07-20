@@ -1,3 +1,4 @@
+import { Stack, Stepper, Text } from "@mantine/core";
 import type { DimensionState, TranscriptEntry } from "../state/eventReducer";
 import { mergeTranscript } from "../state/eventReducer";
 
@@ -28,34 +29,31 @@ function buildSteps(dimension: DimensionState): StepInfo[] {
   return steps;
 }
 
-function statusIcon(status: StepInfo["status"]): string {
-  if (status === "done") return "✅";
-  if (status === "current") return "▶";
-  return "○";
-}
-
 export default function TimelineView({ dimension, sharedTranscript }: TimelineViewProps) {
   if (dimension === null) {
-    return <p className="timeline-empty">Waiting for the trial to begin...</p>;
+    return <Text c="dimmed" className="timeline-empty">Waiting for the trial to begin...</Text>;
   }
 
   const steps = buildSteps(dimension);
+  const currentIndex = steps.findIndex((s) => s.status === "current");
+  const activeIndex = currentIndex === -1 ? steps.length : currentIndex;
   const entries = mergeTranscript(sharedTranscript, dimension);
 
   return (
-    <div className="timeline-view">
-      <div className="timeline-steps">
-        {steps.map((step) => (
-          <div key={step.label} className={`timeline-step timeline-step-${step.status}`}>
-            {statusIcon(step.status)} {step.label}
-          </div>
+    <Stack gap="lg" className="timeline-view">
+      <Stepper active={activeIndex} orientation="vertical" size="sm" iconSize={22}>
+        {steps.map((step, index) => (
+          <Stepper.Step
+            key={step.label} label={step.label}
+            data-testid={`timeline-step-${index}`} data-status={step.status}
+          />
         ))}
-      </div>
-      <div className="timeline-transcript">
+      </Stepper>
+      <Stack gap="xs" className="timeline-transcript">
         {entries.map((entry) => (
-          <div key={entry.id} className="timeline-entry">{entry.text}</div>
+          <Text key={entry.id} size="sm">{entry.text}</Text>
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   );
 }
