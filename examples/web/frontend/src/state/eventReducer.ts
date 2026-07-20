@@ -145,7 +145,9 @@ export function applyEvent(state: TrialState, event: PSALMEvent): TrialState {
         kind: "closing_statement", role: event.role, text: `${event.role}: "${event.statement}"`, raw: event,
       };
       if (event.dimension === null) return appendShared(state, entry);
-      return updateDimension(state, event.dimension, (dim) => appendEntry(dim, entry));
+      return updateDimension(state, event.dimension, (dim) => appendEntry(
+        { ...dim, speakingRole: event.role, latestSpeech: event.statement }, entry,
+      ));
     }
 
     case "argumentation_stability_checked": {
@@ -166,7 +168,9 @@ export function applyEvent(state: TrialState, event: PSALMEvent): TrialState {
         text: `${event.role} closing argument: "${event.statement}"`, raw: event,
       };
       if (event.dimension === null) return appendShared(state, entry);
-      return updateDimension(state, event.dimension, (dim) => appendEntry(dim, entry));
+      return updateDimension(state, event.dimension, (dim) => appendEntry(
+        { ...dim, speakingRole: event.role, latestSpeech: event.statement }, entry,
+      ));
     }
 
     case "argument_batch_completeness_retry": {

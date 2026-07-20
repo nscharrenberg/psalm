@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type {
   ArgumentSubmitted,
+  ClosingArgumentDelivered,
+  ClosingStatementDelivered,
   DimensionStarted,
   DimensionVerdictReached,
   FinalVerdictReached,
@@ -86,6 +88,36 @@ describe("applyEvent", () => {
     const state = applyEvent(createInitialState(), event);
     expect(state.sharedTranscript).toHaveLength(1);
     expect(state.dimensions).toEqual({});
+  });
+
+  it("closing_statement_delivered updates the speaker so Stage doesn't go stale", () => {
+    let state = applyEvent(createInitialState(), {
+      ...envelope({ dimension: "Character" }), category: "lifecycle", type: "dimension_started",
+      dimension_type: "infringement", importance: "high",
+    } as DimensionStarted);
+    const event: ClosingStatementDelivered = {
+      ...envelope({ dimension: "Character" }), category: "argumentation", type: "closing_statement_delivered",
+      round: 1, role: "defense", statement: "The defense rests.",
+    };
+    state = applyEvent(state, event);
+    expect(state.dimensions["Character"].speakingRole).toBe("defense");
+    expect(state.dimensions["Character"].latestSpeech).toBe("The defense rests.");
+    expect(state.dimensions["Character"].transcript).toHaveLength(1);
+  });
+
+  it("closing_argument_delivered updates the speaker so Stage doesn't go stale", () => {
+    let state = applyEvent(createInitialState(), {
+      ...envelope({ dimension: "Character" }), category: "lifecycle", type: "dimension_started",
+      dimension_type: "infringement", importance: "high",
+    } as DimensionStarted);
+    const event: ClosingArgumentDelivered = {
+      ...envelope({ dimension: "Character" }), category: "argumentation", type: "closing_argument_delivered",
+      role: "prosecution", statement: "The evidence is overwhelming.",
+    };
+    state = applyEvent(state, event);
+    expect(state.dimensions["Character"].speakingRole).toBe("prosecution");
+    expect(state.dimensions["Character"].latestSpeech).toBe("The evidence is overwhelming.");
+    expect(state.dimensions["Character"].transcript).toHaveLength(1);
   });
 
   it("juror_vote_cast records the vote under the right dimension", () => {
