@@ -97,6 +97,9 @@ if it were a settled fact. Quote as closely as possible to the original; close a
 the wording are acceptable, but the underlying claim of similarity must be certain, not
 speculative.
 
+For each argument, identify the specific textual proof first, then state the claim that proof
+supports — not the other way around.
+
 If you have nothing further that meets this bar — for this call, across every sub-dimension you
 were asked to address — set no_further_arguments=True and provide a one-sentence
 closing_statement explaining why (e.g. "All HIGH and CRITICAL sub-dimensions have been argued

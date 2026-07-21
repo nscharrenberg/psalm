@@ -107,6 +107,9 @@ inference, or possibility as if it were a settled fact. Quote as closely as poss
 original; close approximations of the wording are acceptable, but the underlying claim must be
 certain, not speculative.
 
+For each argument, identify the specific textual proof first, then state the claim that proof
+supports — not the other way around.
+
 For each prosecution argument, decide: does it rest on an available exception-based defense (see
 above — only if applicable), or on specific expression and independent creation (challenge on the
 merits)?

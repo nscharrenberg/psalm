@@ -376,3 +376,9 @@ async def test_counter_instruction_does_not_unconditionally_offer_unprotectable_
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "unprotectable" not in user_content.lower()
+
+
+def test_defense_prompt_specifies_proof_before_claim_order():
+    from psalm.agents.defense import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    assert "identify the specific textual proof first" in prompt

@@ -355,3 +355,9 @@ async def test_deliver_closing_argument_empty_case_states_no_evidence(prosecutor
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "none survived judge validation" in user_content
+
+
+def test_prosecutor_prompt_specifies_proof_before_claim_order():
+    from psalm.agents.prosecutor import _SYSTEM_PROMPT
+    prompt = _SYSTEM_PROMPT.lower()
+    assert "identify the specific textual proof first" in prompt
