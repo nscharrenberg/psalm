@@ -1,9 +1,9 @@
 import { MemoryRouter } from "react-router-dom";
-import { fireEvent, render, screen, waitFor, within } from "../test/render";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
 import type { CatalogResponse } from "../api/types";
 import SetupPage from "./SetupPage";
+import { fireEvent, render, screen, waitFor, within } from "../test/render";
 
 const fakeCatalog = {
   dimensions: [
@@ -29,36 +29,95 @@ function renderSetupPage() {
 }
 
 describe("SetupPage", () => {
-  it("loads the catalog and shows Character as a selectable dimension", async () => {
+  it("loads the catalog and shows the Text step first", async () => {
     vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
     renderSetupPage();
-    expect(await screen.findByLabelText("Character")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Preset")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Character")).not.toBeInTheDocument();
   });
 
   it("applying a preset fills the source and target text fields", async () => {
     vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
     renderSetupPage();
-    await screen.findByLabelText("Character");
+    await screen.findByLabelText("Preset");
     fireEvent.change(screen.getByLabelText("Preset"), { target: { value: "infringing" } });
     expect(screen.getByLabelText("Source text")).toHaveValue("SRC");
     expect(screen.getByLabelText("Target text")).toHaveValue("TGT");
   });
 
+  it("advancing to the Dimensions step shows selectable dimensions", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    expect(await screen.findByLabelText("Character")).toBeInTheDocument();
+    expect(screen.getByLabelText("Scenes a Faire")).toBeInTheDocument();
+  });
+
+  it("advancing to the Agents step shows each agent's env-var status as a badge", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    // Accordion.Control is queried by role, not by text: Mantine's Accordion.Panel content
+    // (which contains AgentConfigPanel's Fieldset, whose legend also reads "Prosecutor")
+    // stays mounted-but-hidden when collapsed, so a plain text query would be ambiguous.
+    const prosecutorControl = await screen.findByRole("button", { name: /Prosecutor/ });
+    expect(within(prosecutorControl).getByText("✓ using environment variable")).toBeInTheDocument();
+  });
+
+  it("expanding an agent panel reveals its configuration fields", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    const prosecutorControl = await screen.findByRole("button", { name: /Prosecutor/ });
+    fireEvent.click(prosecutorControl);
+    const prosecutorGroup = await screen.findByRole("group", { name: "Prosecutor" });
+    expect(within(prosecutorGroup).getByLabelText("API key")).toBeInTheDocument();
+  });
+
+  it("adds and removes jurors, never going below 3", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    await screen.findByRole("button", { name: /^Juror 0/ });
+    expect(screen.getAllByRole("button", { name: /^Juror \d/ })).toHaveLength(3);
+
+    fireEvent.click(screen.getByText("Add juror"));
+    expect(screen.getAllByRole("button", { name: /^Juror \d/ })).toHaveLength(4);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Juror 3/ }));
+    fireEvent.click(await screen.findByText("Remove juror 3"));
+    expect(screen.getAllByRole("button", { name: /^Juror \d/ })).toHaveLength(3);
+  });
+
   it("disables Start Trial until source, target, and at least one dimension are set", async () => {
     vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
     renderSetupPage();
-    await screen.findByText("Agents");
-    expect(screen.getByText("Start Trial")).toBeDisabled();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    // Mantine's Button wraps its label in an inner <span>, so a text query would
+    // return that span rather than the disabled <button> itself; query by role instead.
+    expect(await screen.findByRole("button", { name: "Start Trial" })).toBeDisabled();
   });
 
   it("submits the trial with the right payload and navigates on success", async () => {
     vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
     const startTrialSpy = vi.spyOn(client, "startTrial").mockResolvedValue({ trial_id: "abc" });
     renderSetupPage();
-    await screen.findByLabelText("Character");
-
+    await screen.findByLabelText("Preset");
     fireEvent.change(screen.getByLabelText("Preset"), { target: { value: "infringing" } });
+    fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByLabelText("Character"));
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByText("Start Trial"));
 
     await waitFor(() => expect(startTrialSpy).toHaveBeenCalled());
@@ -73,9 +132,12 @@ describe("SetupPage", () => {
       new client.TrialConfigError("PSALM-WEB-001", "No API key provided.", {}),
     );
     renderSetupPage();
-    await screen.findByLabelText("Character");
+    await screen.findByLabelText("Preset");
     fireEvent.change(screen.getByLabelText("Preset"), { target: { value: "infringing" } });
+    fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByLabelText("Character"));
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByText("Start Trial"));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No API key provided.");
@@ -87,26 +149,10 @@ describe("SetupPage", () => {
       env_status: { PSALM_API_KEY: true, PSALM_PROSECUTOR_API_KEY: false },
     });
     renderSetupPage();
-    await screen.findByLabelText("Character");
-
-    const prosecutorPanel = screen.getByRole("group", { name: "Prosecutor" });
-    expect(within(prosecutorPanel).getByLabelText("API key")).toHaveAttribute(
-      "placeholder", "✓ using environment variable",
-    );
-  });
-
-  it("adds and removes jurors, never going below 3", async () => {
-    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
-    renderSetupPage();
-    await screen.findByText("Jury");
-    expect(screen.getAllByText(/^Juror \d$/)).toHaveLength(3);
-    expect(screen.queryByText("Remove juror 0")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("Add juror"));
-    expect(screen.getAllByText(/^Juror \d$/)).toHaveLength(4);
-    expect(screen.getByText("Remove juror 3")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("Remove juror 3"));
-    expect(screen.getAllByText(/^Juror \d$/)).toHaveLength(3);
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+    const prosecutorControl = await screen.findByRole("button", { name: /Prosecutor/ });
+    expect(within(prosecutorControl).getByText("✓ using environment variable")).toBeInTheDocument();
   });
 });

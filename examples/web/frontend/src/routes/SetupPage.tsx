@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Accordion, Badge, Button, Checkbox, Group, NativeSelect, NumberInput,
+  Stack, Stepper, Text, Textarea, Title,
+} from "@mantine/core";
 import { TrialConfigError, TrialConflictError, getCatalog, startTrial } from "../api/client";
 import type { AgentConfigInput, CatalogResponse, JurorConfigInput } from "../api/types";
 import AgentConfigPanel from "../components/AgentConfigPanel";
@@ -12,10 +16,19 @@ function emptyJurorConfig(): JurorConfigInput {
   return {};
 }
 
+function agentSummary(config: AgentConfigInput, envAvailable: boolean): string {
+  const hasOverride = Boolean(
+    config.base_url || config.api_key || config.model || config.temperature !== undefined,
+  );
+  if (hasOverride) return "configured";
+  return envAvailable ? "✓ using environment variable" : "required";
+}
+
 export default function SetupPage() {
   const navigate = useNavigate();
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
 
   const [sourceText, setSourceText] = useState("");
   const [targetText, setTargetText] = useState("");
@@ -24,7 +37,6 @@ export default function SetupPage() {
   const [argumentationRounds, setArgumentationRounds] = useState(3);
   const [deliberationRounds, setDeliberationRounds] = useState(2);
   const [timeLimitSeconds, setTimeLimitSeconds] = useState(120);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const [prosecutor, setProsecutor] = useState<AgentConfigInput>(emptyAgentConfig());
   const [defense, setDefense] = useState<AgentConfigInput>(emptyAgentConfig());
@@ -92,129 +104,194 @@ export default function SetupPage() {
   }
 
   if (catalogError) {
-    return <p role="alert">Failed to load configuration options: {catalogError}</p>;
+    return <Text role="alert" c="red">Failed to load configuration options: {catalogError}</Text>;
   }
   if (!catalog) {
-    return <p>Loading...</p>;
+    return <Text>Loading...</Text>;
   }
 
   const canSubmit = (
     sourceText.trim() !== "" && targetText.trim() !== "" && selectedDimensions.length > 0 && !submitting
   );
 
+  const agentPanels = [
+    { label: "Prosecutor", config: prosecutor, onChange: setProsecutor, envKey: "PSALM_PROSECUTOR_API_KEY" },
+    { label: "Defense", config: defense, onChange: setDefense, envKey: "PSALM_DEFENSE_API_KEY" },
+    { label: "Judge", config: judge, onChange: setJudge, envKey: "PSALM_JUDGE_API_KEY" },
+  ] as const;
+
   return (
-    <div className="setup-page">
-      <h1>New trial</h1>
+    <Stack gap="lg" className="setup-page">
+      <Title order={2}>New trial</Title>
 
-      <section>
-        <h2>Texts</h2>
-        <label htmlFor="preset-select">Preset</label>
-        <select id="preset-select" onChange={(e) => applyPreset(e.target.value)} defaultValue="">
-          <option value="" disabled>Choose a preset (optional)</option>
-          {catalog.presets.map((p) => (
-            <option key={p.id} value={p.id}>{p.label}</option>
-          ))}
-        </select>
-        <label htmlFor="source-text">Source text</label>
-        <textarea id="source-text" value={sourceText} onChange={(e) => setSourceText(e.target.value)} rows={6} />
-        <label htmlFor="target-text">Target text</label>
-        <textarea id="target-text" value={targetText} onChange={(e) => setTargetText(e.target.value)} rows={6} />
-      </section>
+      <Stepper active={step} onStepClick={setStep} allowNextStepsSelect={false}>
+        <Stepper.Step label="Text">
+          <Stack gap="sm" mt="md">
+            <NativeSelect
+              id="preset-select" label="Preset"
+              data={[
+                { value: "", label: "Choose a preset (optional)" },
+                ...catalog.presets.map((p) => ({ value: p.id, label: p.label })),
+              ]}
+              onChange={(e) => applyPreset(e.target.value)}
+            />
+            <Textarea
+              id="source-text" label="Source text" value={sourceText}
+              onChange={(e) => setSourceText(e.target.value)} minRows={6} autosize
+            />
+            <Textarea
+              id="target-text" label="Target text" value={targetText}
+              onChange={(e) => setTargetText(e.target.value)} minRows={6} autosize
+            />
+          </Stack>
+        </Stepper.Step>
 
-      <section>
-        <h2>Dimensions</h2>
-        {(["infringement", "exception"] as const).map((type) => (
-          <div key={type}>
-            <h3>{type === "infringement" ? "Infringement dimensions" : "Exception dimensions"}</h3>
-            {catalog.dimensions.filter((d) => d.dimension_type === type).map((d) => (
-              <label key={d.name} title={d.description}>
-                <input
-                  type="checkbox"
-                  checked={selectedDimensions.includes(d.name)}
-                  onChange={() => toggleDimension(d.name)}
-                />
-                {d.name}
-              </label>
+        <Stepper.Step label="Dimensions">
+          <Stack gap="lg" mt="md">
+            {(["infringement", "exception"] as const).map((type) => (
+              <div key={type}>
+                <Text fw={600} mb="xs">
+                  {type === "infringement" ? "Infringement dimensions" : "Exception dimensions"}
+                </Text>
+                <Stack gap="xs">
+                  {catalog.dimensions.filter((d) => d.dimension_type === type).map((d) => (
+                    <Checkbox
+                      key={d.name} label={d.name} title={d.description}
+                      checked={selectedDimensions.includes(d.name)}
+                      onChange={() => toggleDimension(d.name)}
+                    />
+                  ))}
+                </Stack>
+              </div>
             ))}
-          </div>
-        ))}
-      </section>
 
-      <section>
-        <button type="button" onClick={() => setAdvancedOpen((v) => !v)}>
-          {advancedOpen ? "Hide" : "Show"} advanced settings
-        </button>
-        {advancedOpen && (
-          <div>
-            <label htmlFor="strategy-select">Evaluation strategy</label>
-            <select
-              id="strategy-select" value={evaluationStrategy}
-              onChange={(e) => setEvaluationStrategy(e.target.value)}
-            >
-              {catalog.evaluation_strategies.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
+            <Accordion>
+              <Accordion.Item value="advanced">
+                <Accordion.Control>Advanced settings</Accordion.Control>
+                <Accordion.Panel>
+                  <Stack gap="sm">
+                    <NativeSelect
+                      id="strategy-select" label="Evaluation strategy" value={evaluationStrategy}
+                      data={catalog.evaluation_strategies.map((s) => ({ value: s.value, label: s.label }))}
+                      onChange={(e) => setEvaluationStrategy(e.target.value)}
+                    />
+                    <NumberInput
+                      id="argumentation-rounds" label="Argumentation rounds" min={1}
+                      value={argumentationRounds}
+                      onChange={(value) => setArgumentationRounds(Number(value))}
+                    />
+                    <NumberInput
+                      id="deliberation-rounds" label="Deliberation rounds" min={1}
+                      value={deliberationRounds}
+                      onChange={(value) => setDeliberationRounds(Number(value))}
+                    />
+                    <NumberInput
+                      id="time-limit" label="Time limit (seconds)" min={1}
+                      value={timeLimitSeconds}
+                      onChange={(value) => setTimeLimitSeconds(Number(value))}
+                    />
+                  </Stack>
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          </Stack>
+        </Stepper.Step>
+
+        <Stepper.Step label="Agents">
+          <Stack gap="md" mt="md">
+            <Accordion multiple defaultValue={[]}>
+              {agentPanels.map((agent) => (
+                <Accordion.Item key={agent.label} value={agent.label}>
+                  <Accordion.Control>
+                    <Group justify="space-between" pr="md">
+                      <Text>{agent.label}</Text>
+                      <Badge variant="light" color="gray">
+                        {agentSummary(
+                          agent.config,
+                          catalog.env_status[agent.envKey] || catalog.env_status.PSALM_API_KEY,
+                        )}
+                      </Badge>
+                    </Group>
+                  </Accordion.Control>
+                  <Accordion.Panel>
+                    <AgentConfigPanel
+                      label={agent.label} config={agent.config} onChange={agent.onChange}
+                      envAvailable={catalog.env_status[agent.envKey] || catalog.env_status.PSALM_API_KEY}
+                      providerPresets={catalog.provider_presets}
+                    />
+                  </Accordion.Panel>
+                </Accordion.Item>
               ))}
-            </select>
-            <label htmlFor="argumentation-rounds">Argumentation rounds</label>
-            <input
-              id="argumentation-rounds" type="number" min={1} value={argumentationRounds}
-              onChange={(e) => setArgumentationRounds(Number(e.target.value))}
-            />
-            <label htmlFor="deliberation-rounds">Deliberation rounds</label>
-            <input
-              id="deliberation-rounds" type="number" min={1} value={deliberationRounds}
-              onChange={(e) => setDeliberationRounds(Number(e.target.value))}
-            />
-            <label htmlFor="time-limit">Time limit (seconds)</label>
-            <input
-              id="time-limit" type="number" min={1} value={timeLimitSeconds}
-              onChange={(e) => setTimeLimitSeconds(Number(e.target.value))}
-            />
-          </div>
+
+              {jury.map((jurorConfig, index) => (
+                <Accordion.Item key={index} value={`Juror ${index}`}>
+                  <Accordion.Control>
+                    <Group justify="space-between" pr="md">
+                      <Text>Juror {index}</Text>
+                      <Badge variant="light" color="gray">
+                        {agentSummary(
+                          jurorConfig,
+                          catalog.env_status.PSALM_JURY_API_KEY || catalog.env_status.PSALM_API_KEY,
+                        )}
+                      </Badge>
+                    </Group>
+                  </Accordion.Control>
+                  <Accordion.Panel>
+                    <Stack gap="sm">
+                      <AgentConfigPanel
+                        label={`Juror ${index}`} config={jurorConfig}
+                        onChange={(updated) => setJury((current) => (
+                          current.map((j, i) => (i === index ? { ...updated, seed: j.seed } : j))
+                        ))}
+                        envAvailable={catalog.env_status.PSALM_JURY_API_KEY || catalog.env_status.PSALM_API_KEY}
+                        providerPresets={catalog.provider_presets}
+                      />
+                      {jury.length > 3 && (
+                        <Button variant="subtle" color="red" onClick={() => removeJuror(index)}>
+                          Remove juror {index}
+                        </Button>
+                      )}
+                    </Stack>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+            <Button variant="light" onClick={addJuror}>Add juror</Button>
+          </Stack>
+        </Stepper.Step>
+
+        <Stepper.Step label="Review">
+          <Stack gap="md" mt="md">
+            <div>
+              <Text fw={600}>Source text</Text>
+              <Text size="sm" c="dimmed">{sourceText || "(empty)"}</Text>
+            </div>
+            <div>
+              <Text fw={600}>Target text</Text>
+              <Text size="sm" c="dimmed">{targetText || "(empty)"}</Text>
+            </div>
+            <div>
+              <Text fw={600}>Dimensions</Text>
+              <Text size="sm" c="dimmed">
+                {selectedDimensions.length > 0 ? selectedDimensions.join(", ") : "(none selected)"}
+              </Text>
+            </div>
+            {submitError && <Text role="alert" c="red">{submitError}</Text>}
+            <Button onClick={handleSubmit} disabled={!canSubmit}>
+              {submitting ? "Starting..." : "Start Trial"}
+            </Button>
+          </Stack>
+        </Stepper.Step>
+      </Stepper>
+
+      <Group justify="space-between">
+        <Button variant="default" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        {step < 3 && (
+          <Button onClick={() => setStep((s) => Math.min(3, s + 1))}>Next</Button>
         )}
-      </section>
-
-      <section>
-        <h2>Agents</h2>
-        <AgentConfigPanel
-          label="Prosecutor" config={prosecutor} onChange={setProsecutor}
-          envAvailable={catalog.env_status.PSALM_PROSECUTOR_API_KEY || catalog.env_status.PSALM_API_KEY}
-          providerPresets={catalog.provider_presets}
-        />
-        <AgentConfigPanel
-          label="Defense" config={defense} onChange={setDefense}
-          envAvailable={catalog.env_status.PSALM_DEFENSE_API_KEY || catalog.env_status.PSALM_API_KEY}
-          providerPresets={catalog.provider_presets}
-        />
-        <AgentConfigPanel
-          label="Judge" config={judge} onChange={setJudge}
-          envAvailable={catalog.env_status.PSALM_JUDGE_API_KEY || catalog.env_status.PSALM_API_KEY}
-          providerPresets={catalog.provider_presets}
-        />
-
-        <h3>Jury</h3>
-        {jury.map((jurorConfig, index) => (
-          <div key={index}>
-            <AgentConfigPanel
-              label={`Juror ${index}`} config={jurorConfig}
-              onChange={(updated) => setJury((current) => (
-                current.map((j, i) => (i === index ? { ...updated, seed: j.seed } : j))
-              ))}
-              envAvailable={catalog.env_status.PSALM_JURY_API_KEY || catalog.env_status.PSALM_API_KEY}
-              providerPresets={catalog.provider_presets}
-            />
-            {jury.length > 3 && (
-              <button type="button" onClick={() => removeJuror(index)}>Remove juror {index}</button>
-            )}
-          </div>
-        ))}
-        <button type="button" onClick={addJuror}>Add juror</button>
-      </section>
-
-      {submitError && <p role="alert">{submitError}</p>}
-      <button type="button" onClick={handleSubmit} disabled={!canSubmit}>
-        {submitting ? "Starting..." : "Start Trial"}
-      </button>
-    </div>
+      </Group>
+    </Stack>
   );
 }
