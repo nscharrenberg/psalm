@@ -43,6 +43,36 @@ class AgentConfig(BaseModel):
         return v
 
 
+class ExecutionConfig(BaseModel):
+    max_concurrent_llm_calls: int = 8
+    max_retries: int = 3
+    backoff_factor: float = 2.0
+
+    @field_validator("max_concurrent_llm_calls", "max_retries")
+    @classmethod
+    def validate_positive_int(cls, v: int, info) -> int:
+        if v < 1:
+            raise PSALMConfigError(
+                code="PSALM-C008",
+                message=f"{info.field_name} must be >= 1, got {v}.",
+                context={"field": info.field_name, "value": v},
+                suggestion="Set a value of 1 or greater.",
+            )
+        return v
+
+    @field_validator("backoff_factor")
+    @classmethod
+    def validate_backoff_factor(cls, v: float) -> float:
+        if v <= 0:
+            raise PSALMConfigError(
+                code="PSALM-C008",
+                message=f"backoff_factor must be > 0, got {v}.",
+                context={"field": "backoff_factor", "value": v},
+                suggestion="Set a positive value (e.g. 2.0).",
+            )
+        return v
+
+
 class DebateConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

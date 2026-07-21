@@ -123,3 +123,40 @@ def test_debate_config_accepts_custom_strategy():
     from psalm.models.config import DebateConfig, EvaluationStrategy
     config = DebateConfig(evaluation_strategy=EvaluationStrategy.SHARED_ALL)
     assert config.evaluation_strategy == EvaluationStrategy.SHARED_ALL
+
+
+def test_execution_config_defaults():
+    from psalm.models.config import ExecutionConfig
+    config = ExecutionConfig()
+    assert config.max_concurrent_llm_calls == 8
+    assert config.max_retries == 3
+    assert config.backoff_factor == 2.0
+
+
+def test_execution_config_accepts_custom_values():
+    from psalm.models.config import ExecutionConfig
+    config = ExecutionConfig(max_concurrent_llm_calls=4, max_retries=5, backoff_factor=1.5)
+    assert config.max_concurrent_llm_calls == 4
+    assert config.max_retries == 5
+    assert config.backoff_factor == 1.5
+
+
+def test_execution_config_rejects_non_positive_max_concurrent_llm_calls():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(max_concurrent_llm_calls=0)
+    assert exc_info.value.code == "PSALM-C008"
+
+
+def test_execution_config_rejects_non_positive_max_retries():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(max_retries=0)
+    assert exc_info.value.code == "PSALM-C008"
+
+
+def test_execution_config_rejects_non_positive_backoff_factor():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(backoff_factor=0.0)
+    assert exc_info.value.code == "PSALM-C008"
