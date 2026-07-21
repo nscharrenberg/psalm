@@ -1,7 +1,5 @@
-import { MantineProvider } from "@mantine/core";
 import { describe, expect, it } from "vitest";
 import { makeDimensionState } from "../state/testFixtures";
-import { theme } from "../theme";
 import StageView from "./StageView";
 import { render, screen } from "../test/render";
 
@@ -68,15 +66,11 @@ describe("StageView", () => {
     const { rerender } = render(<StageView dimension={null} />);
     expect(screen.getByText(/waiting for the trial to begin/i)).toBeInTheDocument();
 
-    // Re-wrap in the same MantineProvider so the rerender replaces StageView's
-    // props in place (same component instance/fiber) rather than unmounting and
-    // remounting a fresh instance under a different root element type — the
-    // latter would mask the exact hooks-order bug this test guards against.
-    rerender(
-      <MantineProvider theme={theme} forceColorScheme="dark">
-        <StageView dimension={makeDimensionState({ phase: "argumentation", currentRound: 1 })} />
-      </MantineProvider>,
-    );
+    // `render`'s `wrapper` option (src/test/render.tsx) means rerender keeps
+    // applying MantineProvider automatically -- no manual re-wrap needed here.
+    // This replaces StageView's props on the same instance/fiber (not a fresh
+    // mount), which is what actually exercises the hooks-order bug this guards.
+    rerender(<StageView dimension={makeDimensionState({ phase: "argumentation", currentRound: 1 })} />);
     expect(screen.getByText(/Argumentation — round 1/)).toBeInTheDocument();
   });
 });
