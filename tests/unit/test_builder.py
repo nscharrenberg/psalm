@@ -90,6 +90,39 @@ async def test_build_raises_on_llm_ping_failure():
     assert "PSALM-C006" in str(exc_info.value)
 
 
+async def test_ping_llm_retries_transient_failures_then_succeeds():
+    from psalm.models.config import AgentConfig
+
+    config = AgentConfig(**_agent_kwargs())
+    mock_llm = AsyncMock()
+    mock_llm.ainvoke = AsyncMock(
+        side_effect=[ConnectionError("transient"), ConnectionError("transient"), None]
+    )
+    with (
+        patch("langchain_openai.ChatOpenAI", return_value=mock_llm),
+        patch("psalm.builder.asyncio.sleep", new=AsyncMock()),
+    ):
+        await PSALM()._ping_llm(config, "juror-0")
+    assert mock_llm.ainvoke.call_count == 3
+
+
+async def test_ping_llm_raises_psalm_c006_after_exhausting_retries():
+    from psalm.models.config import AgentConfig
+
+    config = AgentConfig(**_agent_kwargs())
+    mock_llm = AsyncMock()
+    mock_llm.ainvoke = AsyncMock(side_effect=ConnectionError("persistent"))
+    with (
+        patch("langchain_openai.ChatOpenAI", return_value=mock_llm),
+        patch("psalm.builder.asyncio.sleep", new=AsyncMock()),
+    ):
+        with pytest.raises(PSALMConfigError) as exc_info:
+            await PSALM()._ping_llm(config, "juror-1")
+    assert exc_info.value.code == "PSALM-C006"
+    assert exc_info.value.cause is not None
+    assert mock_llm.ainvoke.call_count == 3
+
+
 async def test_evaluate_raises_on_empty_source():
     courtroom = await _build_psalm()
     with pytest.raises(PSALMValidationError) as exc_info:

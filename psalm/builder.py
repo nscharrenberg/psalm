@@ -30,6 +30,15 @@ _STRATEGY_MAP = {
     "judge_tiebreaker": JudgeTiebreakerVoting,
 }
 
+# Mirrors psalm.agents.base.BaseAgent's retry policy for real LLM calls during
+# a trial. Without this, a single transient blip on any one of the concurrent
+# pings in _ping_all_llms aborts the whole build -- and since every agent
+# (including every juror) is pinged at once, often sharing the same API key,
+# provider-side rate limiting under that burst is a likely, foreseeable
+# transient failure, not a sign the specific agent's config is actually bad.
+_PING_RETRY_ATTEMPTS = 3
+_PING_BACKOFF_FACTOR = 2.0
+
 
 class PSALM:
     def __init__(self) -> None:
@@ -146,16 +155,22 @@ class PSALM:
             model=config.model,
             max_completion_tokens=1,
         )
-        try:
-            await llm.ainvoke([{"role": "user", "content": "ping"}])
-        except Exception as exc:
-            raise PSALMConfigError(
-                code="PSALM-C006",
-                message=f"LLM connection failed for agent '{role}'.",
-                context={"role": role, "base_url": config.base_url, "model": config.model},
-                suggestion="Check api_key, base_url, and network connectivity.",
-                cause=exc,
-            ) from exc
+        last_exc: Exception | None = None
+        for attempt in range(_PING_RETRY_ATTEMPTS):
+            try:
+                await llm.ainvoke([{"role": "user", "content": "ping"}])
+                return
+            except Exception as exc:
+                last_exc = exc
+                if attempt < _PING_RETRY_ATTEMPTS - 1:
+                    await asyncio.sleep(_PING_BACKOFF_FACTOR**attempt)
+        raise PSALMConfigError(
+            code="PSALM-C006",
+            message=f"LLM connection failed for agent '{role}'.",
+            context={"role": role, "base_url": config.base_url, "model": config.model},
+            suggestion="Check api_key, base_url, and network connectivity.",
+            cause=last_exc,
+        ) from last_exc
 
     async def _ping_all_llms(self) -> None:
         assert self._prosecutor_config is not None
