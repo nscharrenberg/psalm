@@ -8,8 +8,8 @@ from psalm.dimensions import CHARACTER, SCENES_A_FAIRE
 
 
 @pytest.fixture
-def defense(agent_config):
-    return Defense(config=agent_config)
+def defense(agent_config, run_execution):
+    return Defense(config=agent_config, execution=run_execution)
 
 
 def test_defense_prompt_allows_affirmative_arguments():
@@ -147,8 +147,8 @@ async def test_defense_gather_arguments_prompt_mentions_affirmative(defense, sam
     assert "affirmative" in user_content.lower() or "distinct" in user_content.lower()
 
 
-async def test_defense_counter_prompt_includes_sub_dimension_context(agent_config, sample_argument, sample_counter_argument):
-    defense = Defense(config=agent_config)
+async def test_defense_counter_prompt_includes_sub_dimension_context(agent_config, run_execution, sample_argument, sample_counter_argument):
+    defense = Defense(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -164,8 +164,8 @@ async def test_defense_counter_prompt_includes_sub_dimension_context(agent_confi
     assert "Identity & Properties" in user_content or "character" in user_content.lower()
 
 
-async def test_defense_prompt_separates_infringement_and_exception_dimensions(agent_config, sample_argument):
-    defense = Defense(config=agent_config)
+async def test_defense_prompt_separates_infringement_and_exception_dimensions(agent_config, run_execution, sample_argument):
+    defense = Defense(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -183,11 +183,11 @@ async def test_defense_prompt_separates_infringement_and_exception_dimensions(ag
     assert "Scènes à Faire" in user_content
 
 
-async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
+async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_config, run_execution, sample_argument):
     # When an exception dimension runs its own standalone pipeline (no infringement dimension
     # present), it IS the subject of that pipeline's verdict and must be framed as mandatory —
     # not as an optional tool for a dimension that isn't even in the room.
-    defense = Defense(config=agent_config)
+    defense = Defense(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -204,8 +204,8 @@ async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_
     assert "AVAILABLE EXCEPTION TOOLS" not in user_content
 
 
-async def test_defense_retry_hint_appears_in_prompt(agent_config, sample_argument):
-    defense = Defense(config=agent_config)
+async def test_defense_retry_hint_appears_in_prompt(agent_config, run_execution, sample_argument):
+    defense = Defense(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):

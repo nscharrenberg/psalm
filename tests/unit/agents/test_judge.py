@@ -8,8 +8,8 @@ from psalm.models.result import JurorVote, ValidationResult
 
 
 @pytest.fixture
-def judge(agent_config):
-    return Judge(config=agent_config)
+def judge(agent_config, run_execution):
+    return Judge(config=agent_config, execution=run_execution)
 
 
 async def test_judge_role(judge):

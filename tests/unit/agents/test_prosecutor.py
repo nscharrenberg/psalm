@@ -7,8 +7,8 @@ from psalm.dimensions import CHARACTER, SCENES_A_FAIRE
 
 
 @pytest.fixture
-def prosecutor(agent_config):
-    return Prosecutor(config=agent_config)
+def prosecutor(agent_config, run_execution):
+    return Prosecutor(config=agent_config, execution=run_execution)
 
 
 async def test_gather_arguments_returns_batch(prosecutor, sample_argument, agent_config):
@@ -44,10 +44,10 @@ def test_prosecutor_prompt_prioritizes_expression_over_idea_arguments():
     assert "debate must proceed" in prompt  # weaker args still allowed to proceed
 
 
-async def test_gather_arguments_role():
+async def test_gather_arguments_role(run_execution):
     from psalm.models.config import AgentConfig
     config = AgentConfig(base_url="https://api.openai.com/v1", api_key="sk-test", model="gpt-4o")
-    prosecutor = Prosecutor(config=config)
+    prosecutor = Prosecutor(config=config, execution=run_execution)
     assert prosecutor.role == "prosecutor"
 
 
@@ -131,9 +131,9 @@ async def test_prosecutor_counter_prompt_mentions_defense_args(prosecutor, sampl
     assert "Eye color is a generic trait" in user_content or "defense" in user_content.lower()
 
 
-async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, sample_argument):
+async def test_prosecutor_prompt_includes_sub_dimension_context(agent_config, run_execution, sample_argument):
     from psalm.agents.prosecutor import Prosecutor
-    prosecutor = Prosecutor(config=agent_config)
+    prosecutor = Prosecutor(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -165,8 +165,8 @@ def test_prosecutor_system_prompt_forbids_padding_and_guesswork():
     assert "no_further_arguments" in prompt
 
 
-async def test_prosecutor_prompt_separates_infringement_and_exception_dimensions(agent_config, sample_argument):
-    prosecutor = Prosecutor(config=agent_config)
+async def test_prosecutor_prompt_separates_infringement_and_exception_dimensions(agent_config, run_execution, sample_argument):
+    prosecutor = Prosecutor(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -184,11 +184,11 @@ async def test_prosecutor_prompt_separates_infringement_and_exception_dimensions
     assert "Scènes à Faire" in user_content
 
 
-async def test_prosecutor_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
+async def test_prosecutor_prompt_standalone_exception_dimension_is_mandatory(agent_config, run_execution, sample_argument):
     # When an exception dimension runs its own standalone pipeline (no infringement dimension
     # present), it IS the subject of that pipeline's verdict and must be framed as mandatory —
     # not as an optional tool for a dimension that isn't even in the room.
-    prosecutor = Prosecutor(config=agent_config)
+    prosecutor = Prosecutor(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -205,8 +205,8 @@ async def test_prosecutor_prompt_standalone_exception_dimension_is_mandatory(age
     assert "AVAILABLE EXCEPTION TOOLS" not in user_content
 
 
-async def test_prosecutor_retry_hint_appears_in_prompt(agent_config, sample_argument):
-    prosecutor = Prosecutor(config=agent_config)
+async def test_prosecutor_retry_hint_appears_in_prompt(agent_config, run_execution, sample_argument):
+    prosecutor = Prosecutor(config=agent_config, execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):

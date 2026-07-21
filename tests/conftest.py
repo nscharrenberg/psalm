@@ -1,8 +1,10 @@
 # tests/conftest.py
+import asyncio
 from contextlib import contextmanager
 
 import pytest
 
+from psalm.agents.base import _RunExecution
 from psalm.events.base import EventSink
 from psalm.events.context import _current_sink
 from psalm.models.config import AgentConfig, DebateConfig
@@ -28,6 +30,11 @@ def agent_config() -> AgentConfig:
         temperature=0.0,
         seed=42,
     )
+
+
+@pytest.fixture
+def run_execution() -> _RunExecution:
+    return _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
 
 
 @pytest.fixture

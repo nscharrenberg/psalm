@@ -9,8 +9,8 @@ from psalm.models.result import DimensionScore, JurorVote
 
 
 @pytest.fixture
-def juror(agent_config):
-    return Juror(config=agent_config, juror_id="juror-0")
+def juror(agent_config, run_execution):
+    return Juror(config=agent_config, juror_id="juror-0", execution=run_execution)
 
 
 async def test_juror_role(juror):
@@ -285,12 +285,12 @@ async def test_vote_prompt_contains_prior_rationale(juror, minimal_argumentation
 
 # --- Tests for dimension-aware vote() and rubric prompt ---
 
-async def test_juror_vote_accepts_dimension_parameter(agent_config, minimal_argumentation_log):
+async def test_juror_vote_accepts_dimension_parameter(agent_config, run_execution, minimal_argumentation_log):
     from unittest.mock import AsyncMock, MagicMock, patch
 
     from psalm.agents.juror import Juror
 
-    juror = Juror(config=agent_config, juror_id="juror-0")
+    juror = Juror(config=agent_config, juror_id="juror-0", execution=run_execution)
     mock_vote = JurorVote(
         juror_id="juror-0",
         vote="Guilty",
@@ -318,12 +318,12 @@ async def test_juror_vote_accepts_dimension_parameter(agent_config, minimal_argu
     assert result.vote == "Guilty"
 
 
-async def test_juror_vote_prompt_includes_rubric_and_sub_dimensions(agent_config, minimal_argumentation_log):
+async def test_juror_vote_prompt_includes_rubric_and_sub_dimensions(agent_config, run_execution, minimal_argumentation_log):
     from unittest.mock import MagicMock, patch
 
     from psalm.agents.juror import Juror
 
-    juror = Juror(config=agent_config, juror_id="juror-0")
+    juror = Juror(config=agent_config, juror_id="juror-0", execution=run_execution)
     captured: list = []
 
     async def capture_invoke(prompt, **kwargs):
@@ -374,13 +374,13 @@ def test_vote_prompt_says_single_differing_detail_does_not_launder_whole_passage
     assert "clear" in prompt
 
 
-async def test_juror_vote_all_dimensions_returns_list(agent_config, minimal_argumentation_log):
+async def test_juror_vote_all_dimensions_returns_list(agent_config, run_execution, minimal_argumentation_log):
     from unittest.mock import AsyncMock, MagicMock, patch
 
     from psalm.agents.juror import Juror
     from psalm.models.result import JurorVote
 
-    juror = Juror(config=agent_config, juror_id="juror-0")
+    juror = Juror(config=agent_config, juror_id="juror-0", execution=run_execution)
     mock_vote = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension_scores=[], dimension="character")
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_vote)

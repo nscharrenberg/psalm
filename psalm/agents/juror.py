@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from psalm.agents.base import BaseAgent
+from psalm.agents.base import BaseAgent, _RunExecution
 from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
@@ -174,8 +174,8 @@ def _format_sub_dimension_rubric(dimension: Dimension) -> str:
 
 
 class Juror(BaseAgent):
-    def __init__(self, config: AgentConfig, juror_id: str) -> None:
-        super().__init__(config)
+    def __init__(self, config: AgentConfig, juror_id: str, execution: _RunExecution) -> None:
+        super().__init__(config, execution)
         self._juror_id = juror_id
 
     @property

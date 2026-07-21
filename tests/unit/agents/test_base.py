@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,8 +16,8 @@ class _TestAgent(BaseAgent):
 
 
 @pytest.fixture
-def test_agent(agent_config):
-    return _TestAgent(config=agent_config)
+def test_agent(agent_config, run_execution):
+    return _TestAgent(config=agent_config, execution=run_execution)
 
 
 async def test_call_llm_emits_retrying_then_succeeds(test_agent):
@@ -64,3 +65,68 @@ async def test_call_structured_emits_retrying_then_succeeds(test_agent):
     retrying = [e for e in events if isinstance(e, AgentCallRetrying)]
     assert len(retrying) == 1
     assert retrying[0].attempt == 1
+
+
+async def test_call_llm_respects_semaphore_cap(agent_config):
+    from psalm.agents.base import _RunExecution
+
+    execution = _RunExecution(semaphore=asyncio.Semaphore(1), max_retries=3, backoff_factor=2.0)
+    agent = _TestAgent(config=agent_config, execution=execution)
+
+    in_flight = 0
+    max_in_flight = 0
+
+    async def fake_ainvoke(messages):
+        nonlocal in_flight, max_in_flight
+        in_flight += 1
+        max_in_flight = max(max_in_flight, in_flight)
+        await asyncio.sleep(0.01)
+        in_flight -= 1
+        return "ok"
+
+    with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(side_effect=fake_ainvoke)):
+        await asyncio.gather(
+            agent._call_llm([{"role": "user", "content": "a"}]),
+            agent._call_llm([{"role": "user", "content": "b"}]),
+        )
+
+    assert max_in_flight == 1
+
+
+async def test_call_llm_honors_configurable_max_retries(agent_config):
+    from psalm.agents.base import _RunExecution
+    from psalm.exceptions import PSALMAgentError
+
+    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=1, backoff_factor=2.0)
+    agent = _TestAgent(config=agent_config, execution=execution)
+
+    with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(side_effect=Exception("boom"))) as mock_ainvoke:
+        with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()) as mock_sleep:
+            with pytest.raises(PSALMAgentError):
+                await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert mock_ainvoke.call_count == 1
+    mock_sleep.assert_not_called()
+
+
+async def test_call_llm_backoff_is_within_full_jitter_bounds(agent_config):
+    from psalm.agents.base import _RunExecution
+
+    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
+    agent = _TestAgent(config=agent_config, execution=execution)
+
+    recorded_sleeps = []
+
+    async def fake_sleep(seconds):
+        recorded_sleeps.append(seconds)
+
+    with patch.object(
+        type(agent._llm), "ainvoke",
+        new=AsyncMock(side_effect=[Exception("boom"), Exception("boom"), "ok"]),
+    ):
+        with patch("psalm.agents.base.asyncio.sleep", new=fake_sleep):
+            await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert len(recorded_sleeps) == 2
+    assert 0 <= recorded_sleeps[0] <= 1.0  # backoff_factor**0 == 1
+    assert 0 <= recorded_sleeps[1] <= 2.0  # backoff_factor**1 == 2

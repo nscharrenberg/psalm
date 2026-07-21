@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import random
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any
 
 from langchain_openai import ChatOpenAI
@@ -11,13 +13,18 @@ from psalm.events import AgentCallFailed, AgentCallRetrying, emit
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
 
-_RETRY_ATTEMPTS = 3
-_BACKOFF_FACTOR = 2.0
+
+@dataclass
+class _RunExecution:
+    semaphore: asyncio.Semaphore
+    max_retries: int
+    backoff_factor: float
 
 
 class BaseAgent(ABC):
-    def __init__(self, config: AgentConfig) -> None:
+    def __init__(self, config: AgentConfig, execution: _RunExecution) -> None:
         self._config = config
+        self._execution = execution
         self._llm = ChatOpenAI(
             base_url=config.base_url,
             api_key=SecretStr(config.api_key) if config.api_key else None,
@@ -37,59 +44,65 @@ class BaseAgent(ABC):
     def role(self) -> str: ...
 
     async def _call_llm(self, messages: list[Any]) -> Any:
-        for attempt in range(_RETRY_ATTEMPTS):
+        max_retries = self._execution.max_retries
+        for attempt in range(max_retries):
             try:
-                return await self._llm.ainvoke(messages)
+                async with self._execution.semaphore:
+                    return await self._llm.ainvoke(messages)
             except Exception as exc:
-                if attempt == _RETRY_ATTEMPTS - 1:
+                if attempt == max_retries - 1:
                     await emit(AgentCallFailed(
-                        role=self.role, attempts=_RETRY_ATTEMPTS, code="PSALM-A003", error=str(exc),
+                        role=self.role, attempts=max_retries, code="PSALM-A003", error=str(exc),
                     ))
                     raise PSALMAgentError(
                         code="PSALM-A003",
-                        message=f"LLM retry limit reached after {_RETRY_ATTEMPTS} attempts.",
+                        message=f"LLM retry limit reached after {max_retries} attempts.",
                         context={
                             "role": self.role,
                             "model": self._config.model,
-                            "attempts": _RETRY_ATTEMPTS,
+                            "attempts": max_retries,
                         },
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc
-                backoff = _BACKOFF_FACTOR**attempt
+                backoff = self._execution.backoff_factor**attempt
+                jittered = random.uniform(0, backoff)
                 await emit(AgentCallRetrying(
-                    role=self.role, attempt=attempt + 1, max_attempts=_RETRY_ATTEMPTS,
-                    backoff_seconds=backoff, error=str(exc),
+                    role=self.role, attempt=attempt + 1, max_attempts=max_retries,
+                    backoff_seconds=jittered, error=str(exc),
                 ))
-                await asyncio.sleep(backoff)
+                await asyncio.sleep(jittered)
         raise RuntimeError("unreachable")
 
     async def _call_structured(self, structured_llm: Any, messages: list[Any]) -> Any:
-        for attempt in range(_RETRY_ATTEMPTS):
+        max_retries = self._execution.max_retries
+        for attempt in range(max_retries):
             try:
-                return await structured_llm.ainvoke(messages)
+                async with self._execution.semaphore:
+                    return await structured_llm.ainvoke(messages)
             except Exception as exc:
-                if attempt == _RETRY_ATTEMPTS - 1:
+                if attempt == max_retries - 1:
                     await emit(AgentCallFailed(
-                        role=self.role, attempts=_RETRY_ATTEMPTS, code="PSALM-A003", error=str(exc),
+                        role=self.role, attempts=max_retries, code="PSALM-A003", error=str(exc),
                     ))
                     raise PSALMAgentError(
                         code="PSALM-A003",
                         message=(
-                            f"Structured LLM retry limit reached after {_RETRY_ATTEMPTS} attempts."
+                            f"Structured LLM retry limit reached after {max_retries} attempts."
                         ),
                         context={
                             "role": self.role,
                             "model": self._config.model,
-                            "attempts": _RETRY_ATTEMPTS,
+                            "attempts": max_retries,
                         },
                         suggestion="Check API credentials, endpoint availability, and rate limits.",
                         cause=exc,
                     ) from exc
-                backoff = _BACKOFF_FACTOR**attempt
+                backoff = self._execution.backoff_factor**attempt
+                jittered = random.uniform(0, backoff)
                 await emit(AgentCallRetrying(
-                    role=self.role, attempt=attempt + 1, max_attempts=_RETRY_ATTEMPTS,
-                    backoff_seconds=backoff, error=str(exc),
+                    role=self.role, attempt=attempt + 1, max_attempts=max_retries,
+                    backoff_seconds=jittered, error=str(exc),
                 ))
-                await asyncio.sleep(backoff)
+                await asyncio.sleep(jittered)
         raise RuntimeError("unreachable")
