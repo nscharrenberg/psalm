@@ -5,7 +5,7 @@ SCENES_A_FAIRE = Dimension(
     description="Standard or necessary elements indispensable to the genre or type of work.",
     sub_dimensions=[
         SubDimension(
-            name="Creative Elaboration (INVERSE)",
+            name="Creative Elaboration",
             description=(
                 "Distinctive voice/style (unique authorial tone, specific creative expression "
                 "patterns), original descriptive detail (particular sensory richness, unique "
@@ -13,10 +13,17 @@ SCENES_A_FAIRE = Dimension(
                 "specific emotional nuance), unique dialogue (particular speech patterns, specific "
                 "conversational styles), innovative structure (unique narrative architectures, "
                 "specific formal experiments), creative worldbuilding (particular imaginative "
-                "constructions, unique setting details). Note: HIGH originality reduces scènes à "
-                "faire score, indicating more protectable content."
+                "constructions, unique setting details)."
             ),
             importance=Importance.HIGH,
+            # HIGH textual similarity here means the shared passage is highly original/creatively
+            # elaborate -- the strongest possible infringement signal, not scenes-à-faire
+            # material. _compute_weighted_score (psalm/phases/deliberation.py) flips this
+            # sub-dimension's contribution accordingly. The juror is never told about this --
+            # it scores this sub-dimension exactly like any other, using the same
+            # pure-textual-similarity rubric (_VOTE_SYSTEM_PROMPT in psalm/agents/juror.py);
+            # the inversion is applied only during aggregation, in code.
+            inverse=True,
         ),
         SubDimension(
             name="Genre Conventions & Setting",

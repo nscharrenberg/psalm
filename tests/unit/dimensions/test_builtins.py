@@ -45,11 +45,28 @@ def test_scenes_a_faire_is_valid_dimension():
     assert len(SCENES_A_FAIRE.sub_dimensions) == 6
 
 
-def test_scenes_a_faire_creative_elaboration_is_high():
+def test_scenes_a_faire_creative_elaboration_is_high_and_inverse():
     elaboration = next(
-        sd for sd in SCENES_A_FAIRE.sub_dimensions if sd.name == "Creative Elaboration (INVERSE)"
+        sd for sd in SCENES_A_FAIRE.sub_dimensions if sd.name == "Creative Elaboration"
     )
     assert elaboration.importance == Importance.HIGH
+    assert elaboration.inverse is True
+
+
+def test_scenes_a_faire_creative_elaboration_name_has_no_inverse_suffix():
+    # The juror-facing name must not hint at inversion — see Task 1 of the
+    # 2026-07-21-subdimension-inversion plan for why.
+    names = {sd.name for sd in SCENES_A_FAIRE.sub_dimensions}
+    assert "Creative Elaboration (INVERSE)" not in names
+    assert "Creative Elaboration" in names
+
+
+def test_scenes_a_faire_creative_elaboration_description_has_no_inversion_note():
+    elaboration = next(
+        sd for sd in SCENES_A_FAIRE.sub_dimensions if sd.name == "Creative Elaboration"
+    )
+    assert "reduces" not in elaboration.description.lower()
+    assert "inverse" not in elaboration.description.lower()
 
 
 def test_all_sub_dimensions_have_name_and_description():

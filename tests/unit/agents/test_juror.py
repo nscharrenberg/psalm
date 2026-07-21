@@ -432,3 +432,10 @@ def test_vote_prompt_specifies_reasoning_before_vote_order():
     prompt = _VOTE_SYSTEM_PROMPT.lower()
     assert "score every sub-dimension first" in prompt
     assert "should follow from the rationale you just wrote" in prompt
+
+
+def test_format_sub_dimension_rubric_carries_no_inversion_hint():
+    from psalm.agents.juror import _format_sub_dimension_rubric
+    from psalm.dimensions import SCENES_A_FAIRE
+    text = _format_sub_dimension_rubric(SCENES_A_FAIRE)
+    assert "inverse" not in text.lower()

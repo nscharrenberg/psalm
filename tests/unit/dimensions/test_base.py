@@ -86,3 +86,13 @@ def test_dimension_accepts_exception_type():
         sub_dimensions=[SubDimension(name="Sub1", description="sub1")],
     )
     assert dim.dimension_type == "exception"
+
+
+def test_sub_dimension_inverse_defaults_to_false():
+    sd = SubDimension(name="Test Sub", description="A test sub-dimension.")
+    assert sd.inverse is False
+
+
+def test_sub_dimension_accepts_inverse():
+    sd = SubDimension(name="Test", description="desc", inverse=True)
+    assert sd.inverse is True

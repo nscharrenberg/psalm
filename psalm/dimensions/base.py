@@ -40,6 +40,7 @@ class SubDimension(BaseModel):
     name: str
     description: str
     importance: Importance = Importance.MEDIUM
+    inverse: bool = False
 
 
 class Dimension(BaseModel):
