@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SubDimensionPayload(BaseModel):
@@ -65,6 +65,8 @@ class TrialConfigRequest(BaseModel):
     argumentation_rounds: int = 3
     deliberation_rounds: int = 2
     time_limit_seconds: int = 120
+    max_concurrent_llm_calls: int = Field(default=8, ge=1)
+    max_retries: int = Field(default=3, ge=1)
     prosecutor: AgentConfigRequest = AgentConfigRequest()
     defense: AgentConfigRequest = AgentConfigRequest()
     judge: AgentConfigRequest = AgentConfigRequest()

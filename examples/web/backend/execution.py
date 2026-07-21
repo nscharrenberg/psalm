@@ -61,6 +61,10 @@ async def build_psalm(config: TrialConfigRequest, resolved: dict[str, Any]):
                 deliberation_rounds=config.deliberation_rounds,
                 time_limit_seconds=config.time_limit_seconds,
             )
+            .with_execution(
+                max_concurrent_llm_calls=config.max_concurrent_llm_calls,
+                max_retries=config.max_retries,
+            )
             .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
             .with_evaluation_strategy(evaluation_strategy)
             .build()

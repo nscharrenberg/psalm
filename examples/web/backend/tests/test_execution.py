@@ -72,3 +72,51 @@ async def test_build_psalm_wraps_config_error_from_llm_ping_failure():
         with pytest.raises(TrialStartError) as exc_info:
             await build_psalm(config, resolved)
     assert exc_info.value.code == "PSALM-C006"
+
+
+async def test_build_psalm_forwards_execution_settings():
+    from unittest.mock import MagicMock
+
+    config = _config(max_concurrent_llm_calls=2, max_retries=1)
+    resolved = resolve_config(config)
+    captured = {}
+
+    class _FakeBuilder:
+        def with_prosecutor(self, **kw): return self
+        def with_defense(self, **kw): return self
+        def with_judge(self, **kw): return self
+        def with_jury(self, jury): return self
+        def with_dimensions(self, dims): return self
+        def with_debate(self, **kw): return self
+        def with_voting(self, strategies): return self
+        def with_evaluation_strategy(self, strategy): return self
+        def with_execution(self, **kw):
+            captured.update(kw)
+            return self
+        async def build(self): return "built"
+
+    with patch("execution.PSALM", return_value=_FakeBuilder()):
+        result = await build_psalm(config, resolved)
+
+    assert captured == {"max_concurrent_llm_calls": 2, "max_retries": 1}
+    assert result == "built"
+
+
+def test_trial_config_request_execution_defaults():
+    config = _config()
+    assert config.max_concurrent_llm_calls == 8
+    assert config.max_retries == 3
+
+
+def test_trial_config_request_rejects_non_positive_max_concurrent_llm_calls():
+    import pydantic
+
+    with pytest.raises(pydantic.ValidationError):
+        _config(max_concurrent_llm_calls=0)
+
+
+def test_trial_config_request_rejects_non_positive_max_retries():
+    import pydantic
+
+    with pytest.raises(pydantic.ValidationError):
+        _config(max_retries=0)
