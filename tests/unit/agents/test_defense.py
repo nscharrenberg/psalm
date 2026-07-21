@@ -1,4 +1,4 @@
-﻿# tests/unit/agents/test_defense.py
+# tests/unit/agents/test_defense.py
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -180,12 +180,12 @@ async def test_defense_prompt_separates_infringement_and_exception_dimensions(ag
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "PRIMARY DIMENSION (must argue): Character" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" in user_content
-    assert "ScÃ¨nes Ã  Faire" in user_content
+    assert "Scènes à Faire" in user_content
 
 
 async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
     # When an exception dimension runs its own standalone pipeline (no infringement dimension
-    # present), it IS the subject of that pipeline's verdict and must be framed as mandatory â€”
+    # present), it IS the subject of that pipeline's verdict and must be framed as mandatory —
     # not as an optional tool for a dimension that isn't even in the room.
     defense = Defense(config=agent_config)
     captured: list = []
@@ -200,7 +200,7 @@ async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_
         await defense.gather_arguments("src", "tgt", [SCENES_A_FAIRE], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    assert "PRIMARY DIMENSION (must argue): ScÃ¨nes Ã  Faire" in user_content
+    assert "PRIMARY DIMENSION (must argue): Scènes à Faire" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" not in user_content
 
 
@@ -352,7 +352,8 @@ def test_defense_prompt_exception_defenses_are_gated():
     from psalm.agents.defense import _SYSTEM_PROMPT
     assert "EXCEPTION-BASED DEFENSES" in _SYSTEM_PROMPT
     assert "AVAILABLE EXCEPTION TOOLS" in _SYSTEM_PROMPT
-    assert "no exception-based defenses in this case" in _SYSTEM_PROMPT.lower()
+    normalized = " ".join(_SYSTEM_PROMPT.lower().split())
+    assert "no exception-based defenses in this case" in normalized
 
 
 def test_defense_prompt_primary_tools_no_longer_lead_with_idea_expression():
