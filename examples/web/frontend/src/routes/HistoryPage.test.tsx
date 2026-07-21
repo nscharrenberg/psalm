@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
 import HistoryPage from "./HistoryPage";
+import { render, screen } from "../test/render";
 
 afterEach(() => {
   vi.restoreAllMocks();
