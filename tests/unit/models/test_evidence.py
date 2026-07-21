@@ -124,3 +124,8 @@ def test_closing_statement_model():
     cs = ClosingStatement(round=1, statement="The prosecution rests.")
     assert cs.round == 1
     assert cs.statement == "The prosecution rests."
+
+
+def test_argument_field_order():
+    from psalm.models.evidence import Argument
+    assert list(Argument.model_fields) == ["dimension", "proofs", "claim", "agent_role", "round"]

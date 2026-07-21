@@ -12,9 +12,9 @@ class Proof(BaseModel):
 
 
 class Argument(BaseModel):
-    claim: str
     dimension: str
     proofs: list[Proof]
+    claim: str
     agent_role: str
     round: int
 
