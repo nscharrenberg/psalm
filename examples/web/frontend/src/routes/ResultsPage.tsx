@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {
+  ActionIcon, Alert, Accordion, Badge, Button, Group, Slider, Stack, Table, Text, Title,
+} from "@mantine/core";
+import { IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react";
 import { fetchTrialEvents, getTrial } from "../api/client";
 import type { TrialDetail } from "../api/types";
 import { useTrialStore } from "../state/store";
@@ -59,128 +63,148 @@ export default function ResultsPage() {
     });
   }
 
-  if (error) return <p role="alert">Failed to load trial: {error}</p>;
-  if (!detail) return <p>Loading...</p>;
+  if (error) return <Alert role="alert" color="red">Failed to load trial: {error}</Alert>;
+  if (!detail) return <Text>Loading...</Text>;
 
   const result = detail.result;
 
+  function verdictColor(verdict: string): string {
+    if (verdict === "Guilty") return "red";
+    if (verdict === "Not Guilty") return "green";
+    return "gray";
+  }
+
   return (
-    <div className="results-page">
-      <h1>Trial result</h1>
-      {detail.status === "error" && <p role="alert">Trial failed: {detail.error_message}</p>}
+    <Stack gap="lg" className="results-page">
+      <Title order={2}>Trial result</Title>
+      {detail.status === "error" && (
+        <Alert role="alert" color="red">Trial failed: {detail.error_message}</Alert>
+      )}
 
       {result && (
         <>
-          <section className="verdict-banner">
-            <h2>Verdict: {result.verdict}</h2>
-            <p>{result.rationale}</p>
-          </section>
+          <Alert color={verdictColor(result.verdict)} title={`Verdict: ${result.verdict}`} className="verdict-banner">
+            {result.rationale}
+          </Alert>
 
-          <section>
-            <h2>Per-dimension breakdown</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Dimension</th><th>Type</th><th>Importance</th><th>Verdict</th><th>Score</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Stack gap="sm">
+            <Title order={4}>Per-dimension breakdown</Title>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Dimension</Table.Th><Table.Th>Type</Table.Th><Table.Th>Importance</Table.Th>
+                  <Table.Th>Verdict</Table.Th><Table.Th>Score</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {result.dimension_verdicts.map((dv) => (
-                  <tr key={dv.dimension}>
-                    <td>{dv.dimension}</td>
-                    <td>{dv.dimension_type}</td>
-                    <td>{dv.importance}</td>
-                    <td>{dv.verdict}</td>
-                    <td>{dv.weighted_score.toFixed(2)}</td>
-                  </tr>
+                  <Table.Tr key={dv.dimension}>
+                    <Table.Td>{dv.dimension}</Table.Td>
+                    <Table.Td>{dv.dimension_type}</Table.Td>
+                    <Table.Td>{dv.importance}</Table.Td>
+                    <Table.Td>
+                      <Badge color={verdictColor(dv.verdict)} variant="light">{dv.verdict}</Badge>
+                    </Table.Td>
+                    <Table.Td>{dv.weighted_score.toFixed(2)}</Table.Td>
+                  </Table.Tr>
                 ))}
-              </tbody>
-            </table>
-          </section>
+              </Table.Tbody>
+            </Table>
+          </Stack>
 
-          {result.dimension_verdicts.map((dv) => (
-            <details key={dv.dimension}>
-              <summary>{dv.dimension} — full log</summary>
-              <h3>Argumentation</h3>
-              {dv.argumentation_log.rounds.map((round) => (
-                <div key={round.round}>
-                  <h4>Round {round.round}</h4>
-                  {round.prosecution_arguments.map((arg, i) => <p key={`pa${i}`}>Prosecution: {arg.claim}</p>)}
-                  {round.prosecution_rejected_arguments.map((rej, i) => (
-                    <p key={`pr${i}`}>Rejected (prosecution): {rej.argument.claim} — {rej.rejection_reason}</p>
+          <Accordion>
+            {result.dimension_verdicts.map((dv) => (
+              <Accordion.Item key={dv.dimension} value={dv.dimension}>
+                <Accordion.Control>{dv.dimension} — full log</Accordion.Control>
+                <Accordion.Panel>
+                  <Title order={5}>Argumentation</Title>
+                  {dv.argumentation_log.rounds.map((round) => (
+                    <div key={round.round}>
+                      <Text fw={600} size="sm" mt="sm">Round {round.round}</Text>
+                      {round.prosecution_arguments.map((arg, i) => <Text key={`pa${i}`} size="sm">Prosecution: {arg.claim}</Text>)}
+                      {round.prosecution_rejected_arguments.map((rej, i) => (
+                        <Text key={`pr${i}`} size="sm" c="dimmed">Rejected (prosecution): {rej.argument.claim} — {rej.rejection_reason}</Text>
+                      ))}
+                      {round.defense_counters.map((arg, i) => <Text key={`dc${i}`} size="sm">Defense counters: {arg.claim}</Text>)}
+                      {round.defense_counter_rejected_arguments.map((rej, i) => (
+                        <Text key={`dcr${i}`} size="sm" c="dimmed">Rejected (defense counter): {rej.argument.claim} — {rej.rejection_reason}</Text>
+                      ))}
+                      {round.defense_arguments.map((arg, i) => <Text key={`da${i}`} size="sm">Defense: {arg.claim}</Text>)}
+                      {round.defense_rejected_arguments.map((rej, i) => (
+                        <Text key={`dr${i}`} size="sm" c="dimmed">Rejected (defense): {rej.argument.claim} — {rej.rejection_reason}</Text>
+                      ))}
+                      {round.prosecution_counters.map((arg, i) => (
+                        <Text key={`pc${i}`} size="sm">Prosecution counters: {arg.claim}</Text>
+                      ))}
+                      {round.prosecution_counter_rejected_arguments.map((rej, i) => (
+                        <Text key={`pcr${i}`} size="sm" c="dimmed">Rejected (prosecution counter): {rej.argument.claim} — {rej.rejection_reason}</Text>
+                      ))}
+                    </div>
                   ))}
-                  {round.defense_counters.map((arg, i) => <p key={`dc${i}`}>Defense counters: {arg.claim}</p>)}
-                  {round.defense_counter_rejected_arguments.map((rej, i) => (
-                    <p key={`dcr${i}`}>Rejected (defense counter): {rej.argument.claim} — {rej.rejection_reason}</p>
-                  ))}
-                  {round.defense_arguments.map((arg, i) => <p key={`da${i}`}>Defense: {arg.claim}</p>)}
-                  {round.defense_rejected_arguments.map((rej, i) => (
-                    <p key={`dr${i}`}>Rejected (defense): {rej.argument.claim} — {rej.rejection_reason}</p>
-                  ))}
-                  {round.prosecution_counters.map((arg, i) => (
-                    <p key={`pc${i}`}>Prosecution counters: {arg.claim}</p>
-                  ))}
-                  {round.prosecution_counter_rejected_arguments.map((rej, i) => (
-                    <p key={`pcr${i}`}>Rejected (prosecution counter): {rej.argument.claim} — {rej.rejection_reason}</p>
-                  ))}
-                </div>
-              ))}
-              {dv.argumentation_log.prosecution_closing_argument && (
-                <p>Prosecution closing: {dv.argumentation_log.prosecution_closing_argument}</p>
-              )}
-              {dv.argumentation_log.defense_closing_argument && (
-                <p>Defense closing: {dv.argumentation_log.defense_closing_argument}</p>
-              )}
+                  {dv.argumentation_log.prosecution_closing_argument && (
+                    <Text size="sm" mt="sm">Prosecution closing: {dv.argumentation_log.prosecution_closing_argument}</Text>
+                  )}
+                  {dv.argumentation_log.defense_closing_argument && (
+                    <Text size="sm">Defense closing: {dv.argumentation_log.defense_closing_argument}</Text>
+                  )}
 
-              <h3>Deliberation</h3>
-              {dv.debate_log.rounds.map((round) => (
-                <div key={round.round}>
-                  <h4>Round {round.round}</h4>
-                  {round.votes.map((vote) => (
-                    <p key={vote.juror_id}>{vote.juror_id}: {vote.vote} — {vote.rationale}</p>
+                  <Title order={5} mt="md">Deliberation</Title>
+                  {dv.debate_log.rounds.map((round) => (
+                    <div key={round.round}>
+                      <Text fw={600} size="sm" mt="sm">Round {round.round}</Text>
+                      {round.votes.map((vote) => (
+                        <Text key={vote.juror_id} size="sm">{vote.juror_id}: {vote.vote} — {vote.rationale}</Text>
+                      ))}
+                      {round.discussion_messages.map((msg, i) => (
+                        <Text key={i} size="sm">{msg.juror_id}: {msg.message}</Text>
+                      ))}
+                    </div>
                   ))}
-                  {round.discussion_messages.map((msg, i) => (
-                    <p key={i}>{msg.juror_id}: {msg.message}</p>
-                  ))}
-                </div>
-              ))}
-            </details>
-          ))}
+                </Accordion.Panel>
+              </Accordion.Item>
+            ))}
+          </Accordion>
         </>
       )}
 
       {detail.status !== "running" && !showReplay && (
-        <button type="button" onClick={startReplay} disabled={isLoadingReplay}>
+        <Button onClick={startReplay} disabled={isLoadingReplay} variant="light">
           {isLoadingReplay ? "Loading replay..." : "Replay this trial"}
-        </button>
+        </Button>
       )}
 
       {showReplay && replayMode === "replay" && (
-        <section className="replay-section">
-          <h2>Replay</h2>
+        <Stack gap="sm" className="replay-section">
+          <Title order={4}>Replay</Title>
           {replayState.dimensionOrder.length > 1 && (
-            <div className="dimension-selector">
+            <Group gap="xs" className="dimension-selector">
               {replayState.dimensionOrder.map((name) => (
-                <button
-                  key={name} type="button"
-                  className={name === replayDimension ? "active" : ""}
+                <Badge
+                  key={name} variant={name === replayDimension ? "filled" : "light"}
+                  color="gold" style={{ cursor: "pointer" }}
                   onClick={() => setReplayDimension(name)}
                 >
                   {name}
-                </button>
+                </Badge>
               ))}
-            </div>
+            </Group>
           )}
-          <div className="replay-controls">
-            <button type="button" onClick={isPlaying ? pause : play}>{isPlaying ? "Pause" : "Play"}</button>
-            <input
-              type="range" min={-1} max={liveEvents.length - 1} value={replayIndex}
-              onChange={(e) => scrubTo(Number(e.target.value))}
+          <Group gap="sm" align="center" className="replay-controls">
+            <ActionIcon
+              onClick={isPlaying ? pause : play} variant="filled" size="lg"
+              aria-label={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? <IconPlayerPause size={18} /> : <IconPlayerPlay size={18} />}
+            </ActionIcon>
+            <Slider
+              style={{ flex: 1 }}
+              min={-1} max={Math.max(liveEvents.length - 1, 0)} value={replayIndex}
+              onChange={scrubTo} label={null}
             />
-          </div>
+          </Group>
           <StageView dimension={replayDimension ? replayState.dimensions[replayDimension] ?? null : null} />
-        </section>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 }
