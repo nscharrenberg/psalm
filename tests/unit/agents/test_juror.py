@@ -439,3 +439,18 @@ def test_format_sub_dimension_rubric_carries_no_inversion_hint():
     from psalm.dimensions import SCENES_A_FAIRE
     text = _format_sub_dimension_rubric(SCENES_A_FAIRE)
     assert "inverse" not in text.lower()
+
+
+def test_format_sub_dimension_rubric_infringement_has_no_exception_framing():
+    from psalm.agents.juror import _format_sub_dimension_rubric
+    from psalm.dimensions import CHARACTER
+    text = _format_sub_dimension_rubric(CHARACTER)
+    assert "EXCEPTION dimension" not in text
+
+
+def test_format_sub_dimension_rubric_exception_has_exception_framing():
+    from psalm.agents.juror import _format_sub_dimension_rubric
+    from psalm.dimensions import SCENES_A_FAIRE
+    text = _format_sub_dimension_rubric(SCENES_A_FAIRE)
+    assert "EXCEPTION dimension" in text
+    assert 'Vote "Guilty" if the exception applies' in text

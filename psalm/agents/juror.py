@@ -159,7 +159,15 @@ def _format_prior_rounds(previous_rounds: list[dict], my_juror_id: str) -> str:
 
 
 def _format_sub_dimension_rubric(dimension: Dimension) -> str:
-    lines = [f"Dimension: {dimension.name} — {dimension.description}", "Sub-dimensions to score:"]
+    lines = [f"Dimension: {dimension.name} — {dimension.description}"]
+    if dimension.dimension_type == "exception":
+        lines.append(
+            "This is an EXCEPTION dimension, not an infringement dimension: you are not "
+            "deciding whether the target text infringes copyright here. You are deciding "
+            "whether this specific legal exception applies to the shared content. Vote "
+            "\"Guilty\" if the exception applies, \"Not Guilty\" if it does not."
+        )
+    lines.append("Sub-dimensions to score:")
     for sd in dimension.sub_dimensions:
         lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
     return "\n".join(lines)
