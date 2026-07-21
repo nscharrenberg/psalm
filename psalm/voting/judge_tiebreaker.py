@@ -13,6 +13,7 @@ class JudgeTiebreakerVoting(VotingStrategy):
         votes: list[JurorVote],
         judge: Any,
         argumentation_log: ArgumentationLog | None = None,
+        dimension: Any = None,
     ) -> VoteResult:
         if judge is None:
             raise PSALMConfigError(
@@ -21,5 +22,5 @@ class JudgeTiebreakerVoting(VotingStrategy):
                 context={},
                 suggestion="Ensure .with_judge(...) is called on the builder before .build().",
             )
-        verdict = await judge.tiebreak(votes, argumentation_log)
+        verdict = await judge.tiebreak(votes, argumentation_log, dimension=dimension)
         return VoteResult(verdict=verdict, is_tie=False)

@@ -13,7 +13,8 @@ def _weight(rationale: str) -> float:
 
 class TrustWeightedVoting(VotingStrategy):
     async def apply(
-        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None
+        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None,
+        dimension: Any = None,
     ) -> VoteResult:
         weights: dict[str, float] = defaultdict(float)
         for v in votes:

@@ -165,7 +165,9 @@ class DeliberationPhase:
     async def _apply_voting_strategy(self, state: DeliberationState) -> dict[str, Any]:
         latest_votes = [JurorVote(**v) for v in state.vote_history[-1]["votes"]]
         for strategy in self._voting_strategies:
-            result = await strategy.apply(latest_votes, self._judge, state.argumentation_log)
+            result = await strategy.apply(
+                latest_votes, self._judge, state.argumentation_log, state.current_dimension,
+            )
             await emit(VotingStrategyApplied(
                 strategy_name=type(strategy).__name__, is_tie=result.is_tie, verdict=result.verdict,
             ))

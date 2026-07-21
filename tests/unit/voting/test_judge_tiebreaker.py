@@ -46,3 +46,18 @@ async def test_tiebreaker_raises_without_judge(strategy, minimal_argumentation_l
     with pytest.raises(PSALMConfigError) as exc_info:
         await strategy.apply(votes, judge=None, argumentation_log=minimal_argumentation_log)
     assert "PSALM-C005" in str(exc_info.value)
+
+
+async def test_tiebreaker_forwards_dimension_to_judge(strategy, mock_judge, minimal_argumentation_log):
+    from psalm.dimensions import SCENES_A_FAIRE
+    votes = [
+        JurorVote(juror_id="j0", vote="Guilty", rationale="r1"),
+        JurorVote(juror_id="j1", vote="Not Guilty", rationale="r2"),
+    ]
+    await strategy.apply(
+        votes, judge=mock_judge, argumentation_log=minimal_argumentation_log,
+        dimension=SCENES_A_FAIRE,
+    )
+    mock_judge.tiebreak.assert_called_once_with(
+        votes, minimal_argumentation_log, dimension=SCENES_A_FAIRE,
+    )

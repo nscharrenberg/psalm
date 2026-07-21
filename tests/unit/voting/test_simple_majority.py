@@ -59,3 +59,14 @@ async def test_majority_undecided(strategy):
     result = await strategy.apply(votes, judge=None)
     assert result.verdict == "Undecided"
     assert result.is_tie is False
+
+
+async def test_apply_accepts_dimension_argument(strategy):
+    from psalm.dimensions import CHARACTER
+    votes = [
+        JurorVote(juror_id=f"j{i}", vote="Guilty", rationale="Clear infringement.")
+        for i in range(3)
+    ]
+    result = await strategy.apply(votes, judge=None, dimension=CHARACTER)
+    assert result.verdict == "Guilty"
+    assert result.is_tie is False

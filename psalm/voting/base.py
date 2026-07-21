@@ -16,5 +16,6 @@ class VoteResult(BaseModel):
 class VotingStrategy(ABC):
     @abstractmethod
     async def apply(
-        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None
+        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None,
+        dimension: Any = None,
     ) -> VoteResult: ...

@@ -9,7 +9,8 @@ from psalm.voting.base import VoteResult, VotingStrategy
 
 class SimpleMajorityVoting(VotingStrategy):
     async def apply(
-        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None
+        self, votes: list[JurorVote], judge: Any, argumentation_log: Any = None,
+        dimension: Any = None,
     ) -> VoteResult:
         counts = Counter(v.vote for v in votes)
         if not counts:
