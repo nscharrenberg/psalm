@@ -225,7 +225,8 @@ def _compute_weighted_score(votes: list[JurorVote], dimension: Dimension) -> flo
         raw_scores = scores_by_sub[sub_name]
         avg = sum(raw_scores) / len(raw_scores) if raw_scores else 0.0
         max_score = 3  # SimilarityScore.CLEAR
-        weighted_total += avg * multiplier
+        contribution = (max_score - avg) if sub_dim.inverse else avg
+        weighted_total += contribution * multiplier
         max_possible += max_score * multiplier
 
     if max_possible == 0.0:

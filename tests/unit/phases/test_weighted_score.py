@@ -66,3 +66,55 @@ def test_multiple_jurors_averaged():
     # All others are 0, so numerator ≈ 1.5, denominator = high importance weight
     assert score > 0.0
     assert score < 0.5  # Should be relatively small since only one sub-dim has any score
+
+
+def test_inverse_sub_dimension_clear_score_contributes_zero():
+    from psalm.dimensions.base import Dimension, Importance, SubDimension
+    dim = Dimension(
+        name="test-exception",
+        description="A test exception dimension with one inverted sub-dimension.",
+        dimension_type="exception",
+        sub_dimensions=[
+            SubDimension(name="Inverted Sub", description="d.", importance=Importance.HIGH, inverse=True),
+        ],
+    )
+    votes = [_vote([("Inverted Sub", SimilarityScore.CLEAR)])]
+    score = _compute_weighted_score(votes, dim)
+    # clear (avg=3) on an inverted sub-dimension flips to (3 - 3) = 0 contribution.
+    assert score == 0.0
+
+
+def test_inverse_sub_dimension_none_score_contributes_max():
+    from psalm.dimensions.base import Dimension, Importance, SubDimension
+    dim = Dimension(
+        name="test-exception",
+        description="A test exception dimension with one inverted sub-dimension.",
+        dimension_type="exception",
+        sub_dimensions=[
+            SubDimension(name="Inverted Sub", description="d.", importance=Importance.HIGH, inverse=True),
+        ],
+    )
+    votes = [_vote([("Inverted Sub", SimilarityScore.NONE)])]
+    score = _compute_weighted_score(votes, dim)
+    # none (avg=0) on an inverted sub-dimension flips to (3 - 0) = 3 contribution, the max
+    # possible for this sub-dimension -- normalised score is 1.0.
+    assert abs(score - 1.0) < 1e-6
+
+
+def test_mixed_normal_and_inverse_sub_dimensions_blend_correctly():
+    from psalm.dimensions.base import Dimension, Importance, SubDimension
+    dim = Dimension(
+        name="test-exception",
+        description="A test exception dimension mixing normal and inverted sub-dimensions.",
+        dimension_type="exception",
+        sub_dimensions=[
+            SubDimension(name="Normal Sub", description="d.", importance=Importance.MEDIUM, inverse=False),
+            SubDimension(name="Inverted Sub", description="d.", importance=Importance.MEDIUM, inverse=True),
+        ],
+    )
+    votes = [_vote([("Normal Sub", SimilarityScore.CLEAR), ("Inverted Sub", SimilarityScore.CLEAR)])]
+    score = _compute_weighted_score(votes, dim)
+    # Normal Sub: clear (avg=3) contributes 3 * 1.0 = 3.
+    # Inverted Sub: clear (avg=3) flips to (3-3) = 0, contributes 0 * 1.0 = 0.
+    # weighted_total = 3, max_possible = 3*1.0 + 3*1.0 = 6 -> normalised = 0.5.
+    assert abs(score - 0.5) < 1e-6
