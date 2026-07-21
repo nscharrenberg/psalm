@@ -1,4 +1,4 @@
-# tests/unit/agents/test_defense.py
+﻿# tests/unit/agents/test_defense.py
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -180,12 +180,12 @@ async def test_defense_prompt_separates_infringement_and_exception_dimensions(ag
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "PRIMARY DIMENSION (must argue): Character" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" in user_content
-    assert "Scènes à Faire" in user_content
+    assert "ScÃ¨nes Ã  Faire" in user_content
 
 
 async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_config, sample_argument):
     # When an exception dimension runs its own standalone pipeline (no infringement dimension
-    # present), it IS the subject of that pipeline's verdict and must be framed as mandatory —
+    # present), it IS the subject of that pipeline's verdict and must be framed as mandatory â€”
     # not as an optional tool for a dimension that isn't even in the room.
     defense = Defense(config=agent_config)
     captured: list = []
@@ -200,7 +200,7 @@ async def test_defense_prompt_standalone_exception_dimension_is_mandatory(agent_
         await defense.gather_arguments("src", "tgt", [SCENES_A_FAIRE], 1)
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
-    assert "PRIMARY DIMENSION (must argue): Scènes à Faire" in user_content
+    assert "PRIMARY DIMENSION (must argue): ScÃ¨nes Ã  Faire" in user_content
     assert "AVAILABLE EXCEPTION TOOLS" not in user_content
 
 
@@ -346,3 +346,32 @@ async def test_deliver_closing_argument_empty_case_states_no_evidence(defense):
 
     user_content = next(m["content"] for m in captured if m["role"] == "user")
     assert "none survived judge validation" in user_content
+
+
+def test_defense_prompt_exception_defenses_are_gated():
+    from psalm.agents.defense import _SYSTEM_PROMPT
+    assert "EXCEPTION-BASED DEFENSES" in _SYSTEM_PROMPT
+    assert "AVAILABLE EXCEPTION TOOLS" in _SYSTEM_PROMPT
+    assert "no exception-based defenses in this case" in _SYSTEM_PROMPT.lower()
+
+
+def test_defense_prompt_primary_tools_no_longer_lead_with_idea_expression():
+    from psalm.agents.defense import _SYSTEM_PROMPT
+    assert "1. IDEA-EXPRESSION DICHOTOMY" not in _SYSTEM_PROMPT
+    assert "1. LACK OF EXPRESSION-LEVEL SIMILARITY" in _SYSTEM_PROMPT
+
+
+async def test_counter_instruction_does_not_unconditionally_offer_unprotectable_ideas(defense, sample_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(arguments=[], no_further_arguments=True, closing_statement="Nothing further.")
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(defense._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await defense.gather_counter_arguments("src", "tgt", [CHARACTER], [sample_argument], 1)
+
+    user_content = next(m["content"] for m in captured if m["role"] == "user")
+    assert "unprotectable" not in user_content.lower()

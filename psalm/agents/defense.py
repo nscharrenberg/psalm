@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pydantic import BaseModel
 
@@ -51,13 +51,13 @@ def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
     exception_dims = [d for d in dimensions if d.dimension_type == "exception"]
 
     # When no infringement dimension is present, the exception dimension(s) are the sole
-    # subject of this pipeline's own verdict and must be argued directly — not treated as
+    # subject of this pipeline's own verdict and must be argued directly â€” not treated as
     # optional tools for a dimension that isn't in the room.
     mandatory_dims = infringement_dims or exception_dims
     optional_dims = exception_dims if infringement_dims else []
 
     for dim in mandatory_dims:
-        lines.append(f"\nPRIMARY DIMENSION (must argue): {dim.name} — {dim.description}")
+        lines.append(f"\nPRIMARY DIMENSION (must argue): {dim.name} â€” {dim.description}")
         lines.append(
             "Sub-dimensions (argue ALL marked HIGH or CRITICAL where factually supportable):"
         )
@@ -67,7 +67,7 @@ def _format_sub_dimensions(dimensions: list[Dimension]) -> str:
     for dim in optional_dims:
         lines.append(
             f"\nAVAILABLE EXCEPTION TOOLS (optional, cite only if relevant): "
-            f"{dim.name} — {dim.description}"
+            f"{dim.name} â€” {dim.description}"
         )
         for sd in dim.sub_dimensions:
             lines.append(f"  [{sd.importance.value.upper()}] {sd.name}: {sd.description}")
@@ -81,19 +81,17 @@ Challenge the prosecutor's arguments AND make proactive affirmative claims about
 
 PRIMARY TOOLS for countering prosecution arguments:
 
-1. IDEA-EXPRESSION DICHOTOMY (most powerful): Under EU copyright law, only specific creative
-   expression is protected — not ideas, themes, concepts, or genre conventions. When the
-   prosecution argues that both texts share a character type, theme, setting, or plot device,
-   explicitly name this as an unprotectable idea and explain why it is not infringement.
-   Examples to challenge: "both characters are liars", "both experience betrayal",
-   "both set in an industrial city", "both have a mentor figure".
-
-2. LACK OF EXPRESSION-LEVEL SIMILARITY: Even where concepts overlap, show that the specific
+1. LACK OF EXPRESSION-LEVEL SIMILARITY: Even where concepts overlap, show that the specific
    wording, imagery, and narrative choices differ — different words, different details,
    different emotional register.
 
-3. INDEPENDENT CREATION: Show that the claimed similarities are genre conventions or common
-   literary devices that any author could independently create without access to the source.
+2. INDEPENDENT CREATION: Show that the specific wording differs enough from the source that
+   independent, coincidental arrival at similar content is plausible — i.e. this was not copied.
+
+EXCEPTION-BASED DEFENSES (unprotectable idea / idea-expression dichotomy, genre convention,
+parody, satire, pastiche, permitted quotation or citation) are available ONLY when a matching
+entry appears under AVAILABLE EXCEPTION TOOLS in the case details below, and must be argued
+strictly under that named dimension. If no such entry appears below, you have no exception-based defenses in this case — rely only on the two tools above and the affirmative arguments below.
 
 AFFIRMATIVE ARGUMENTS — you may also proactively argue why the texts are distinct:
 - Point to specific passages where the writing styles, structures, or narrative choices
@@ -108,8 +106,9 @@ inference, or possibility as if it were a settled fact. Quote as closely as poss
 original; close approximations of the wording are acceptable, but the underlying claim must be
 certain, not speculative.
 
-For each prosecution argument, decide: does it rest on an unprotectable idea (challenge as
-legally insufficient) or on specific expression (challenge on the merits)?
+For each prosecution argument, decide: does it rest on an available exception-based defense (see
+above — only if applicable), or on specific expression and independent creation (challenge on the
+merits)?
 
 If you have nothing further that meets this bar — for this call, across every prosecution
 argument and sub-dimension you were asked to address — set no_further_arguments=True and provide
@@ -139,17 +138,17 @@ class Defense(BaseAgent):
         )
         if prosecutor_arguments:
             instruction = (
-                "Counter each prosecution argument where you have clear grounds (unprotectable "
-                "ideas, lack of expression-level similarity, independent creation). "
+                "Counter each prosecution argument where you have clear grounds (lack of "
+                "expression-level similarity, independent creation, or an applicable exception-based defense if one is listed above). "
                 "Additionally, you may make an affirmative argument about why the texts are "
-                "independently created — cite specific passages where the expression and "
+                "independently created â€” cite specific passages where the expression and "
                 "creative choices diverge. If no clear grounds exist anywhere, declare "
                 "no_further_arguments."
             )
         else:
             instruction = (
                 "The prosecution has not yet raised any arguments. You may make affirmative "
-                "arguments about why the target text does NOT infringe the source — highlight "
+                "arguments about why the target text does NOT infringe the source â€” highlight "
                 "specific passages where the wording, imagery, and creative choices are "
                 "independently created. If no clear, unambiguous grounds exist, declare "
                 "no_further_arguments."
@@ -250,8 +249,8 @@ class Defense(BaseAgent):
     ) -> str:
         """Delivered once, after the round loop ends, regardless of how the debate went.
 
-        Deliberately has no access to the raw source/target text — only to arguments that
-        already survived judge validation — so it cannot introduce comparisons the Judge
+        Deliberately has no access to the raw source/target text â€” only to arguments that
+        already survived judge validation â€” so it cannot introduce comparisons the Judge
         never had a chance to check.
         """
         structured_llm = self._llm.with_structured_output(_ClosingArgument)
@@ -267,7 +266,7 @@ class Defense(BaseAgent):
                     f"Dimensions: {dim_names}\n\n"
                     f"{case_history}\n\n"
                     "The argumentation rounds are complete. Deliver your closing argument using "
-                    "ONLY the surviving arguments and proofs listed above — you do not have "
+                    "ONLY the surviving arguments and proofs listed above â€” you do not have "
                     "access to the full source or target text here, and must not invent or "
                     "recall passages beyond what is quoted above. Summarize the strongest "
                     "surviving evidence for non-infringement, address the prosecution's "
@@ -290,3 +289,5 @@ class Defense(BaseAgent):
                 suggestion="Check the LLM model supports structured output.",
                 cause=exc,
             ) from exc
+
+
