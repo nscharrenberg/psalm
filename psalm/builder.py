@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import random
 from typing import Any, AsyncIterator, Callable
 from uuid import uuid4
 
 from pydantic import SecretStr
 
+from psalm.agents.base import _RunExecution
 from psalm.agents.defense import Defense
 from psalm.agents.judge import Judge
 from psalm.agents.juror import Juror
@@ -16,7 +18,13 @@ from psalm.dimensions.base import Dimension
 from psalm.events import EventSink, FinalVerdictReached, PSALMEvent, RunFailed, RunStarted, emit
 from psalm.events.context import _current_sink
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
-from psalm.models.config import AgentConfig, CaseInput, DebateConfig, EvaluationStrategy
+from psalm.models.config import (
+    AgentConfig,
+    CaseInput,
+    DebateConfig,
+    EvaluationStrategy,
+    ExecutionConfig,
+)
 from psalm.models.result import PSALMResult
 from psalm.phases.argumentation import ArgumentationPhase
 from psalm.phases.deliberation import DeliberationPhase
@@ -30,15 +38,6 @@ _STRATEGY_MAP = {
     "judge_tiebreaker": JudgeTiebreakerVoting,
 }
 
-# Mirrors psalm.agents.base.BaseAgent's retry policy for real LLM calls during
-# a trial. Without this, a single transient blip on any one of the concurrent
-# pings in _ping_all_llms aborts the whole build -- and since every agent
-# (including every juror) is pinged at once, often sharing the same API key,
-# provider-side rate limiting under that burst is a likely, foreseeable
-# transient failure, not a sign the specific agent's config is actually bad.
-_PING_RETRY_ATTEMPTS = 3
-_PING_BACKOFF_FACTOR = 2.0
-
 
 class PSALM:
     def __init__(self) -> None:
@@ -47,6 +46,7 @@ class PSALM:
         self._judge_config: AgentConfig | None = None
         self._jury_configs: list[AgentConfig] = []
         self._debate_config = DebateConfig()
+        self._execution_config: ExecutionConfig = ExecutionConfig()
         self._event_listeners: list[Callable[[PSALMEvent], Any]] = []
 
     def with_prosecutor(self, base_url: str, api_key: str, model: str, **kwargs: Any) -> PSALM:
@@ -103,14 +103,32 @@ class PSALM:
         )
         return self
 
+    def with_execution(
+        self,
+        max_concurrent_llm_calls: int = 8,
+        max_retries: int = 3,
+        backoff_factor: float = 2.0,
+    ) -> PSALM:
+        self._execution_config = ExecutionConfig(
+            max_concurrent_llm_calls=max_concurrent_llm_calls,
+            max_retries=max_retries,
+            backoff_factor=backoff_factor,
+        )
+        return self
+
     def with_event_listener(self, listener: Callable[[PSALMEvent], Any]) -> PSALM:
         self._event_listeners.append(listener)
         return self
 
     async def build(self) -> _BuiltPSALM:
         self._validate_config()
-        await self._ping_all_llms()
-        return self._assemble()
+        execution = _RunExecution(
+            semaphore=asyncio.Semaphore(self._execution_config.max_concurrent_llm_calls),
+            max_retries=self._execution_config.max_retries,
+            backoff_factor=self._execution_config.backoff_factor,
+        )
+        await self._ping_all_llms(execution)
+        return self._assemble(execution)
 
     def _validate_config(self) -> None:
         if self._prosecutor_config is None:
@@ -146,7 +164,7 @@ class PSALM:
                 suggestion="Add at least one more AgentConfig to .with_jury([...]).",
             )
 
-    async def _ping_llm(self, config: AgentConfig, role: str) -> None:
+    async def _ping_llm(self, config: AgentConfig, role: str, execution: _RunExecution) -> None:
         from langchain_openai import ChatOpenAI
         llm = ChatOpenAI(
             base_url=config.base_url,
@@ -156,14 +174,16 @@ class PSALM:
             max_completion_tokens=1,
         )
         last_exc: Exception | None = None
-        for attempt in range(_PING_RETRY_ATTEMPTS):
+        for attempt in range(execution.max_retries):
             try:
-                await llm.ainvoke([{"role": "user", "content": "ping"}])
+                async with execution.semaphore:
+                    await llm.ainvoke([{"role": "user", "content": "ping"}])
                 return
             except Exception as exc:
                 last_exc = exc
-                if attempt < _PING_RETRY_ATTEMPTS - 1:
-                    await asyncio.sleep(_PING_BACKOFF_FACTOR**attempt)
+                if attempt < execution.max_retries - 1:
+                    backoff = execution.backoff_factor**attempt
+                    await asyncio.sleep(random.uniform(0, backoff))
         raise PSALMConfigError(
             code="PSALM-C006",
             message=f"LLM connection failed for agent '{role}'.",
@@ -172,7 +192,7 @@ class PSALM:
             cause=last_exc,
         ) from last_exc
 
-    async def _ping_all_llms(self) -> None:
+    async def _ping_all_llms(self, execution: _RunExecution) -> None:
         assert self._prosecutor_config is not None
         assert self._defense_config is not None
         assert self._judge_config is not None
@@ -181,16 +201,19 @@ class PSALM:
             (self._defense_config, "defense"),
             (self._judge_config, "judge"),
         ] + [(c, f"juror-{i}") for i, c in enumerate(self._jury_configs)]
-        await asyncio.gather(*[self._ping_llm(cfg, role) for cfg, role in configs])
+        await asyncio.gather(*[self._ping_llm(cfg, role, execution) for cfg, role in configs])
 
-    def _assemble(self) -> _BuiltPSALM:
+    def _assemble(self, execution: _RunExecution) -> _BuiltPSALM:
         assert self._prosecutor_config is not None
         assert self._defense_config is not None
         assert self._judge_config is not None
-        prosecutor = Prosecutor(config=self._prosecutor_config)
-        defense = Defense(config=self._defense_config)
-        judge = Judge(config=self._judge_config)
-        jury = [Juror(juror_id=f"juror-{i}", config=c) for i, c in enumerate(self._jury_configs)]
+        prosecutor = Prosecutor(config=self._prosecutor_config, execution=execution)
+        defense = Defense(config=self._defense_config, execution=execution)
+        judge = Judge(config=self._judge_config, execution=execution)
+        jury = [
+            Juror(juror_id=f"juror-{i}", config=c, execution=execution)
+            for i, c in enumerate(self._jury_configs)
+        ]
         voting_strategies = [
             _STRATEGY_MAP[name]() for name in self._debate_config.voting_strategies
         ]

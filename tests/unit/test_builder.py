@@ -1,8 +1,10 @@
 # tests/unit/test_builder.py
+import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from psalm.agents.base import _RunExecution
 from psalm.builder import PSALM
 from psalm.dimensions import CHARACTER, PLOT
 from psalm.exceptions import PSALMConfigError, PSALMValidationError
@@ -94,6 +96,7 @@ async def test_ping_llm_retries_transient_failures_then_succeeds():
     from psalm.models.config import AgentConfig
 
     config = AgentConfig(**_agent_kwargs())
+    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
     mock_llm = AsyncMock()
     mock_llm.ainvoke = AsyncMock(
         side_effect=[ConnectionError("transient"), ConnectionError("transient"), None]
@@ -102,7 +105,7 @@ async def test_ping_llm_retries_transient_failures_then_succeeds():
         patch("langchain_openai.ChatOpenAI", return_value=mock_llm),
         patch("psalm.builder.asyncio.sleep", new=AsyncMock()),
     ):
-        await PSALM()._ping_llm(config, "juror-0")
+        await PSALM()._ping_llm(config, "juror-0", execution)
     assert mock_llm.ainvoke.call_count == 3
 
 
@@ -110,6 +113,7 @@ async def test_ping_llm_raises_psalm_c006_after_exhausting_retries():
     from psalm.models.config import AgentConfig
 
     config = AgentConfig(**_agent_kwargs())
+    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
     mock_llm = AsyncMock()
     mock_llm.ainvoke = AsyncMock(side_effect=ConnectionError("persistent"))
     with (
@@ -117,7 +121,7 @@ async def test_ping_llm_raises_psalm_c006_after_exhausting_retries():
         patch("psalm.builder.asyncio.sleep", new=AsyncMock()),
     ):
         with pytest.raises(PSALMConfigError) as exc_info:
-            await PSALM()._ping_llm(config, "juror-1")
+            await PSALM()._ping_llm(config, "juror-1", execution)
     assert exc_info.value.code == "PSALM-C006"
     assert exc_info.value.cause is not None
     assert mock_llm.ainvoke.call_count == 3
@@ -330,3 +334,59 @@ async def test_astream_evaluate_raises_on_empty_source():
     with pytest.raises(PSALMValidationError):
         async for _event in courtroom.astream_evaluate("", "target"):
             pass
+
+
+def test_with_execution_stores_config():
+    builder = PSALM().with_execution(max_concurrent_llm_calls=4, max_retries=5, backoff_factor=3.0)
+    assert builder._execution_config.max_concurrent_llm_calls == 4
+    assert builder._execution_config.max_retries == 5
+    assert builder._execution_config.backoff_factor == 3.0
+
+
+def test_default_execution_config():
+    builder = PSALM()
+    assert builder._execution_config.max_concurrent_llm_calls == 8
+    assert builder._execution_config.max_retries == 3
+    assert builder._execution_config.backoff_factor == 2.0
+
+
+async def test_build_shares_one_semaphore_across_prosecutor_and_jury():
+    courtroom = await _build_psalm()
+    prosecutor_execution = courtroom._courtroom._argumentation_phase._prosecutor._execution
+    juror_execution = courtroom._courtroom._deliberation_phases[0]._jury[0]._execution
+    judge_execution = courtroom._courtroom._deliberation_phases[0]._judge._execution
+    assert prosecutor_execution.semaphore is juror_execution.semaphore
+    assert prosecutor_execution.semaphore is judge_execution.semaphore
+
+
+async def test_build_applies_configured_execution_settings():
+    builder = (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_execution(max_concurrent_llm_calls=2, max_retries=1, backoff_factor=1.5)
+    )
+    with patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)):
+        courtroom = await builder.build()
+    execution = courtroom._courtroom._argumentation_phase._prosecutor._execution
+    assert execution.max_retries == 1
+    assert execution.backoff_factor == 1.5
+    assert execution.semaphore._value == 2
+
+
+async def test_ping_llm_uses_execution_max_retries():
+    from psalm.models.config import AgentConfig
+
+    config = AgentConfig(**_agent_kwargs())
+    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=2, backoff_factor=1.0)
+    mock_llm = AsyncMock()
+    mock_llm.ainvoke = AsyncMock(side_effect=ConnectionError("persistent"))
+    with (
+        patch("langchain_openai.ChatOpenAI", return_value=mock_llm),
+        patch("psalm.builder.asyncio.sleep", new=AsyncMock()),
+    ):
+        with pytest.raises(PSALMConfigError):
+            await PSALM()._ping_llm(config, "juror-1", execution)
+    assert mock_llm.ainvoke.call_count == 2
