@@ -124,6 +124,8 @@ describe("SetupPage", () => {
     const payload = startTrialSpy.mock.calls[0][0];
     expect(payload.source_text).toBe("SRC");
     expect(payload.dimensions).toContain("Character");
+    expect(payload.max_concurrent_llm_calls).toBe(8);
+    expect(payload.max_retries).toBe(3);
   });
 
   it("shows an error message when the backend reports a config error", async () => {

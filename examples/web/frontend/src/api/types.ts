@@ -62,6 +62,8 @@ export interface TrialConfigInput {
   argumentation_rounds: number;
   deliberation_rounds: number;
   time_limit_seconds: number;
+  max_concurrent_llm_calls: number;
+  max_retries: number;
   prosecutor: AgentConfigInput;
   defense: AgentConfigInput;
   judge: AgentConfigInput;

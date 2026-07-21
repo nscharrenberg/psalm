@@ -37,6 +37,8 @@ export default function SetupPage() {
   const [argumentationRounds, setArgumentationRounds] = useState(3);
   const [deliberationRounds, setDeliberationRounds] = useState(2);
   const [timeLimitSeconds, setTimeLimitSeconds] = useState(120);
+  const [maxConcurrentLlmCalls, setMaxConcurrentLlmCalls] = useState(8);
+  const [maxRetries, setMaxRetries] = useState(3);
 
   const [prosecutor, setProsecutor] = useState<AgentConfigInput>(emptyAgentConfig());
   const [defense, setDefense] = useState<AgentConfigInput>(emptyAgentConfig());
@@ -93,6 +95,8 @@ export default function SetupPage() {
         argumentation_rounds: argumentationRounds,
         deliberation_rounds: deliberationRounds,
         time_limit_seconds: timeLimitSeconds,
+        max_concurrent_llm_calls: maxConcurrentLlmCalls,
+        max_retries: maxRetries,
         prosecutor,
         defense,
         judge,
@@ -197,6 +201,16 @@ export default function SetupPage() {
                       id="time-limit" label="Time limit (seconds)" min={1}
                       value={timeLimitSeconds}
                       onChange={(value) => setTimeLimitSeconds(Number(value))}
+                    />
+                    <NumberInput
+                      id="max-concurrent-llm-calls" label="Max concurrent LLM calls" min={1}
+                      value={maxConcurrentLlmCalls}
+                      onChange={(value) => setMaxConcurrentLlmCalls(Number(value))}
+                    />
+                    <NumberInput
+                      id="max-retries" label="Max retries" min={1}
+                      value={maxRetries}
+                      onChange={(value) => setMaxRetries(Number(value))}
                     />
                   </Stack>
                 </Accordion.Panel>
