@@ -7,6 +7,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from psalm.agents.base import BaseAgent
+from psalm.dimensions.base import Dimension
 from psalm.exceptions import PSALMAgentError
 from psalm.models.evidence import Argument, ArgumentBatch
 from psalm.models.result import ArgumentationLog, JurorVote, ValidationResult
@@ -71,12 +72,32 @@ offered to support. In particular: if the claim asserts the texts are distinct o
 created, an identical (or near-identical) passage in both texts is evidence of similarity, not
 distinctness — such a proof undermines rather than supports the claim and must be rejected.
 
-Defense arguments may challenge prosecution claims as legally insufficient (unprotectable ideas,
-genre conventions), show differences in specific expression, argue independent creation, or make
-affirmative claims about the texts' distinctiveness. They are not required to demonstrate
-similarity — that is the prosecution's burden. Do NOT reject for weak or interpretive reasoning —
-that is the prosecution's job to challenge, not yours to discard.
+Defense arguments may challenge prosecution claims by showing differences in specific expression,
+arguing independent creation, or making affirmative claims about the texts' distinctiveness. The
+defense carries no burden to show similarity — that is the prosecution's alone. Do NOT reject for
+weak or interpretive reasoning — that is the prosecution's job to challenge, not yours to discard.
 """
+
+
+def _defense_validation_prompt(exception_names: list[str]) -> str:
+    if exception_names:
+        names = ", ".join(exception_names)
+        clause = (
+            f"\nThis case includes the following exception dimension(s): {names}. The defense "
+            "may additionally argue legal insufficiency via those specific exceptions only "
+            "(e.g. unprotectable idea / genre convention, parody, satire, pastiche, or permitted "
+            "quotation/citation — whichever of these match the list above). Reject an argument "
+            "that invokes an exception NOT in this list.\n"
+        )
+    else:
+        clause = (
+            "\nNO exception dimension is selected for this case. The defense may NOT argue legal "
+            "insufficiency via unprotectable ideas, genre conventions, scenes à faire, parody, "
+            "satire, pastiche, or citation exceptions — reject any argument that relies solely "
+            "on such reasoning. Valid grounds here are differences in specific expression or "
+            "independent creation only.\n"
+        )
+    return _DEFENSE_VALIDATION_PROMPT + clause
 
 
 class Judge(BaseAgent):
@@ -90,6 +111,7 @@ class Judge(BaseAgent):
         source_text: str,
         target_text: str,
         role: str = "prosecution",
+        dimensions: list[Dimension] | None = None,
     ) -> ValidationResult:
         for proof in argument.proofs:
             if not is_proof_authentic(proof.source_excerpt, source_text):
@@ -110,9 +132,13 @@ class Judge(BaseAgent):
                 )
 
         structured_llm = self._llm.with_structured_output(ValidationResult)
-        validation_prompt = (
-            _DEFENSE_VALIDATION_PROMPT if role == "defense" else _PROSECUTION_VALIDATION_PROMPT
-        )
+        if role == "defense":
+            exception_names = [
+                d.name for d in (dimensions or []) if d.dimension_type == "exception"
+            ]
+            validation_prompt = _defense_validation_prompt(exception_names)
+        else:
+            validation_prompt = _PROSECUTION_VALIDATION_PROMPT
         proofs_text = "\n".join(
             f"  Source: '{p.source_excerpt}'\n  Target: '{p.target_excerpt}'\n"
             f"  Relevance: {p.relevance}"

@@ -235,7 +235,8 @@ class ArgumentationPhase(BasePhase):
         rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(
-                arg, state.source_text, state.target_text, role="defense"
+                arg, state.source_text, state.target_text, role="defense",
+                dimensions=state.dimensions,
             )
             if result.is_valid:
                 valid.append(arg.model_dump())
@@ -292,7 +293,8 @@ class ArgumentationPhase(BasePhase):
         rejected = []
         for arg in pending:
             result = await self._judge.validate_argument(
-                arg, state.source_text, state.target_text, role="defense"
+                arg, state.source_text, state.target_text, role="defense",
+                dimensions=state.dimensions,
             )
             if result.is_valid:
                 valid.append(arg.model_dump())

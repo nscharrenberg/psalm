@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from psalm.agents.judge import Judge
+from psalm.dimensions import CHARACTER, SCENES_A_FAIRE
 from psalm.models.result import JurorVote, ValidationResult
 
 
@@ -247,3 +248,92 @@ async def test_validate_batch_completeness_false_when_empty_and_not_declared(jud
     from psalm.models.evidence import ArgumentBatch
     batch = ArgumentBatch()
     assert await judge.validate_batch_completeness(batch) is False
+
+
+async def test_defense_validation_rejects_unprotectable_idea_without_exception_dimension(judge):
+    from psalm.models.evidence import Argument, Proof
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return ValidationResult(is_valid=False, rejection_reason="No exception dimension selected.")
+
+    arg = Argument(
+        claim="This is an unprotectable idea / common archetype.",
+        dimension="character",
+        proofs=[Proof(source_excerpt="a", target_excerpt="a", relevance="r")],
+        agent_role="defense",
+        round=1,
+    )
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.validate_argument(arg, "a", "a", role="defense", dimensions=[CHARACTER])
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "NO exception dimension is selected" in system_content
+    assert "may NOT argue" in system_content
+
+
+async def test_defense_validation_allows_exception_reasoning_when_dimension_selected(judge):
+    from psalm.models.evidence import Argument, Proof
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return ValidationResult(is_valid=True)
+
+    arg = Argument(
+        claim="This is scenes à faire / unprotectable idea.",
+        dimension="character",
+        proofs=[Proof(source_excerpt="a", target_excerpt="a", relevance="r")],
+        agent_role="defense",
+        round=1,
+    )
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.validate_argument(
+            arg, "a", "a", role="defense", dimensions=[CHARACTER, SCENES_A_FAIRE],
+        )
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "Scènes à Faire" in system_content
+    assert "exception dimension(s)" in system_content
+
+
+async def test_defense_validation_defaults_to_no_exceptions_when_dimensions_omitted(judge, sample_argument):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return ValidationResult(is_valid=True)
+
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.validate_argument(
+            sample_argument,
+            "The wizard had bright blue eyes.",
+            "The sorcerer possessed striking azure irises.",
+            role="defense",
+        )
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "NO exception dimension is selected" in system_content
+
+
+async def test_prosecution_validation_ignores_dimensions_argument(judge, sample_argument):
+    mock_result = ValidationResult(is_valid=True)
+    mock_chain = AsyncMock()
+    mock_chain.ainvoke = AsyncMock(return_value=mock_result)
+    mock_with_structured = MagicMock(return_value=mock_chain)
+    with patch.object(type(judge._llm), "with_structured_output", mock_with_structured):
+        result = await judge.validate_argument(
+            sample_argument,
+            "The wizard had bright blue eyes.",
+            "The sorcerer possessed striking azure irises.",
+            role="prosecution",
+            dimensions=[CHARACTER],
+        )
+    assert result.is_valid is True
