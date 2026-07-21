@@ -60,6 +60,28 @@ describe("ResultsPage", () => {
     expect(screen.getByText("0.80")).toBeInTheDocument();
   });
 
+  it("shows an exception dimension's verdict as Applies/Does Not Apply, not Guilty/Not Guilty", async () => {
+    vi.spyOn(client, "getTrial").mockResolvedValue({
+      ...fakeDetail,
+      result: {
+        ...fakeDetail.result!,
+        dimension_verdicts: [
+          ...fakeDetail.result!.dimension_verdicts,
+          {
+            dimension: "Scènes à Faire", dimension_type: "exception", importance: "medium",
+            verdict: "Not Guilty", weighted_score: 0.2,
+            argumentation_log: { rounds: [], prosecution_closing_argument: null, defense_closing_argument: null },
+            debate_log: { rounds: [], final_voting_strategy_applied: "unanimous" },
+          },
+        ],
+      },
+    });
+    renderAtResult("abc");
+    await screen.findByText("Verdict: Guilty");
+    expect(screen.getByText("Exception Does Not Apply")).toBeInTheDocument();
+    expect(screen.queryByText("Not Guilty")).not.toBeInTheDocument();
+  });
+
   it("shows an error banner for a failed trial", async () => {
     vi.spyOn(client, "getTrial").mockResolvedValue({
       ...fakeDetail, status: "error", error_message: "LLM connection failed.", result: null,

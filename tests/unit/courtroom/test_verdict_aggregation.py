@@ -184,3 +184,46 @@ def test_synthesize_rationale_shows_exception_discount_value():
     ]
     rationale = _synthesize_rationale("Not Guilty", dvs)
     assert "Exception discount applied: 0.90" in rationale
+
+
+def test_rationale_shows_exception_applies_label():
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Not Guilty", 0.52),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Guilty",
+            weighted_score=0.9,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    rationale = _synthesize_rationale("Not Guilty", dvs)
+    assert "Exception Applies" in rationale
+
+
+def test_rationale_shows_exception_does_not_apply_label():
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Guilty", 0.9),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Not Guilty",
+            weighted_score=0.1,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    rationale = _synthesize_rationale("Guilty", dvs)
+    assert "Exception Does Not Apply" in rationale
+
+
+def test_rationale_infringement_dimension_verdict_label_unchanged():
+    # Infringement dimensions must still show plain "Guilty"/"Not Guilty" — only exception
+    # dimensions get the Applies/Does Not Apply relabeling.
+    dvs = [_make_dv("character", Importance.HIGH, "Not Guilty", 0.2)]
+    rationale = _synthesize_rationale("Not Guilty", dvs)
+    assert "character [high]: Not Guilty" in rationale
+    assert "Applies" not in rationale

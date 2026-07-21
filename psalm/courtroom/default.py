@@ -202,6 +202,22 @@ def _blend(verdicts: list[DimensionVerdict]) -> float | None:
     return total_weighted / total_weight
 
 
+_EXCEPTION_VERDICT_LABELS: dict[str, str] = {
+    "Guilty": "Exception Applies",
+    "Not Guilty": "Exception Does Not Apply",
+    "Undecided": "Undecided",
+}
+
+
+def _display_verdict(dv: DimensionVerdict) -> str:
+    """Human-facing verdict label — exception dimensions read "Guilty"/"Not Guilty" as a
+    legal conclusion, which is confusing (an exception isn't "guilty" of anything); the
+    underlying stored value is unchanged, only this display text differs."""
+    if dv.dimension_type == "exception":
+        return _EXCEPTION_VERDICT_LABELS[dv.verdict]
+    return dv.verdict
+
+
 def _synthesize_rationale(
     verdict: str,
     dimension_verdicts: list[DimensionVerdict],
@@ -213,7 +229,7 @@ def _synthesize_rationale(
             else " [exception, discounts infringement score]"
         )
         lines.append(
-            f"  {dv.dimension} [{dv.importance.value}]{suffix}: {dv.verdict} "
+            f"  {dv.dimension} [{dv.importance.value}]{suffix}: {_display_verdict(dv)} "
             f"(weighted score: {dv.weighted_score:.2f})"
         )
     exception_verdicts = [dv for dv in dimension_verdicts if dv.dimension_type == "exception"]

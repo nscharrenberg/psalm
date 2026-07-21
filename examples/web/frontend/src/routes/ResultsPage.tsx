@@ -74,6 +74,21 @@ export default function ResultsPage() {
     return "gray";
   }
 
+  // Exception dimensions ("Scènes à Faire" etc.) aren't guilty of anything — they discount
+  // the infringement score when they apply. Their Guilty/Not Guilty verdict is a legal-vote
+  // label under the hood (unchanged), but shown to users as "applies"/"does not apply".
+  function dimensionVerdictLabel(dv: { dimension_type: string; verdict: string }): string {
+    if (dv.dimension_type !== "exception") return dv.verdict;
+    if (dv.verdict === "Guilty") return "Exception Applies";
+    if (dv.verdict === "Not Guilty") return "Exception Does Not Apply";
+    return dv.verdict;
+  }
+
+  function dimensionVerdictColor(dv: { dimension_type: string; verdict: string }): string {
+    if (dv.dimension_type === "exception") return "blue";
+    return verdictColor(dv.verdict);
+  }
+
   return (
     <Stack gap="lg" className="results-page">
       <Title order={2}>Trial result</Title>
@@ -103,7 +118,7 @@ export default function ResultsPage() {
                     <Table.Td>{dv.dimension_type}</Table.Td>
                     <Table.Td>{dv.importance}</Table.Td>
                     <Table.Td>
-                      <Badge color={verdictColor(dv.verdict)} variant="light">{dv.verdict}</Badge>
+                      <Badge color={dimensionVerdictColor(dv)} variant="light">{dimensionVerdictLabel(dv)}</Badge>
                     </Table.Td>
                     <Table.Td>{dv.weighted_score.toFixed(2)}</Table.Td>
                   </Table.Tr>
