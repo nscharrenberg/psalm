@@ -155,4 +155,69 @@ describe("SetupPage", () => {
     const prosecutorControl = await screen.findByRole("button", { name: /Prosecutor/ });
     expect(within(prosecutorControl).getByText("✓ using environment variable")).toBeInTheDocument();
   });
+
+  it("shows a collapsible global defaults panel, collapsed by default", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+
+    const globalControl = await screen.findByRole(
+      "button", { name: "Set one configuration for all agents" },
+    );
+    expect(globalControl).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(globalControl);
+    expect(globalControl).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("filling the global defaults panel and clicking Apply to all agents propagates it to every agent", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+
+    const globalControl = await screen.findByRole(
+      "button", { name: "Set one configuration for all agents" },
+    );
+    fireEvent.click(globalControl);
+    const globalGroup = await screen.findByRole("group", { name: "Global defaults" });
+    fireEvent.change(within(globalGroup).getByLabelText("API key"), { target: { value: "sk-global" } });
+    fireEvent.change(within(globalGroup).getByLabelText("Model"), { target: { value: "gpt-4o-mini" } });
+    fireEvent.click(screen.getByText("Apply to all agents"));
+
+    const prosecutorControl = screen.getByRole("button", { name: /Prosecutor/ });
+    fireEvent.click(prosecutorControl);
+    const prosecutorGroup = await screen.findByRole("group", { name: "Prosecutor" });
+    expect(within(prosecutorGroup).getByLabelText("API key")).toHaveValue("sk-global");
+    expect(within(prosecutorGroup).getByLabelText("Model")).toHaveValue("gpt-4o-mini");
+
+    const juror0Control = screen.getByRole("button", { name: /^Juror 0/ });
+    fireEvent.click(juror0Control);
+    const juror0Group = await screen.findByRole("group", { name: "Juror 0" });
+    expect(within(juror0Group).getByLabelText("API key")).toHaveValue("sk-global");
+  });
+
+  it("a juror added after Apply to all agents was clicked starts blank", async () => {
+    vi.spyOn(client, "getCatalog").mockResolvedValue(fakeCatalog);
+    renderSetupPage();
+    await screen.findByLabelText("Preset");
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Next"));
+
+    const globalControl = await screen.findByRole(
+      "button", { name: "Set one configuration for all agents" },
+    );
+    fireEvent.click(globalControl);
+    const globalGroup = await screen.findByRole("group", { name: "Global defaults" });
+    fireEvent.change(within(globalGroup).getByLabelText("API key"), { target: { value: "sk-global" } });
+    fireEvent.click(screen.getByText("Apply to all agents"));
+
+    fireEvent.click(screen.getByText("Add juror"));
+    const juror3Control = screen.getByRole("button", { name: /^Juror 3/ });
+    fireEvent.click(juror3Control);
+    const juror3Group = await screen.findByRole("group", { name: "Juror 3" });
+    expect(within(juror3Group).getByLabelText("API key")).toHaveValue("");
+  });
 });

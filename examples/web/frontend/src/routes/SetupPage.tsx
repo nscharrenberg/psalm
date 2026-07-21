@@ -44,6 +44,7 @@ export default function SetupPage() {
   const [jury, setJury] = useState<JurorConfigInput[]>([
     emptyJurorConfig(), emptyJurorConfig(), emptyJurorConfig(),
   ]);
+  const [globalConfig, setGlobalConfig] = useState<AgentConfigInput>(emptyAgentConfig());
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +72,13 @@ export default function SetupPage() {
 
   function removeJuror(index: number) {
     setJury((current) => (current.length <= 3 ? current : current.filter((_, i) => i !== index)));
+  }
+
+  function applyGlobalConfigToAllAgents() {
+    setProsecutor(globalConfig);
+    setDefense(globalConfig);
+    setJudge(globalConfig);
+    setJury((current) => current.map((j) => ({ ...globalConfig, seed: j.seed })));
   }
 
   async function handleSubmit() {
@@ -199,6 +207,21 @@ export default function SetupPage() {
 
         <Stepper.Step label="Agents">
           <Stack gap="md" mt="md">
+            <Accordion>
+              <Accordion.Item value="global-defaults">
+                <Accordion.Control>Set one configuration for all agents</Accordion.Control>
+                <Accordion.Panel>
+                  <Stack gap="sm">
+                    <AgentConfigPanel
+                      label="Global defaults" config={globalConfig} onChange={setGlobalConfig}
+                      envAvailable={catalog.env_status.PSALM_API_KEY}
+                      providerPresets={catalog.provider_presets}
+                    />
+                    <Button variant="light" onClick={applyGlobalConfigToAllAgents}>Apply to all agents</Button>
+                  </Stack>
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
             <Accordion multiple defaultValue={[]}>
               {agentPanels.map((agent) => (
                 <Accordion.Item key={agent.label} value={agent.label}>
