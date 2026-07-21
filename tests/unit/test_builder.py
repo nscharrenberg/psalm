@@ -96,7 +96,7 @@ async def test_ping_llm_retries_transient_failures_then_succeeds():
     from psalm.models.config import AgentConfig
 
     config = AgentConfig(**_agent_kwargs())
-    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0)
     mock_llm = AsyncMock()
     mock_llm.ainvoke = AsyncMock(
         side_effect=[ConnectionError("transient"), ConnectionError("transient"), None]
@@ -113,7 +113,7 @@ async def test_ping_llm_raises_psalm_c006_after_exhausting_retries():
     from psalm.models.config import AgentConfig
 
     config = AgentConfig(**_agent_kwargs())
-    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0)
     mock_llm = AsyncMock()
     mock_llm.ainvoke = AsyncMock(side_effect=ConnectionError("persistent"))
     with (
@@ -355,8 +355,8 @@ async def test_build_shares_one_semaphore_across_prosecutor_and_jury():
     prosecutor_execution = courtroom._courtroom._argumentation_phase._prosecutor._execution
     juror_execution = courtroom._courtroom._deliberation_phases[0]._jury[0]._execution
     judge_execution = courtroom._courtroom._deliberation_phases[0]._judge._execution
-    assert prosecutor_execution.semaphore is juror_execution.semaphore
-    assert prosecutor_execution.semaphore is judge_execution.semaphore
+    assert prosecutor_execution.semaphore() is juror_execution.semaphore()
+    assert prosecutor_execution.semaphore() is judge_execution.semaphore()
 
 
 async def test_build_applies_configured_execution_settings():
@@ -373,14 +373,14 @@ async def test_build_applies_configured_execution_settings():
     execution = courtroom._courtroom._argumentation_phase._prosecutor._execution
     assert execution.max_retries == 1
     assert execution.backoff_factor == 1.5
-    assert execution.semaphore._value == 2
+    assert execution.max_concurrent_llm_calls == 2
 
 
 async def test_ping_llm_uses_execution_max_retries():
     from psalm.models.config import AgentConfig
 
     config = AgentConfig(**_agent_kwargs())
-    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=2, backoff_factor=1.0)
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=2, backoff_factor=1.0)
     mock_llm = AsyncMock()
     mock_llm.ainvoke = AsyncMock(side_effect=ConnectionError("persistent"))
     with (
@@ -390,3 +390,71 @@ async def test_ping_llm_uses_execution_max_retries():
         with pytest.raises(PSALMConfigError):
             await PSALM()._ping_llm(config, "juror-1", execution)
     assert mock_llm.ainvoke.call_count == 2
+
+
+def test_evaluate_sync_works_across_separate_event_loops_with_contended_cap():
+    # Regression test: the build-time connectivity ping and the sync evaluate() path run in
+    # TWO SEPARATE event loops (evaluate() calls asyncio.run() internally). If the semaphore
+    # were created once at build() time and reused, it would bind to the build loop the first
+    # time it actually blocks (which happens whenever ping/eval contends the configured cap)
+    # and then raise "bound to a different event loop" when used from evaluate()'s fresh loop.
+    #
+    # NOTE on why this test drives *real* contention instead of only patching whole methods
+    # with AsyncMock: an AsyncMock coroutine completes without ever yielding control back to
+    # the event loop, so gathering N of them never actually interleaves — every "concurrent"
+    # call fully acquires-and-releases the semaphore before the next one starts, and the
+    # semaphore never truly contends (never gets to `locked()`), so it never binds to a loop
+    # and the original bug can't reproduce. Both loops below therefore include an explicit
+    # `await asyncio.sleep(0)` while holding the semaphore, so overlapping callers genuinely
+    # queue on it, matching the real "jury size / cap contention" scenario from the bug report.
+    from psalm.models.result import ArgumentationLog, DebateLog, RoundArguments
+
+    async def _yielding_ainvoke(*_args, **_kwargs):
+        await asyncio.sleep(0)
+        return None
+
+    mock_llm = AsyncMock()
+    mock_llm.ainvoke = AsyncMock(side_effect=_yielding_ainvoke)
+
+    async def _build():
+        builder = (
+            PSALM()
+            .with_prosecutor(**_agent_kwargs())
+            .with_defense(**_agent_kwargs())
+            .with_judge(**_agent_kwargs())
+            .with_jury(_jury_configs(n=6))
+            .with_dimensions([CHARACTER])
+            .with_execution(max_concurrent_llm_calls=2, max_retries=1, backoff_factor=1.0)
+        )
+        # Mock only the network boundary (not _ping_llm itself) so the real ping code path
+        # runs and genuinely contends the semaphore: 9 pingers (prosecutor, defense, judge,
+        # 6 jurors) against a cap of 2.
+        with patch("langchain_openai.ChatOpenAI", return_value=mock_llm):
+            return await builder.build()
+
+    courtroom = asyncio.run(_build())
+
+    arg_log = ArgumentationLog(rounds=[
+        RoundArguments(
+            round=1, prosecution_arguments=[], defense_counters=[],
+            defense_arguments=[], prosecution_counters=[],
+        )
+    ])
+    debate_log = DebateLog(rounds=[], final_voting_strategy_applied="unanimous")
+    execution = courtroom._courtroom._deliberation_phases[0]._jury[0]._execution
+
+    async def _contend_semaphore(*_args, **_kwargs):
+        # Simulate 6 jurors concurrently trying to call their LLM during deliberation, in
+        # evaluate()'s fresh loop, again contending the cap of 2.
+        async def _hold():
+            async with execution.semaphore():
+                await asyncio.sleep(0)
+
+        await asyncio.gather(*[_hold() for _ in range(6)])
+        return "Not Guilty", debate_log, 0.1
+
+    with patch.object(courtroom._courtroom._argumentation_phase, "run", AsyncMock(return_value=arg_log)):
+        with patch.object(courtroom._courtroom._deliberation_phases[0], "run", _contend_semaphore):
+            result = courtroom.evaluate("source text here", "target text here")
+
+    assert result.verdict is not None

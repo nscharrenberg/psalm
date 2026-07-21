@@ -1,5 +1,4 @@
 # tests/conftest.py
-import asyncio
 from contextlib import contextmanager
 
 import pytest
@@ -34,7 +33,7 @@ def agent_config() -> AgentConfig:
 
 @pytest.fixture
 def run_execution() -> _RunExecution:
-    return _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
+    return _RunExecution(max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0)
 
 
 @pytest.fixture

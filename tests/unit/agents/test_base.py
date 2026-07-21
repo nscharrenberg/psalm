@@ -70,7 +70,7 @@ async def test_call_structured_emits_retrying_then_succeeds(test_agent):
 async def test_call_llm_respects_semaphore_cap(agent_config):
     from psalm.agents.base import _RunExecution
 
-    execution = _RunExecution(semaphore=asyncio.Semaphore(1), max_retries=3, backoff_factor=2.0)
+    execution = _RunExecution(max_concurrent_llm_calls=1, max_retries=3, backoff_factor=2.0)
     agent = _TestAgent(config=agent_config, execution=execution)
 
     in_flight = 0
@@ -97,7 +97,7 @@ async def test_call_llm_honors_configurable_max_retries(agent_config):
     from psalm.agents.base import _RunExecution
     from psalm.exceptions import PSALMAgentError
 
-    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=1, backoff_factor=2.0)
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=1, backoff_factor=2.0)
     agent = _TestAgent(config=agent_config, execution=execution)
 
     with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(side_effect=Exception("boom"))) as mock_ainvoke:
@@ -112,7 +112,7 @@ async def test_call_llm_honors_configurable_max_retries(agent_config):
 async def test_call_llm_backoff_is_within_full_jitter_bounds(agent_config):
     from psalm.agents.base import _RunExecution
 
-    execution = _RunExecution(semaphore=asyncio.Semaphore(8), max_retries=3, backoff_factor=2.0)
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0)
     agent = _TestAgent(config=agent_config, execution=execution)
 
     recorded_sleeps = []

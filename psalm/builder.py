@@ -123,7 +123,7 @@ class PSALM:
     async def build(self) -> _BuiltPSALM:
         self._validate_config()
         execution = _RunExecution(
-            semaphore=asyncio.Semaphore(self._execution_config.max_concurrent_llm_calls),
+            max_concurrent_llm_calls=self._execution_config.max_concurrent_llm_calls,
             max_retries=self._execution_config.max_retries,
             backoff_factor=self._execution_config.backoff_factor,
         )
@@ -176,7 +176,7 @@ class PSALM:
         last_exc: Exception | None = None
         for attempt in range(execution.max_retries):
             try:
-                async with execution.semaphore:
+                async with execution.semaphore():
                     await llm.ainvoke([{"role": "user", "content": "ping"}])
                 return
             except Exception as exc:

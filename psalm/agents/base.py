@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import random
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from langchain_openai import ChatOpenAI
@@ -16,9 +16,19 @@ from psalm.models.config import AgentConfig
 
 @dataclass
 class _RunExecution:
-    semaphore: asyncio.Semaphore
+    max_concurrent_llm_calls: int
     max_retries: int
     backoff_factor: float
+    _semaphores: dict[int, asyncio.Semaphore] = field(default_factory=dict, repr=False)
+
+    def semaphore(self) -> asyncio.Semaphore:
+        loop = asyncio.get_running_loop()
+        key = id(loop)
+        sem = self._semaphores.get(key)
+        if sem is None:
+            sem = asyncio.Semaphore(self.max_concurrent_llm_calls)
+            self._semaphores[key] = sem
+        return sem
 
 
 class BaseAgent(ABC):
@@ -47,7 +57,7 @@ class BaseAgent(ABC):
         max_retries = self._execution.max_retries
         for attempt in range(max_retries):
             try:
-                async with self._execution.semaphore:
+                async with self._execution.semaphore():
                     return await self._llm.ainvoke(messages)
             except Exception as exc:
                 if attempt == max_retries - 1:
@@ -78,7 +88,7 @@ class BaseAgent(ABC):
         max_retries = self._execution.max_retries
         for attempt in range(max_retries):
             try:
-                async with self._execution.semaphore:
+                async with self._execution.semaphore():
                     return await structured_llm.ainvoke(messages)
             except Exception as exc:
                 if attempt == max_retries - 1:
