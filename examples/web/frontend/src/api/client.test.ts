@@ -18,6 +18,7 @@ afterEach(() => {
 const sampleConfig: TrialConfigInput = {
   source_text: "s", target_text: "t", dimensions: ["Character"], evaluation_strategy: "fully_separate",
   argumentation_rounds: 3, deliberation_rounds: 2, time_limit_seconds: 120,
+  max_concurrent_llm_calls: 8, max_retries: 3,
   prosecutor: {}, defense: {}, judge: {}, jury: [],
 };
 
