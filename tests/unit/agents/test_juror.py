@@ -425,3 +425,10 @@ def test_discuss_prompt_no_longer_names_protectability_labels():
     prompt = _DISCUSS_SYSTEM_PROMPT.lower()
     assert "unprotectable" not in prompt
     assert "archetype" not in prompt
+
+
+def test_vote_prompt_specifies_reasoning_before_vote_order():
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "score every sub-dimension first" in prompt
+    assert "should follow from the rationale you just wrote" in prompt

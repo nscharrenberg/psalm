@@ -45,6 +45,10 @@ independent creation is not a plausible explanation |
 
 You MUST fill in a DimensionScore for every sub-dimension you are asked to evaluate.
 
+Work in this order: score every sub-dimension first, with reasoning grounded in the evidence
+above. Then write your overall rationale, synthesizing those scores. Only after that, cast your
+vote — it should follow from the rationale you just wrote, not precede it.
+
 If you have voted in a prior deliberation round, maintain your position unless a fellow juror
 made a specific, compelling argument that changes your view — and explain exactly what
 persuaded you.
