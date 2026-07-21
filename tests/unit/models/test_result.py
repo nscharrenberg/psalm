@@ -372,3 +372,15 @@ def test_round_arguments_accepts_closing_statements():
     assert ra.defense_counter_closing_statement == "No counters to offer."
     assert ra.defense_closing_statement == "The defense rests."
     assert ra.prosecution_counter_closing_statement == "No rebuttal needed."
+
+
+def test_dimension_score_field_order():
+    from psalm.models.result import DimensionScore
+    assert list(DimensionScore.model_fields) == ["sub_dimension", "reasoning", "score"]
+
+
+def test_juror_vote_field_order():
+    from psalm.models.result import JurorVote
+    assert list(JurorVote.model_fields) == [
+        "juror_id", "dimension", "dimension_scores", "rationale", "vote",
+    ]

@@ -42,16 +42,16 @@ class ArgumentationLog(BaseModel):
 
 class DimensionScore(BaseModel):
     sub_dimension: str
-    score: SimilarityScore
     reasoning: str
+    score: SimilarityScore
 
 
 class JurorVote(BaseModel):
     juror_id: str
-    vote: Literal["Guilty", "Not Guilty", "Undecided"]
-    rationale: str
-    dimension_scores: list[DimensionScore] = Field(default_factory=list)
     dimension: str | None = None
+    dimension_scores: list[DimensionScore] = Field(default_factory=list)
+    rationale: str
+    vote: Literal["Guilty", "Not Guilty", "Undecided"]
 
 
 class RoundDeliberation(BaseModel):
