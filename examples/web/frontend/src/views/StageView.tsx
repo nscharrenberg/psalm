@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Badge, Card, Group, Stack, Text, Title } from "@mantine/core";
 import { IconScale } from "@tabler/icons-react";
 import type { DimensionState } from "../state/eventReducer";
@@ -23,10 +22,10 @@ export default function StageView({ dimension }: StageViewProps) {
     return <Text c="dimmed" className="stage-empty">Waiting for the trial to begin...</Text>;
   }
 
-  const voteCounts = useMemo(() => Object.values(dimension.jurorVotes).reduce<Record<string, number>>((acc, v) => {
+  const voteCounts = Object.values(dimension.jurorVotes).reduce<Record<string, number>>((acc, v) => {
     acc[v.vote] = (acc[v.vote] ?? 0) + 1;
     return acc;
-  }, {}), [dimension.jurorVotes]);
+  }, {});
 
   const isJurorSpeaking = dimension.speakingRole !== null
     && dimension.speakingRole !== "prosecution"

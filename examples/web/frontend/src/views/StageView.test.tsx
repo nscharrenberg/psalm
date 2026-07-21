@@ -1,5 +1,7 @@
+import { MantineProvider } from "@mantine/core";
 import { describe, expect, it } from "vitest";
 import { makeDimensionState } from "../state/testFixtures";
+import { theme } from "../theme";
 import StageView from "./StageView";
 import { render, screen } from "../test/render";
 
@@ -60,5 +62,21 @@ describe("StageView", () => {
       <StageView dimension={makeDimensionState({ speakingRole: "prosecution", latestSpeech: "The scar matches." })} />,
     );
     expect(screen.getByText('"The scar matches."')).toHaveClass("stage-speech-pulse");
+  });
+
+  it("renders correctly when the same instance transitions from no dimension to a dimension (regression: was a conditional hook)", () => {
+    const { rerender } = render(<StageView dimension={null} />);
+    expect(screen.getByText(/waiting for the trial to begin/i)).toBeInTheDocument();
+
+    // Re-wrap in the same MantineProvider so the rerender replaces StageView's
+    // props in place (same component instance/fiber) rather than unmounting and
+    // remounting a fresh instance under a different root element type — the
+    // latter would mask the exact hooks-order bug this test guards against.
+    rerender(
+      <MantineProvider theme={theme} forceColorScheme="dark">
+        <StageView dimension={makeDimensionState({ phase: "argumentation", currentRound: 1 })} />
+      </MantineProvider>,
+    );
+    expect(screen.getByText(/Argumentation — round 1/)).toBeInTheDocument();
   });
 });
