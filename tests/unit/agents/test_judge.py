@@ -345,3 +345,40 @@ async def test_prosecution_validation_ignores_dimensions_argument(judge, sample_
             dimensions=[CHARACTER],
         )
     assert result.is_valid is True
+
+
+def test_tiebreak_decision_field_order():
+    from psalm.agents.judge import _TiebreakDecision
+    assert list(_TiebreakDecision.model_fields) == ["rationale", "verdict"]
+
+
+def test_prosecution_validation_prompt_specifies_reasoning_before_conclusion():
+    from psalm.agents.judge import _PROSECUTION_VALIDATION_PROMPT
+    prompt = _PROSECUTION_VALIDATION_PROMPT.lower()
+    assert "state your reasoning first" in prompt
+
+
+def test_defense_validation_prompt_specifies_reasoning_before_conclusion():
+    from psalm.agents.judge import _DEFENSE_VALIDATION_PROMPT
+    prompt = _DEFENSE_VALIDATION_PROMPT.lower()
+    assert "state your reasoning first" in prompt
+
+
+async def test_tiebreak_prompt_specifies_reasoning_before_verdict(judge, minimal_argumentation_log):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(rationale="r.", verdict="Guilty")
+
+    votes = [
+        JurorVote(juror_id="j0", vote="Guilty", rationale="Strong evidence."),
+        JurorVote(juror_id="j1", vote="Not Guilty", rationale="Weak similarity."),
+    ]
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.tiebreak(votes, minimal_argumentation_log)
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "explain your reasoning before stating the verdict" in system_content.lower()

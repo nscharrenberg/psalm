@@ -44,8 +44,8 @@ class _StabilityDecision(BaseModel):
 
 
 class _TiebreakDecision(BaseModel):
-    verdict: Literal["Guilty", "Not Guilty", "Undecided"]
     rationale: str
+    verdict: Literal["Guilty", "Not Guilty", "Undecided"]
 
 
 _PROSECUTION_VALIDATION_PROMPT = """\
@@ -60,6 +60,9 @@ or an unrelated or opposite relationship is presented as if it supports the clai
 Do NOT reject for weak, interpretive, idea-level, or thematic reasoning, and do NOT reject merely
 because a proof does not by itself sufficiently "prove" or "establish" the claim — argument
 strength and sufficiency are for the opposing side to challenge, not grounds for you to reject.
+
+State your reasoning first, then decide is_valid based on that reasoning — not the other way
+around.
 """
 
 _DEFENSE_VALIDATION_PROMPT = """\
@@ -76,6 +79,9 @@ Defense arguments may challenge prosecution claims by showing differences in spe
 arguing independent creation, or making affirmative claims about the texts' distinctiveness. The
 defense carries no burden to show similarity — that is the prosecution's alone. Do NOT reject for
 weak or interpretive reasoning — that is the prosecution's job to challenge, not yours to discard.
+
+State your reasoning first, then decide is_valid based on that reasoning — not the other way
+around.
 """
 
 
@@ -192,7 +198,9 @@ class Judge(BaseAgent):
         )
         system_content = (
             "You are a judge casting a tiebreaker vote in a copyright case. Base your "
-            "decision on the totality of the evidence and arguments."
+            "decision on the totality of the evidence and arguments. Explain your reasoning "
+            "before stating the verdict — the verdict should follow from the reasoning, not "
+            "precede it."
         )
         user_content = (
             f"Jury votes (tied):\n{votes_text}\n\nArgumentation summary:\n{rounds_text}\n\n"
