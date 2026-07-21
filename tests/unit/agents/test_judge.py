@@ -382,3 +382,64 @@ async def test_tiebreak_prompt_specifies_reasoning_before_verdict(judge, minimal
 
     system_content = next(m["content"] for m in captured if m["role"] == "system")
     assert "explain your reasoning before stating the verdict" in system_content.lower()
+
+
+async def test_tiebreak_infringement_dimension_has_no_exception_framing(judge, minimal_argumentation_log):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(rationale="r.", verdict="Guilty")
+
+    votes = [
+        JurorVote(juror_id="j0", vote="Guilty", rationale="Strong evidence."),
+        JurorVote(juror_id="j1", vote="Not Guilty", rationale="Weak similarity."),
+    ]
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.tiebreak(votes, minimal_argumentation_log, dimension=CHARACTER)
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "EXCEPTION dimension" not in system_content
+
+
+async def test_tiebreak_no_dimension_has_no_exception_framing(judge, minimal_argumentation_log):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(rationale="r.", verdict="Guilty")
+
+    votes = [
+        JurorVote(juror_id="j0", vote="Guilty", rationale="Strong evidence."),
+        JurorVote(juror_id="j1", vote="Not Guilty", rationale="Weak similarity."),
+    ]
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.tiebreak(votes, minimal_argumentation_log)
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "EXCEPTION dimension" not in system_content
+
+
+async def test_tiebreak_exception_dimension_has_exception_framing(judge, minimal_argumentation_log):
+    captured: list = []
+
+    async def capture_invoke(prompt, **kwargs):
+        captured.extend(prompt)
+        return MagicMock(rationale="r.", verdict="Guilty")
+
+    votes = [
+        JurorVote(juror_id="j0", vote="Guilty", rationale="Strong evidence."),
+        JurorVote(juror_id="j1", vote="Not Guilty", rationale="Weak similarity."),
+    ]
+    mock_chain = MagicMock()
+    mock_chain.ainvoke = capture_invoke
+    with patch.object(type(judge._llm), "with_structured_output", MagicMock(return_value=mock_chain)):
+        await judge.tiebreak(votes, minimal_argumentation_log, dimension=SCENES_A_FAIRE)
+
+    system_content = next(m["content"] for m in captured if m["role"] == "system")
+    assert "EXCEPTION dimension" in system_content
+    assert 'Cast "Guilty" if the exception applies' in system_content

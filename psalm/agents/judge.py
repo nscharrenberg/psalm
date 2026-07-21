@@ -185,7 +185,10 @@ class Judge(BaseAgent):
         return current_claims == previous_claims
 
     async def tiebreak(
-        self, votes: list[JurorVote], argumentation_log: ArgumentationLog
+        self,
+        votes: list[JurorVote],
+        argumentation_log: ArgumentationLog,
+        dimension: Dimension | None = None,
     ) -> Literal["Guilty", "Not Guilty", "Undecided"]:
         structured_llm = self._llm.with_structured_output(_TiebreakDecision)
         votes_text = "\n".join(f"- {v.juror_id}: {v.vote} — {v.rationale}" for v in votes)
@@ -202,6 +205,13 @@ class Judge(BaseAgent):
             "before stating the verdict — the verdict should follow from the reasoning, not "
             "precede it."
         )
+        if dimension is not None and dimension.dimension_type == "exception":
+            system_content += (
+                "\n\nThis is an EXCEPTION dimension, not an infringement dimension: you are not "
+                "deciding whether the target text infringes copyright here. You are deciding "
+                "whether this specific legal exception applies to the shared content. Cast "
+                "\"Guilty\" if the exception applies, \"Not Guilty\" if it does not."
+            )
         user_content = (
             f"Jury votes (tied):\n{votes_text}\n\nArgumentation summary:\n{rounds_text}\n\n"
             "Cast your tiebreaker verdict."
