@@ -86,7 +86,9 @@ def _mock_agents():
         ),
         patch(
             "psalm.agents.judge.Judge.validate_argument",
-            new=AsyncMock(return_value=ValidationResult(is_valid=True)),
+            new=AsyncMock(
+                return_value=ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
+            ),
         ),
         patch(
             "psalm.agents.judge.Judge.detect_stability",

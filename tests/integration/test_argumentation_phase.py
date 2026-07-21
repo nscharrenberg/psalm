@@ -49,7 +49,9 @@ def mock_defense(agent_config, sample_counter_argument):
 @pytest.fixture
 def mock_judge(agent_config):
     judge = AsyncMock(spec=Judge)
-    judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=True))
+    judge.validate_argument = AsyncMock(
+        return_value=ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
+    )
     judge.detect_stability = AsyncMock(return_value=False)
     judge.validate_batch_completeness = AsyncMock(return_value=True)
     return judge
@@ -90,7 +92,11 @@ async def test_argumentation_phase_validates_arguments(argumentation_phase, case
 async def test_invalid_arguments_excluded(mock_prosecutor, mock_defense, mock_judge, case_input):
     # When judge rejects everything, a round is only recorded if it carries at least one
     # argument OR at least one closing statement.
-    mock_judge.validate_argument = AsyncMock(return_value=ValidationResult(is_valid=False, rejection_reason="No excerpts."))
+    mock_judge.validate_argument = AsyncMock(
+        return_value=ValidationResult(
+            reasoning="No excerpts were provided.", is_valid=False, rejection_reason="No excerpts.",
+        )
+    )
     mock_defense.gather_counter_arguments = AsyncMock(
         return_value=ArgumentBatch(no_further_arguments=True, closing_statement="Nothing to counter.")
     )

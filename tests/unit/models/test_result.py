@@ -78,12 +78,16 @@ def minimal_result(argument):
 
 
 def test_validation_result_valid():
-    r = ValidationResult(is_valid=True)
+    r = ValidationResult(reasoning="The proofs support the claim without contradiction.", is_valid=True)
     assert r.rejection_reason is None
 
 
 def test_validation_result_invalid():
-    r = ValidationResult(is_valid=False, rejection_reason="No relevant excerpts provided.")
+    r = ValidationResult(
+        reasoning="No relevant excerpts were provided to support the claim.",
+        is_valid=False,
+        rejection_reason="No relevant excerpts provided.",
+    )
     assert r.rejection_reason == "No relevant excerpts provided."
 
 
@@ -384,3 +388,8 @@ def test_juror_vote_field_order():
     assert list(JurorVote.model_fields) == [
         "juror_id", "dimension", "dimension_scores", "rationale", "vote",
     ]
+
+
+def test_validation_result_field_order():
+    from psalm.models.result import ValidationResult
+    assert list(ValidationResult.model_fields) == ["reasoning", "is_valid", "rejection_reason"]

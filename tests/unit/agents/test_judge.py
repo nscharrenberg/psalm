@@ -39,7 +39,7 @@ def test_judge_has_separate_defense_validation_prompt():
 async def test_validate_argument_accepts_role_parameter(judge, sample_argument):
     # validate_argument must accept a role parameter so defense and prosecution
     # arguments are evaluated under different standards.
-    mock_result = ValidationResult(is_valid=True)
+    mock_result = ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_result)
     mock_with_structured = MagicMock(return_value=mock_chain)
@@ -54,7 +54,7 @@ async def test_validate_argument_accepts_role_parameter(judge, sample_argument):
 
 
 async def test_validate_argument_valid(judge, sample_argument):
-    mock_result = ValidationResult(is_valid=True)
+    mock_result = ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_result)
 
@@ -73,7 +73,11 @@ async def test_validate_argument_valid(judge, sample_argument):
 async def test_validate_argument_invalid(judge, sample_argument):
     # The proofs are authentic (they match source_text/target_text below), so this exercises
     # the LLM coherence-check path, not the authenticity gate.
-    mock_result = ValidationResult(is_valid=False, rejection_reason="Proof contradicts the claim.")
+    mock_result = ValidationResult(
+        reasoning="The cited proof shows the opposite of what the claim asserts.",
+        is_valid=False,
+        rejection_reason="Proof contradicts the claim.",
+    )
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_result)
 
@@ -128,7 +132,7 @@ async def test_validate_argument_prompt_has_no_full_text_access(judge, sample_ar
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return ValidationResult(is_valid=True)
+        return ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
 
     mock_chain = MagicMock()
     mock_chain.ainvoke = capture_invoke
@@ -256,7 +260,11 @@ async def test_defense_validation_rejects_unprotectable_idea_without_exception_d
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return ValidationResult(is_valid=False, rejection_reason="No exception dimension selected.")
+        return ValidationResult(
+            reasoning="No exception dimension covers this argument.",
+            is_valid=False,
+            rejection_reason="No exception dimension selected.",
+        )
 
     arg = Argument(
         claim="This is an unprotectable idea / common archetype.",
@@ -281,7 +289,7 @@ async def test_defense_validation_allows_exception_reasoning_when_dimension_sele
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return ValidationResult(is_valid=True)
+        return ValidationResult(reasoning="The exception dimension covers this argument.", is_valid=True)
 
     arg = Argument(
         claim="This is scenes à faire / unprotectable idea.",
@@ -307,7 +315,7 @@ async def test_defense_validation_defaults_to_no_exceptions_when_dimensions_omit
 
     async def capture_invoke(prompt, **kwargs):
         captured.extend(prompt)
-        return ValidationResult(is_valid=True)
+        return ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
 
     mock_chain = MagicMock()
     mock_chain.ainvoke = capture_invoke
@@ -324,7 +332,7 @@ async def test_defense_validation_defaults_to_no_exceptions_when_dimensions_omit
 
 
 async def test_prosecution_validation_ignores_dimensions_argument(judge, sample_argument):
-    mock_result = ValidationResult(is_valid=True)
+    mock_result = ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
     mock_chain = AsyncMock()
     mock_chain.ainvoke = AsyncMock(return_value=mock_result)
     mock_with_structured = MagicMock(return_value=mock_chain)

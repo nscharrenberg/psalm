@@ -9,6 +9,7 @@ from psalm.models.evidence import Argument
 
 
 class ValidationResult(BaseModel):
+    reasoning: str
     is_valid: bool
     rejection_reason: str | None = None
 

@@ -42,7 +42,12 @@ async def test_concurrent_dimensions_events_correctly_tagged():
         patch("psalm.agents.defense.Defense.gather_arguments", new=AsyncMock(return_value=no_further)),
         patch("psalm.agents.prosecutor.Prosecutor.deliver_closing_argument", new=AsyncMock(return_value="P closing.")),
         patch("psalm.agents.defense.Defense.deliver_closing_argument", new=AsyncMock(return_value="D closing.")),
-        patch("psalm.agents.judge.Judge.validate_argument", new=AsyncMock(return_value=ValidationResult(is_valid=True))),
+        patch(
+            "psalm.agents.judge.Judge.validate_argument",
+            new=AsyncMock(
+                return_value=ValidationResult(reasoning="The proofs support the claim.", is_valid=True)
+            ),
+        ),
         patch("psalm.agents.judge.Judge.detect_stability", new=AsyncMock(return_value=False)),
         patch("psalm.agents.judge.Judge.validate_batch_completeness", new=AsyncMock(return_value=True)),
         patch("psalm.agents.juror.Juror.discuss", new=AsyncMock(return_value="Discussing.")),

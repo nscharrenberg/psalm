@@ -115,21 +115,17 @@ class Judge(BaseAgent):
     ) -> ValidationResult:
         for proof in argument.proofs:
             if not is_proof_authentic(proof.source_excerpt, source_text):
-                return ValidationResult(
-                    is_valid=False,
-                    rejection_reason=(
-                        "The cited source excerpt does not genuinely appear in the source "
-                        f'text: "{proof.source_excerpt}"'
-                    ),
+                reason = (
+                    "The cited source excerpt does not genuinely appear in the source "
+                    f'text: "{proof.source_excerpt}"'
                 )
+                return ValidationResult(reasoning=reason, is_valid=False, rejection_reason=reason)
             if not is_proof_authentic(proof.target_excerpt, target_text):
-                return ValidationResult(
-                    is_valid=False,
-                    rejection_reason=(
-                        "The cited target excerpt does not genuinely appear in the target "
-                        f'text: "{proof.target_excerpt}"'
-                    ),
+                reason = (
+                    "The cited target excerpt does not genuinely appear in the target "
+                    f'text: "{proof.target_excerpt}"'
                 )
+                return ValidationResult(reasoning=reason, is_valid=False, rejection_reason=reason)
 
         structured_llm = self._llm.with_structured_output(ValidationResult)
         if role == "defense":
