@@ -404,3 +404,24 @@ def test_juror_vote_has_optional_dimension_field():
 
     vote_with_dim = JurorVote(juror_id="juror-0", vote="Guilty", rationale="r.", dimension="character")
     assert vote_with_dim.dimension == "character"
+
+
+def test_vote_rubric_no_longer_mentions_protectability():
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    prompt = _VOTE_SYSTEM_PROMPT.lower()
+    assert "unprotectable" not in prompt
+    assert "scenes à faire" not in prompt
+    assert "archetype" not in prompt
+
+
+def test_vote_rubric_clear_no_longer_labeled_as_infringement():
+    from psalm.agents.juror import _VOTE_SYSTEM_PROMPT
+    assert "Clear infringement" not in _VOTE_SYSTEM_PROMPT
+    assert "Clear similarity" in _VOTE_SYSTEM_PROMPT
+
+
+def test_discuss_prompt_no_longer_names_protectability_labels():
+    from psalm.agents.juror import _DISCUSS_SYSTEM_PROMPT
+    prompt = _DISCUSS_SYSTEM_PROMPT.lower()
+    assert "unprotectable" not in prompt
+    assert "archetype" not in prompt
