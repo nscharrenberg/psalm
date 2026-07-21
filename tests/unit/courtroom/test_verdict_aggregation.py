@@ -72,22 +72,46 @@ def test_synthesize_rationale_contains_dimension_names():
     assert "Guilty" in rationale
 
 
-def test_exception_dimension_excluded_from_aggregation():
-    from psalm.models.result import DimensionVerdict
+def test_exception_dimension_low_score_barely_discounts():
     dvs = [
         _make_dv("character", Importance.HIGH, "Guilty", 0.9),
         DimensionVerdict(
             dimension="scenes-a-faire",
             dimension_type="exception",
             importance=Importance.MEDIUM,
-            verdict="Guilty",
+            verdict="Not Guilty",
             weighted_score=0.1,
             argumentation_log=ArgumentationLog(rounds=[]),
             debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
         ),
     ]
-    # Only the infringement dimension (character, HIGH, 0.9) drives the aggregation; the
-    # exception dimension's low weighted_score must not pull it down.
+    # 0.9 * (1 - 0.1) = 0.81 — still comfortably above threshold.
+    assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Guilty"
+
+
+def test_exception_dimension_high_score_flips_verdict_to_not_guilty():
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Not Guilty", 0.52),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Guilty",
+            weighted_score=0.9,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    # 0.52 * (1 - 0.9) = 0.052 — the previously-decorative exception score now genuinely
+    # discounts the infringement score, flipping a borderline verdict.
+    assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Not Guilty"
+
+
+def test_no_exception_dimension_selected_leaves_verdict_unchanged():
+    # A single infringement dimension at weighted_score 0.52 with NO exception dimension
+    # selected still resolves via the infringement score alone — the discount only applies
+    # when the case actually selected an exception dimension.
+    dvs = [_make_dv("character", Importance.HIGH, "Not Guilty", 0.52)]
     assert _aggregate_verdict(dvs, guilty_threshold=0.5) == "Guilty"
 
 
@@ -142,4 +166,21 @@ def test_synthesize_rationale_labels_exception_dimensions():
     ]
     rationale = _synthesize_rationale("Guilty", dvs)
     assert "scenes-a-faire" in rationale
-    assert "excluded from verdict" in rationale
+    assert "discounts infringement score" in rationale
+
+
+def test_synthesize_rationale_shows_exception_discount_value():
+    dvs = [
+        _make_dv("character", Importance.HIGH, "Not Guilty", 0.52),
+        DimensionVerdict(
+            dimension="scenes-a-faire",
+            dimension_type="exception",
+            importance=Importance.MEDIUM,
+            verdict="Guilty",
+            weighted_score=0.9,
+            argumentation_log=ArgumentationLog(rounds=[]),
+            debate_log=DebateLog(rounds=[], final_voting_strategy_applied="unanimous"),
+        ),
+    ]
+    rationale = _synthesize_rationale("Not Guilty", dvs)
+    assert "Exception discount applied: 0.90" in rationale

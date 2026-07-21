@@ -169,26 +169,37 @@ def _aggregate_verdict(
     if not infringement_verdicts:
         return "Undecided"
 
-    # Hard override: any CRITICAL infringement dimension that is Guilty → overall Guilty
+    # Hard override: any CRITICAL infringement dimension that is Guilty → overall Guilty.
+    # Exception dimensions never trigger this, regardless of their own importance/verdict.
     for dv in infringement_verdicts:
         if dv.importance == Importance.CRITICAL and dv.verdict == "Guilty":
             return "Guilty"
 
-    # Weighted score aggregation — exception dimensions never contribute
+    normalised = _blend(infringement_verdicts)
+    if normalised is None:
+        return "Undecided"
+
+    exception_verdicts = [dv for dv in dimension_verdicts if dv.dimension_type == "exception"]
+    exception_score = _blend(exception_verdicts)
+    if exception_score is None:
+        exception_score = 0.0
+    effective = normalised * (1 - exception_score)
+
+    if effective >= guilty_threshold:
+        return "Guilty"
+    return "Not Guilty"
+
+
+def _blend(verdicts: list[DimensionVerdict]) -> float | None:
     total_weighted = 0.0
     total_weight = 0.0
-    for dv in infringement_verdicts:
+    for dv in verdicts:
         multiplier = _IMPORTANCE_MULTIPLIERS[dv.importance]
         total_weighted += dv.weighted_score * multiplier
         total_weight += multiplier
-
     if total_weight == 0.0:
-        return "Undecided"
-
-    normalised = total_weighted / total_weight
-    if normalised >= guilty_threshold:
-        return "Guilty"
-    return "Not Guilty"
+        return None
+    return total_weighted / total_weight
 
 
 def _synthesize_rationale(
@@ -198,10 +209,15 @@ def _synthesize_rationale(
     lines = [f"Verdict: {verdict}."]
     for dv in dimension_verdicts:
         suffix = (
-            "" if dv.dimension_type == "infringement" else " [exception, excluded from verdict]"
+            "" if dv.dimension_type == "infringement"
+            else " [exception, discounts infringement score]"
         )
         lines.append(
             f"  {dv.dimension} [{dv.importance.value}]{suffix}: {dv.verdict} "
             f"(weighted score: {dv.weighted_score:.2f})"
         )
+    exception_verdicts = [dv for dv in dimension_verdicts if dv.dimension_type == "exception"]
+    exception_score = _blend(exception_verdicts)
+    if exception_score:
+        lines.append(f"  Exception discount applied: {exception_score:.2f}")
     return " ".join(lines)
