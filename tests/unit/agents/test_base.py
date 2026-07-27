@@ -251,3 +251,126 @@ async def test_run_execution_rate_limiter_returns_same_instance_within_a_loop():
         max_requests_per_minute=60, max_tokens_per_minute=None,
     )
     assert execution.rate_limiter() is execution.rate_limiter()
+
+
+async def test_execute_with_retry_calls_rate_limiter_acquire_when_configured(agent_config):
+    from psalm.agents.base import _RunExecution
+
+    execution = _RunExecution(
+        max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0,
+        max_requests_per_minute=60, max_tokens_per_minute=None,
+    )
+    agent = _TestAgent(config=agent_config, execution=execution)
+    mock_limiter = AsyncMock()
+
+    with patch.object(_RunExecution, "rate_limiter", return_value=mock_limiter):
+        with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(return_value="ok")):
+            result = await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert result == "ok"
+    mock_limiter.acquire.assert_called_once()
+
+
+async def test_execute_with_retry_skips_rate_limiter_when_disabled(agent_config, run_execution):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+
+    with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(return_value="ok")):
+        result = await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert result == "ok"
+    assert run_execution.rate_limiter() is None
+
+
+async def test_call_llm_fails_fast_on_authentication_error(agent_config, run_execution):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    auth_error = _make_status_error(openai.AuthenticationError, 401)
+
+    with bound_event_sink() as sink:
+        with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(side_effect=auth_error)) as mock_ainvoke:
+            with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()) as mock_sleep:
+                with pytest.raises(PSALMAgentError) as exc_info:
+                    await agent._call_llm([{"role": "user", "content": "hi"}])
+        events = await drain_events(sink)
+
+    assert exc_info.value.code == "PSALM-A004"
+    assert exc_info.value.context["reason"] == "authentication_error"
+    assert mock_ainvoke.call_count == 1
+    mock_sleep.assert_not_called()
+    failed = [e for e in events if isinstance(e, AgentCallFailed)]
+    assert len(failed) == 1
+    assert failed[0].code == "PSALM-A004"
+
+
+async def test_call_llm_fails_fast_on_insufficient_quota(agent_config, run_execution):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    quota_error = _make_rate_limit_error(code="insufficient_quota")
+
+    with patch.object(type(agent._llm), "ainvoke", new=AsyncMock(side_effect=quota_error)) as mock_ainvoke:
+        with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()) as mock_sleep:
+            with pytest.raises(PSALMAgentError) as exc_info:
+                await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert exc_info.value.code == "PSALM-A004"
+    assert exc_info.value.context["reason"] == "insufficient_quota"
+    assert mock_ainvoke.call_count == 1
+    mock_sleep.assert_not_called()
+
+
+async def test_call_llm_retries_genuine_rate_limit_error(agent_config, run_execution):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    rate_limit_error = _make_rate_limit_error(code="rate_limit_exceeded")
+
+    with patch.object(
+        type(agent._llm), "ainvoke", new=AsyncMock(side_effect=[rate_limit_error, "ok"]),
+    ):
+        with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()) as mock_sleep:
+            result = await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert result == "ok"
+    mock_sleep.assert_called_once()
+
+
+async def test_call_llm_honors_retry_after_header_in_backoff(agent_config, run_execution):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    rate_limit_error = _make_rate_limit_error(code="rate_limit_exceeded", retry_after="42")
+    recorded_sleeps = []
+
+    async def fake_sleep(seconds):
+        recorded_sleeps.append(seconds)
+
+    with patch.object(
+        type(agent._llm), "ainvoke", new=AsyncMock(side_effect=[rate_limit_error, "ok"]),
+    ):
+        with patch("psalm.agents.base.asyncio.sleep", new=fake_sleep):
+            await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    assert recorded_sleeps == [42.0]
+
+
+async def test_call_llm_logs_warning_on_retry(agent_config, run_execution, caplog):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    with caplog.at_level("WARNING", logger="psalm.agents.base"):
+        with patch.object(
+            type(agent._llm), "ainvoke", new=AsyncMock(side_effect=[Exception("boom"), "ok"]),
+        ):
+            with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()):
+                await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+    assert len(warnings) == 1
+    assert "test-agent" in warnings[0].getMessage()
+
+
+async def test_call_llm_logs_error_with_exc_info_on_final_failure(agent_config, run_execution, caplog):
+    agent = _TestAgent(config=agent_config, execution=run_execution)
+    with caplog.at_level("ERROR", logger="psalm.agents.base"):
+        with patch.object(
+            type(agent._llm), "ainvoke", new=AsyncMock(side_effect=Exception("persistent")),
+        ):
+            with patch("psalm.agents.base.asyncio.sleep", new=AsyncMock()):
+                with pytest.raises(PSALMAgentError):
+                    await agent._call_llm([{"role": "user", "content": "hi"}])
+
+    errors = [r for r in caplog.records if r.levelname == "ERROR"]
+    assert len(errors) == 1
+    assert errors[0].exc_info is not None
