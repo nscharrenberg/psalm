@@ -118,31 +118,35 @@ async def test_rate_limiter_disabled_never_blocks():
     )
 
 
-async def test_rate_limiter_blocks_until_capacity_available():
-    fake_time = [0.0]
-
-    def fake_monotonic():
-        return fake_time[0]
-
-    with patch("psalm.agents.rate_limiter.time.monotonic", side_effect=fake_monotonic):
-        limiter = _RateLimiter(max_requests_per_minute=60, max_tokens_per_minute=None)
-        await limiter.acquire(1)
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(limiter.acquire(1), timeout=0.05)
-
-
 async def test_rate_limiter_refill_replenishes_capacity_over_simulated_time():
+    # Exhausts the single unit of capacity with max_requests_per_minute=1, then jumps the
+    # mocked clock forward by a full 60s BEFORE the second acquire — so that second acquire
+    # resolves on its first lock-check (capacity is already refilled to 1.0 by the time it's
+    # called) rather than needing to actually poll/sleep while time.monotonic is frozen. This
+    # matters because patch("psalm.agents.rate_limiter.time.monotonic", ...) patches the
+    # shared `time` module object process-wide (Python modules are singletons), which also
+    # freezes asyncio's own internal clock — if a call under this patch genuinely needed to
+    # block and rely on asyncio.wait_for's timeout firing, the frozen clock would make that
+    # timeout never arrive, hanging the test indefinitely instead of failing cleanly.
     fake_time = [0.0]
 
     def fake_monotonic():
         return fake_time[0]
 
     with patch("psalm.agents.rate_limiter.time.monotonic", side_effect=fake_monotonic):
-        limiter = _RateLimiter(max_requests_per_minute=60, max_tokens_per_minute=None)
+        limiter = _RateLimiter(max_requests_per_minute=1, max_tokens_per_minute=None)
         await limiter.acquire(1)
-        fake_time[0] = 1.0
+        fake_time[0] = 60.0
         await asyncio.wait_for(limiter.acquire(1), timeout=0.5)
 ```
+
+**Note:** there is deliberately no separate "still blocked before time advances" test using mocked
+time — `test_rate_limiter_respects_request_cap` above already covers that ground correctly using
+real (unmocked) wall-clock time, where the ~0.05s `wait_for` timeout genuinely elapses before the
+limiter's `_POLL_INTERVAL_SECONDS = 0.25` poll would recheck capacity. Combining "still blocked"
+and "then refills" into one mocked-time test would require the frozen-clock `wait_for` race
+described above, which hangs rather than fails — so they're kept as two separate tests, one on
+real time (blocks) and one on mocked time (refills), each avoiding the other's failure mode.
 
 - [ ] **Step 3: Run tests to verify they fail**
 
@@ -236,7 +240,7 @@ Expected: PASS (all 8 tests)
 - [ ] **Step 6: Run the full suite to confirm nothing else broke**
 
 Run: `python -m pytest tests/ -q`
-Expected: `392 passed, 1 skipped` (384 baseline + 8 new tests)
+Expected: `391 passed, 1 skipped` (384 baseline + 7 new tests)
 
 - [ ] **Step 7: Commit**
 
@@ -456,7 +460,7 @@ Expected: PASS (all tests in the file, including the 13 new ones — the file's 
 - [ ] **Step 5: Run the full suite**
 
 Run: `python -m pytest tests/ -q`
-Expected: `405 passed, 1 skipped` (392 from Task 1 + 13 new tests)
+Expected: `404 passed, 1 skipped` (391 from Task 1 + 13 new tests)
 
 - [ ] **Step 6: Commit**
 
@@ -692,7 +696,7 @@ Expected: PASS (all tests in both files)
 - [ ] **Step 6: Run the full suite**
 
 Run: `python -m pytest tests/ -q`
-Expected: `411 passed, 1 skipped` (405 from Task 2 + 6 new tests: 4 in test_config.py + 2 in test_base.py — `test_execution_config_defaults` was modified, not added)
+Expected: `410 passed, 1 skipped` (404 from Task 2 + 6 new tests: 4 in test_config.py + 2 in test_base.py — `test_execution_config_defaults` was modified, not added)
 
 - [ ] **Step 7: Commit**
 
@@ -1017,7 +1021,7 @@ Expected: PASS (every test in the file — all pre-existing tests plus every new
 - [ ] **Step 5: Run the full suite**
 
 Run: `python -m pytest tests/ -q`
-Expected: `419 passed, 1 skipped` (411 from Task 3 + 8 new tests)
+Expected: `418 passed, 1 skipped` (410 from Task 3 + 8 new tests)
 
 - [ ] **Step 6: Commit**
 
@@ -1171,7 +1175,7 @@ Expected: PASS (all tests in the file)
 - [ ] **Step 5: Run the full suite**
 
 Run: `python -m pytest tests/ -q`
-Expected: `421 passed, 1 skipped` (419 from Task 4 + 2 new tests — `test_default_execution_config` was modified, not added)
+Expected: `420 passed, 1 skipped` (418 from Task 4 + 2 new tests — `test_default_execution_config` was modified, not added)
 
 - [ ] **Step 6: Commit**
 
@@ -1612,7 +1616,7 @@ git commit -m "feat(web): expose RPM/TPM/retry-after-fallback settings in the tr
 - [ ] **Step 1: Run the full SDK suite**
 
 Run: `python -m pytest tests/ -q`
-Expected: `421 passed, 1 skipped` (per the running total established in Task 5, Step 5 — if any earlier task's actual count differed from this plan's prediction, expect that adjusted total instead)
+Expected: `420 passed, 1 skipped` (per the running total established in Task 5, Step 5 — if any earlier task's actual count differed from this plan's prediction, expect that adjusted total instead)
 
 - [ ] **Step 2: Run the full web backend suite**
 
