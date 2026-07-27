@@ -3,7 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from psalm.agents.rate_limiter import _DEFAULT_COMPLETION_TOKEN_ESTIMATE, _RateLimiter, estimate_tokens
+from psalm.agents.rate_limiter import (
+    _DEFAULT_COMPLETION_TOKEN_ESTIMATE,
+    _RateLimiter,
+    estimate_tokens,
+)
 
 
 def test_estimate_tokens_known_model():

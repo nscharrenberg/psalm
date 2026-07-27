@@ -65,9 +65,10 @@ def estimate_tokens(messages: list[Any], model: str, max_completion_tokens: int 
         encoding = tiktoken.get_encoding(_FALLBACK_ENCODING)
     text_parts = []
     for message in messages:
-        content = (
-            message.get("content", "") if isinstance(message, dict) else getattr(message, "content", "")
-        )
+        if isinstance(message, dict):
+            content = message.get("content", "")
+        else:
+            content = getattr(message, "content", "")
         text_parts.append(str(content))
     prompt_tokens = len(encoding.encode(" ".join(text_parts)))
     completion_estimate = max_completion_tokens or _DEFAULT_COMPLETION_TOKEN_ESTIMATE
