@@ -67,6 +67,9 @@ class TrialConfigRequest(BaseModel):
     time_limit_seconds: int = 120
     max_concurrent_llm_calls: int = Field(default=8, ge=1)
     max_retries: int = Field(default=3, ge=1)
+    max_requests_per_minute: int = Field(default=60, ge=0)
+    max_tokens_per_minute: int = Field(default=40000, ge=0)
+    retry_after_fallback_seconds: float = Field(default=0, ge=0)
     prosecutor: AgentConfigRequest = AgentConfigRequest()
     defense: AgentConfigRequest = AgentConfigRequest()
     judge: AgentConfigRequest = AgentConfigRequest()

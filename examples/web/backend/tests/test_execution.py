@@ -75,8 +75,6 @@ async def test_build_psalm_wraps_config_error_from_llm_ping_failure():
 
 
 async def test_build_psalm_forwards_execution_settings():
-    from unittest.mock import MagicMock
-
     config = _config(max_concurrent_llm_calls=2, max_retries=1)
     resolved = resolve_config(config)
     captured = {}
@@ -98,8 +96,53 @@ async def test_build_psalm_forwards_execution_settings():
     with patch("execution.PSALM", return_value=_FakeBuilder()):
         result = await build_psalm(config, resolved)
 
-    assert captured == {"max_concurrent_llm_calls": 2, "max_retries": 1}
+    assert captured == {
+        "max_concurrent_llm_calls": 2, "max_retries": 1,
+        "max_requests_per_minute": 60, "max_tokens_per_minute": 40000,
+        "retry_after_fallback_seconds": None,
+    }
     assert result == "built"
+
+
+async def test_build_psalm_translates_zero_to_none_for_rate_limit_fields():
+    config = _config(max_requests_per_minute=0, max_tokens_per_minute=0, retry_after_fallback_seconds=0)
+    resolved = resolve_config(config)
+    captured = {}
+
+    class _FakeBuilder:
+        def with_prosecutor(self, **kw): return self
+        def with_defense(self, **kw): return self
+        def with_judge(self, **kw): return self
+        def with_jury(self, jury): return self
+        def with_dimensions(self, dims): return self
+        def with_debate(self, **kw): return self
+        def with_voting(self, strategies): return self
+        def with_evaluation_strategy(self, strategy): return self
+        def with_execution(self, **kw):
+            captured.update(kw)
+            return self
+        async def build(self): return "built"
+
+    with patch("execution.PSALM", return_value=_FakeBuilder()):
+        await build_psalm(config, resolved)
+
+    assert captured["max_requests_per_minute"] is None
+    assert captured["max_tokens_per_minute"] is None
+    assert captured["retry_after_fallback_seconds"] is None
+
+
+def test_trial_config_request_rate_limit_defaults():
+    config = _config()
+    assert config.max_requests_per_minute == 60
+    assert config.max_tokens_per_minute == 40000
+    assert config.retry_after_fallback_seconds == 0
+
+
+def test_trial_config_request_rejects_negative_max_requests_per_minute():
+    import pydantic
+
+    with pytest.raises(pydantic.ValidationError):
+        _config(max_requests_per_minute=-1)
 
 
 def test_trial_config_request_execution_defaults():
