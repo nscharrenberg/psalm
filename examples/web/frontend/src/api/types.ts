@@ -64,6 +64,9 @@ export interface TrialConfigInput {
   time_limit_seconds: number;
   max_concurrent_llm_calls: number;
   max_retries: number;
+  max_requests_per_minute: number;
+  max_tokens_per_minute: number;
+  retry_after_fallback_seconds: number;
   prosecutor: AgentConfigInput;
   defense: AgentConfigInput;
   judge: AgentConfigInput;

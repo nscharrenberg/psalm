@@ -126,6 +126,9 @@ describe("SetupPage", () => {
     expect(payload.dimensions).toContain("Character");
     expect(payload.max_concurrent_llm_calls).toBe(8);
     expect(payload.max_retries).toBe(3);
+    expect(payload.max_requests_per_minute).toBe(60);
+    expect(payload.max_tokens_per_minute).toBe(40000);
+    expect(payload.retry_after_fallback_seconds).toBe(0);
   });
 
   it("shows an error message when the backend reports a config error", async () => {
