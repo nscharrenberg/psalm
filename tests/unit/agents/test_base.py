@@ -236,3 +236,18 @@ def test_compute_backoff_uses_jittered_exponential_when_neither_available():
     from psalm.agents.base import _compute_backoff
     wait = _compute_backoff(Exception("boom"), attempt=1, backoff_factor=2.0, fallback_seconds=None)
     assert 0 <= wait <= 2.0
+
+
+def test_run_execution_rate_limiter_returns_none_when_disabled():
+    from psalm.agents.base import _RunExecution
+    execution = _RunExecution(max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0)
+    assert execution.rate_limiter() is None
+
+
+async def test_run_execution_rate_limiter_returns_same_instance_within_a_loop():
+    from psalm.agents.base import _RunExecution
+    execution = _RunExecution(
+        max_concurrent_llm_calls=8, max_retries=3, backoff_factor=2.0,
+        max_requests_per_minute=60, max_tokens_per_minute=None,
+    )
+    assert execution.rate_limiter() is execution.rate_limiter()

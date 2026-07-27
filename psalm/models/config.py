@@ -47,28 +47,36 @@ class ExecutionConfig(BaseModel):
     max_concurrent_llm_calls: int = 8
     max_retries: int = 3
     backoff_factor: float = 2.0
+    max_requests_per_minute: int | None = 60
+    max_tokens_per_minute: int | None = 40000
+    retry_after_fallback_seconds: float | None = None
 
-    @field_validator("max_concurrent_llm_calls", "max_retries")
+    @field_validator(
+        "max_concurrent_llm_calls",
+        "max_retries",
+        "max_requests_per_minute",
+        "max_tokens_per_minute",
+    )
     @classmethod
-    def validate_positive_int(cls, v: int, info) -> int:
-        if v < 1:
+    def validate_positive_int(cls, v: int | None, info) -> int | None:
+        if v is not None and v < 1:
             raise PSALMConfigError(
                 code="PSALM-C008",
                 message=f"{info.field_name} must be >= 1, got {v}.",
                 context={"field": info.field_name, "value": v},
-                suggestion="Set a value of 1 or greater.",
+                suggestion="Set a value of 1 or greater, or None to disable (where applicable).",
             )
         return v
 
-    @field_validator("backoff_factor")
+    @field_validator("backoff_factor", "retry_after_fallback_seconds")
     @classmethod
-    def validate_backoff_factor(cls, v: float) -> float:
-        if v <= 0:
+    def validate_positive_float(cls, v: float | None, info) -> float | None:
+        if v is not None and v <= 0:
             raise PSALMConfigError(
                 code="PSALM-C008",
-                message=f"backoff_factor must be > 0, got {v}.",
-                context={"field": "backoff_factor", "value": v},
-                suggestion="Set a positive value (e.g. 2.0).",
+                message=f"{info.field_name} must be > 0, got {v}.",
+                context={"field": info.field_name, "value": v},
+                suggestion="Set a positive value, or None to disable (where applicable).",
             )
         return v
 

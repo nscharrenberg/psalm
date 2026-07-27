@@ -10,6 +10,7 @@ import openai
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
+from psalm.agents.rate_limiter import _RateLimiter
 from psalm.events import AgentCallFailed, AgentCallRetrying, emit
 from psalm.exceptions import PSALMAgentError
 from psalm.models.config import AgentConfig
@@ -20,7 +21,11 @@ class _RunExecution:
     max_concurrent_llm_calls: int
     max_retries: int
     backoff_factor: float
+    max_requests_per_minute: int | None = None
+    max_tokens_per_minute: int | None = None
+    retry_after_fallback_seconds: float | None = None
     _semaphores: dict[int, asyncio.Semaphore] = field(default_factory=dict, repr=False)
+    _rate_limiters: dict[int, _RateLimiter] = field(default_factory=dict, repr=False)
 
     def semaphore(self) -> asyncio.Semaphore:
         loop = asyncio.get_running_loop()
@@ -30,6 +35,17 @@ class _RunExecution:
             sem = asyncio.Semaphore(self.max_concurrent_llm_calls)
             self._semaphores[key] = sem
         return sem
+
+    def rate_limiter(self) -> _RateLimiter | None:
+        if self.max_requests_per_minute is None and self.max_tokens_per_minute is None:
+            return None
+        loop = asyncio.get_running_loop()
+        key = id(loop)
+        limiter = self._rate_limiters.get(key)
+        if limiter is None:
+            limiter = _RateLimiter(self.max_requests_per_minute, self.max_tokens_per_minute)
+            self._rate_limiters[key] = limiter
+        return limiter
 
 
 _MAX_BACKOFF_SECONDS = 120.0
