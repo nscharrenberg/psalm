@@ -131,6 +131,9 @@ def test_execution_config_defaults():
     assert config.max_concurrent_llm_calls == 8
     assert config.max_retries == 3
     assert config.backoff_factor == 2.0
+    assert config.max_requests_per_minute == 60
+    assert config.max_tokens_per_minute == 40000
+    assert config.retry_after_fallback_seconds is None
 
 
 def test_execution_config_accepts_custom_values():
@@ -159,4 +162,32 @@ def test_execution_config_rejects_non_positive_backoff_factor():
     from psalm.models.config import ExecutionConfig
     with pytest.raises(PSALMConfigError) as exc_info:
         ExecutionConfig(backoff_factor=0.0)
+    assert exc_info.value.code == "PSALM-C008"
+
+
+def test_execution_config_accepts_none_for_rate_limit_fields():
+    from psalm.models.config import ExecutionConfig
+    config = ExecutionConfig(max_requests_per_minute=None, max_tokens_per_minute=None)
+    assert config.max_requests_per_minute is None
+    assert config.max_tokens_per_minute is None
+
+
+def test_execution_config_rejects_non_positive_max_requests_per_minute():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(max_requests_per_minute=0)
+    assert exc_info.value.code == "PSALM-C008"
+
+
+def test_execution_config_rejects_non_positive_max_tokens_per_minute():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(max_tokens_per_minute=0)
+    assert exc_info.value.code == "PSALM-C008"
+
+
+def test_execution_config_rejects_non_positive_retry_after_fallback_seconds():
+    from psalm.models.config import ExecutionConfig
+    with pytest.raises(PSALMConfigError) as exc_info:
+        ExecutionConfig(retry_after_fallback_seconds=0.0)
     assert exc_info.value.code == "PSALM-C008"

@@ -64,6 +64,9 @@ async def build_psalm(config: TrialConfigRequest, resolved: dict[str, Any]):
             .with_execution(
                 max_concurrent_llm_calls=config.max_concurrent_llm_calls,
                 max_retries=config.max_retries,
+                max_requests_per_minute=config.max_requests_per_minute or None,
+                max_tokens_per_minute=config.max_tokens_per_minute or None,
+                retry_after_fallback_seconds=config.retry_after_fallback_seconds or None,
             )
             .with_voting(["simple_majority", "trust_weighted", "judge_tiebreaker"])
             .with_evaluation_strategy(evaluation_strategy)

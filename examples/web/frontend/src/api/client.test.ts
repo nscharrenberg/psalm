@@ -19,6 +19,7 @@ const sampleConfig: TrialConfigInput = {
   source_text: "s", target_text: "t", dimensions: ["Character"], evaluation_strategy: "fully_separate",
   argumentation_rounds: 3, deliberation_rounds: 2, time_limit_seconds: 120,
   max_concurrent_llm_calls: 8, max_retries: 3,
+  max_requests_per_minute: 60, max_tokens_per_minute: 40000, retry_after_fallback_seconds: 0,
   prosecutor: {}, defense: {}, judge: {}, jury: [],
 };
 

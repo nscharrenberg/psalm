@@ -108,11 +108,17 @@ class PSALM:
         max_concurrent_llm_calls: int = 8,
         max_retries: int = 3,
         backoff_factor: float = 2.0,
+        max_requests_per_minute: int | None = 60,
+        max_tokens_per_minute: int | None = 40000,
+        retry_after_fallback_seconds: float | None = None,
     ) -> PSALM:
         self._execution_config = ExecutionConfig(
             max_concurrent_llm_calls=max_concurrent_llm_calls,
             max_retries=max_retries,
             backoff_factor=backoff_factor,
+            max_requests_per_minute=max_requests_per_minute,
+            max_tokens_per_minute=max_tokens_per_minute,
+            retry_after_fallback_seconds=retry_after_fallback_seconds,
         )
         return self
 
@@ -126,6 +132,9 @@ class PSALM:
             max_concurrent_llm_calls=self._execution_config.max_concurrent_llm_calls,
             max_retries=self._execution_config.max_retries,
             backoff_factor=self._execution_config.backoff_factor,
+            max_requests_per_minute=self._execution_config.max_requests_per_minute,
+            max_tokens_per_minute=self._execution_config.max_tokens_per_minute,
+            retry_after_fallback_seconds=self._execution_config.retry_after_fallback_seconds,
         )
         await self._ping_all_llms(execution)
         return self._assemble(execution)

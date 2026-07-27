@@ -39,6 +39,9 @@ export default function SetupPage() {
   const [timeLimitSeconds, setTimeLimitSeconds] = useState(120);
   const [maxConcurrentLlmCalls, setMaxConcurrentLlmCalls] = useState(8);
   const [maxRetries, setMaxRetries] = useState(3);
+  const [maxRequestsPerMinute, setMaxRequestsPerMinute] = useState(60);
+  const [maxTokensPerMinute, setMaxTokensPerMinute] = useState(40000);
+  const [retryAfterFallbackSeconds, setRetryAfterFallbackSeconds] = useState(0);
 
   const [prosecutor, setProsecutor] = useState<AgentConfigInput>(emptyAgentConfig());
   const [defense, setDefense] = useState<AgentConfigInput>(emptyAgentConfig());
@@ -97,6 +100,9 @@ export default function SetupPage() {
         time_limit_seconds: timeLimitSeconds,
         max_concurrent_llm_calls: maxConcurrentLlmCalls,
         max_retries: maxRetries,
+        max_requests_per_minute: maxRequestsPerMinute,
+        max_tokens_per_minute: maxTokensPerMinute,
+        retry_after_fallback_seconds: retryAfterFallbackSeconds,
         prosecutor,
         defense,
         judge,
@@ -211,6 +217,22 @@ export default function SetupPage() {
                       id="max-retries" label="Max retries" min={1}
                       value={maxRetries}
                       onChange={(value) => setMaxRetries(Number(value))}
+                    />
+                    <NumberInput
+                      id="max-requests-per-minute" label="Max requests per minute (0 = unlimited)" min={0}
+                      value={maxRequestsPerMinute}
+                      onChange={(value) => setMaxRequestsPerMinute(Number(value))}
+                    />
+                    <NumberInput
+                      id="max-tokens-per-minute" label="Max tokens per minute (0 = unlimited)" min={0}
+                      value={maxTokensPerMinute}
+                      onChange={(value) => setMaxTokensPerMinute(Number(value))}
+                    />
+                    <NumberInput
+                      id="retry-after-fallback-seconds"
+                      label="Retry-After fallback (seconds, 0 = disabled)" min={0}
+                      value={retryAfterFallbackSeconds}
+                      onChange={(value) => setRetryAfterFallbackSeconds(Number(value))}
                     />
                   </Stack>
                 </Accordion.Panel>
