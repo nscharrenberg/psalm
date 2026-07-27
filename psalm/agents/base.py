@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
 
+import openai
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
@@ -29,6 +30,70 @@ class _RunExecution:
             sem = asyncio.Semaphore(self.max_concurrent_llm_calls)
             self._semaphores[key] = sem
         return sem
+
+
+_MAX_BACKOFF_SECONDS = 120.0
+
+
+@dataclass
+class _ErrorClassification:
+    retryable: bool
+    reason: str
+    suggestion: str
+
+
+def _is_insufficient_quota(exc: openai.RateLimitError) -> bool:
+    code = getattr(exc, "code", None) or ""
+    err_type = getattr(exc, "type", None) or ""
+    return "insufficient_quota" in code or "insufficient_quota" in err_type
+
+
+def _classify_error(exc: Exception) -> _ErrorClassification:
+    if isinstance(exc, openai.AuthenticationError):
+        return _ErrorClassification(False, "authentication_error", "Check your API key.")
+    if isinstance(exc, openai.PermissionDeniedError):
+        return _ErrorClassification(
+            False, "permission_denied",
+            "Check your API key's permissions for this model/endpoint.",
+        )
+    if isinstance(exc, openai.BadRequestError):
+        return _ErrorClassification(
+            False, "bad_request", "Check the request configuration (model, parameters).",
+        )
+    if isinstance(exc, openai.RateLimitError):
+        if _is_insufficient_quota(exc):
+            return _ErrorClassification(
+                False, "insufficient_quota",
+                "Your account has insufficient quota — check your provider's billing dashboard.",
+            )
+        return _ErrorClassification(True, "rate_limited", "")
+    return _ErrorClassification(True, "unknown", "")
+
+
+def _extract_retry_after(exc: Exception) -> float | None:
+    response = getattr(exc, "response", None)
+    if response is None:
+        return None
+    header = response.headers.get("retry-after")
+    if header is None:
+        return None
+    try:
+        value = float(header)
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, value)
+
+
+def _compute_backoff(
+    exc: Exception, attempt: int, backoff_factor: float, fallback_seconds: float | None,
+) -> float:
+    retry_after = _extract_retry_after(exc)
+    if retry_after is not None:
+        return min(retry_after, _MAX_BACKOFF_SECONDS)
+    if fallback_seconds is not None:
+        return fallback_seconds
+    backoff = backoff_factor**attempt
+    return random.uniform(0, backoff)
 
 
 class BaseAgent(ABC):
