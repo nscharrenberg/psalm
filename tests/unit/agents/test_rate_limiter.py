@@ -56,27 +56,23 @@ async def test_rate_limiter_disabled_never_blocks():
     )
 
 
-async def test_rate_limiter_blocks_until_capacity_available():
-    fake_time = [0.0]
-
-    def fake_monotonic():
-        return fake_time[0]
-
-    with patch("psalm.agents.rate_limiter.time.monotonic", side_effect=fake_monotonic):
-        limiter = _RateLimiter(max_requests_per_minute=60, max_tokens_per_minute=None)
-        await limiter.acquire(1)
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(limiter.acquire(1), timeout=0.05)
-
-
 async def test_rate_limiter_refill_replenishes_capacity_over_simulated_time():
+    # Exhausts the single unit of capacity with max_requests_per_minute=1, then jumps the
+    # mocked clock forward by a full 60s BEFORE the second acquire — so that second acquire
+    # resolves on its first lock-check (capacity is already refilled to 1.0 by the time it's
+    # called) rather than needing to actually poll/sleep while time.monotonic is frozen. This
+    # matters because patch("psalm.agents.rate_limiter.time.monotonic", ...) patches the
+    # shared `time` module object process-wide (Python modules are singletons), which also
+    # freezes asyncio's own internal clock — if a call under this patch genuinely needed to
+    # block and rely on asyncio.wait_for's timeout firing, the frozen clock would make that
+    # timeout never arrive, hanging the test indefinitely instead of failing cleanly.
     fake_time = [0.0]
 
     def fake_monotonic():
         return fake_time[0]
 
     with patch("psalm.agents.rate_limiter.time.monotonic", side_effect=fake_monotonic):
-        limiter = _RateLimiter(max_requests_per_minute=60, max_tokens_per_minute=None)
+        limiter = _RateLimiter(max_requests_per_minute=1, max_tokens_per_minute=None)
         await limiter.acquire(1)
-        fake_time[0] = 1.0
+        fake_time[0] = 60.0
         await asyncio.wait_for(limiter.acquire(1), timeout=0.5)
