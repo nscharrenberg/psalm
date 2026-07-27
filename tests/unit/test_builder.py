@@ -348,6 +348,38 @@ def test_default_execution_config():
     assert builder._execution_config.max_concurrent_llm_calls == 8
     assert builder._execution_config.max_retries == 3
     assert builder._execution_config.backoff_factor == 2.0
+    assert builder._execution_config.max_requests_per_minute == 60
+    assert builder._execution_config.max_tokens_per_minute == 40000
+    assert builder._execution_config.retry_after_fallback_seconds is None
+
+
+def test_with_execution_stores_rate_limit_fields():
+    builder = PSALM().with_execution(
+        max_requests_per_minute=10, max_tokens_per_minute=1000, retry_after_fallback_seconds=5.0,
+    )
+    assert builder._execution_config.max_requests_per_minute == 10
+    assert builder._execution_config.max_tokens_per_minute == 1000
+    assert builder._execution_config.retry_after_fallback_seconds == 5.0
+
+
+async def test_build_applies_configured_rate_limit_settings():
+    builder = (
+        PSALM()
+        .with_prosecutor(**_agent_kwargs())
+        .with_defense(**_agent_kwargs())
+        .with_judge(**_agent_kwargs())
+        .with_jury(_jury_configs())
+        .with_execution(
+            max_requests_per_minute=15, max_tokens_per_minute=2000, retry_after_fallback_seconds=3.0,
+        )
+    )
+    with patch("psalm.builder.PSALM._ping_llm", new=AsyncMock(return_value=None)):
+        courtroom = await builder.build()
+    execution = courtroom._courtroom._argumentation_phase._prosecutor._execution
+    assert execution.max_requests_per_minute == 15
+    assert execution.max_tokens_per_minute == 2000
+    assert execution.retry_after_fallback_seconds == 3.0
+    assert execution.rate_limiter() is not None
 
 
 async def test_build_shares_one_semaphore_across_prosecutor_and_jury():
